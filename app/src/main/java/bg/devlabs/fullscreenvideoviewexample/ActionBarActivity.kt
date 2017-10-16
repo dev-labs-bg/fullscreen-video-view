@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.activity_action_bar.*
  * Dev Labs
  * slavi@devlabs.bg
  */
-class ActionBarActivity : AppCompatActivity(), FullscreenVideoView.OnVideoSizeResetListener {
+class ActionBarActivity : AppCompatActivity() {
     companion object {
         fun start(context: Context) {
             val starter = Intent(context, ActionBarActivity::class.java)
@@ -30,16 +30,12 @@ class ActionBarActivity : AppCompatActivity(), FullscreenVideoView.OnVideoSizeRe
 
         fullscreenVideoView = findViewById(R.id.video_player)
 //        fullscreenVideoView.init("http://clips.vorwaerts-gmbh.de/VfE_html5.mp4", supportActionBar, this)
-        fullscreenVideoView.init("http://clips.vorwaerts-gmbh.de/VfE_html5.mp4", parentLayout, this)
+        fullscreenVideoView.init("http://clips.vorwaerts-gmbh.de/VfE_html5.mp4", parentLayout)
         fullscreenVideoView.setAutoStartEnabled(true)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         fullscreenVideoView.handleConfigurationChange(this, newConfig)
-    }
-
-    override fun onVideoSizeReset() {
-
     }
 }

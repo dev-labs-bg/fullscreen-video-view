@@ -8,7 +8,7 @@ import android.support.v7.app.AppCompatActivity
 import bg.devlabs.fullscreenvideoview.FullscreenVideoView
 import kotlinx.android.synthetic.main.activity_toolbar.*
 
-class ToolbarActivity : AppCompatActivity(), FullscreenVideoView.OnVideoSizeResetListener {
+class ToolbarActivity : AppCompatActivity() {
     companion object {
         fun start(context: Context) {
             val starter = Intent(context, ToolbarActivity::class.java)
@@ -19,15 +19,11 @@ class ToolbarActivity : AppCompatActivity(), FullscreenVideoView.OnVideoSizeRese
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_toolbar)
-        fullscreenVideoView.init("http://clips.vorwaerts-gmbh.de/VfE_html5.mp4", parentLayout, this)
+        fullscreenVideoView.init("http://clips.vorwaerts-gmbh.de/VfE_html5.mp4", parentLayout)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         fullscreenVideoView.handleConfigurationChange(this, newConfig)
-    }
-
-    override fun onVideoSizeReset() {
-
     }
 }
