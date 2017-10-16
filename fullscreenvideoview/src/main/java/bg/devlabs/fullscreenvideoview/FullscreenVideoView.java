@@ -46,7 +46,6 @@ public class FullscreenVideoView extends FrameLayout {
     private boolean isAutoStartEnabled;
 
     // Listeners
-    private OnVideoSizeResetListener onVideoSizeResetListener;
     private OrientationEventListener orientationEventListener;
     private MediaPlayer.OnPreparedListener onPreparedListener;
     private View.OnTouchListener onTouchListener;
@@ -95,7 +94,7 @@ public class FullscreenVideoView extends FrameLayout {
 //    }
 
     // There is no ActionBar or Toolbar
-    public void init(String videoPath, ViewGroup parentLayout, OnVideoSizeResetListener listener) {
+    public void init(String videoPath, ViewGroup parentLayout) {
         setupBar();
 //        if (getContext() instanceof AppCompatActivity) {
 //            if (actionBar == null && ((AppCompatActivity) getContext()).getSupportActionBar() != null) {
@@ -105,7 +104,6 @@ public class FullscreenVideoView extends FrameLayout {
 //        }
 
         this.parentLayout = parentLayout;
-        this.onVideoSizeResetListener = listener;
         this.videoPath = videoPath;
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE);
@@ -404,7 +402,6 @@ public class FullscreenVideoView extends FrameLayout {
         showOtherViews();
         // TODO: Calculating the size according to if the view is on the whole screen or not
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        onVideoSizeResetListener.onVideoSizeReset();
         isFullscreen = false;
 
 //        DisplayMetrics displayMetrics = DeviceUtils.getDisplayMetrics(getContext());
@@ -486,22 +483,22 @@ public class FullscreenVideoView extends FrameLayout {
         }
     }
 
-    /**
-     * Calculates all of the extra display items size
-     *
-     * @return the height of all of the extra items
-     */
-    private int getExtraDisplayItemsSize() {
-        int statusBarHeight = 0;
-        // When fullscreen is enabled immersive mode is activated and the status bar is hidden.
-        // Therefore it shouldn't be in the sum value of the extra items
-        if (!isFullscreen) {
-            statusBarHeight = DeviceUtils.getStatusBarHeight(getContext());
-        }
-        // The software navigation buttons
-        int navigationBarHeight = DeviceUtils.getNavigationBarHeight(getContext().getResources());
-        return statusBarHeight + navigationBarHeight;
-    }
+//    /**
+//     * Calculates all of the extra display items size
+//     *
+//     * @return the height of all of the extra items
+//     */
+//    private int getExtraDisplayItemsSize() {
+//        int statusBarHeight = 0;
+//        // When fullscreen is enabled immersive mode is activated and the status bar is hidden.
+//        // Therefore it shouldn't be in the sum value of the extra items
+//        if (!isFullscreen) {
+//            statusBarHeight = DeviceUtils.getStatusBarHeight(getContext());
+//        }
+//        // The software navigation buttons
+//        int navigationBarHeight = DeviceUtils.getNavigationBarHeight(getContext().getResources());
+//        return statusBarHeight + navigationBarHeight;
+//    }
 
     private void initOrientationListener() {
         orientationEventListener = new OrientationEventListener(getContext()) {
@@ -533,9 +530,5 @@ public class FullscreenVideoView extends FrameLayout {
 
     public void setAutoStartEnabled(boolean isAutoStartEnabled) {
         this.isAutoStartEnabled = isAutoStartEnabled;
-    }
-
-    public interface OnVideoSizeResetListener {
-        void onVideoSizeReset();
     }
 }
