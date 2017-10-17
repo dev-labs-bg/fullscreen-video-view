@@ -531,4 +531,25 @@ public class FullscreenVideoView extends FrameLayout {
     public void setAutoStartEnabled(boolean isAutoStartEnabled) {
         this.isAutoStartEnabled = isAutoStartEnabled;
     }
+
+    public void handleOnDestroy() {
+        onPreparedListener = null;
+        onTouchListener = null;
+        mediaPlayer = null;
+        mediaPlayerControl = null;
+        // Disable and null the OrientationEventListener
+        if (orientationEventListener != null) {
+            orientationEventListener.disable();
+            orientationEventListener = null;
+        }
+
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+        }
+
+        if (surfaceHolder != null) {
+            surfaceHolder.removeCallback(surfaceHolderCallback);
+            surfaceHolder.getSurface().release();
+        }
+    }
 }

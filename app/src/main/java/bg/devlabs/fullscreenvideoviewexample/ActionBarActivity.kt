@@ -38,4 +38,9 @@ class ActionBarActivity : AppCompatActivity() {
         super.onConfigurationChanged(newConfig)
         fullscreenVideoView.handleConfigurationChange(this, newConfig)
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        fullscreenVideoView.handleOnDestroy()
+    }
 }

@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import bg.devlabs.fullscreenvideoview.FullscreenVideoView
 import kotlinx.android.synthetic.main.activity_toolbar.*
 
 class ToolbarActivity : AppCompatActivity() {
@@ -25,5 +24,10 @@ class ToolbarActivity : AppCompatActivity() {
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         fullscreenVideoView.handleConfigurationChange(this, newConfig)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        fullscreenVideoView.handleOnDestroy()
     }
 }
