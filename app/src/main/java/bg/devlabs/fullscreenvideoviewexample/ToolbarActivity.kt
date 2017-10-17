@@ -28,9 +28,8 @@ class ToolbarActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
         if (!fullscreenVideoView.shouldHandleOnBackPressed()) {
-            onBackPressed()
+            super.onBackPressed()
         }
     }
 }

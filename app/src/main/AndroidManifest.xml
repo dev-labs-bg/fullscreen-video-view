@@ -26,8 +26,11 @@
         <activity
             android:name=".ToolbarActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/ToolbarActivityTheme" />
-        <activity android:name=".NoActionBarActivity" />
+            android:theme="@style/NoActionBarAppTheme" />
+        <activity
+            android:name=".NoActionBarActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/NoActionBarAppTheme" />
     </application>
 
 </manifest>
