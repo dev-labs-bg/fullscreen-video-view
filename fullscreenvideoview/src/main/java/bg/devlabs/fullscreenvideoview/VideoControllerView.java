@@ -15,23 +15,17 @@ package bg.devlabs.fullscreenvideoview;/*
  */
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -551,6 +545,7 @@ class VideoControllerView extends FrameLayout {
         } else {
             mPlayer.start();
         }
+
         updatePausePlay();
     }
 
@@ -628,36 +623,6 @@ class VideoControllerView extends FrameLayout {
         mPlayer = null;
         mRoot = null;
         Log.d(TAG, "onDestroy: ");
-    }
-
-    private void toggleSystemUiVisibility(Window activityWindow) {
-        int uiOptions = activityWindow.getDecorView().getSystemUiVisibility();
-        int newUiOptions = uiOptions;
-
-        boolean isImmersiveModeEnabled = ((uiOptions | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY) == uiOptions);
-        if (isImmersiveModeEnabled) {
-            Log.i(TAG, "Turning immersive mode mode off. ");
-        } else {
-            Log.i(TAG, "Turning immersive mode mode on.");
-        }
-
-        newUiOptions ^= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-        newUiOptions ^= View.SYSTEM_UI_FLAG_FULLSCREEN;
-        newUiOptions ^= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-
-        activityWindow.getDecorView().setSystemUiVisibility(newUiOptions);
-    }
-
-    private boolean isSystemBarOnBottom(WindowManager windowManager, Configuration configuration) {
-        Point realPoint = new Point();
-        Display display = windowManager.getDefaultDisplay();
-        display.getRealSize(realPoint);
-        DisplayMetrics metrics = new DisplayMetrics();
-        display.getMetrics(metrics);
-        boolean canMove = (metrics.widthPixels != metrics.heightPixels &&
-                configuration.smallestScreenWidthDp < 600);
-
-        return (!canMove || metrics.widthPixels < metrics.heightPixels);
     }
 
     public interface MediaPlayerControl {

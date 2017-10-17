@@ -49,7 +49,6 @@ public class FullscreenVideoView extends FrameLayout {
     private VideoControllerView controller;
     private boolean isFullscreen;
     private String videoPath;
-    private boolean shouldStart = true;
     private boolean landscape = false;
     private boolean isAutoStartEnabled;
 
@@ -177,50 +176,48 @@ public class FullscreenVideoView extends FrameLayout {
         onPreparedListener = new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {
-                if (shouldStart) {
-                    if (((Activity) getContext()).isDestroyed()) {
-                        return;
-                    }
-                    hideProgress();
+                if (((Activity) getContext()).isDestroyed()) {
+                    return;
+                }
+                hideProgress();
 
-                    //Get the dimensions of the video
-                    int videoWidth = mediaPlayer.getVideoWidth();
-                    int videoHeight = mediaPlayer.getVideoHeight();
+                //Get the dimensions of the video
+                int videoWidth = mediaPlayer.getVideoWidth();
+                int videoHeight = mediaPlayer.getVideoHeight();
 
-                    DisplayMetrics displayMetrics = DeviceUtils.getDisplayMetrics(getContext());
+                DisplayMetrics displayMetrics = DeviceUtils.getDisplayMetrics(getContext());
 
 //                    int additionalDimens = getExtraDisplayItemsSize(toolbarHeight);
-                    //Get the width of the screen
-                    int screenWidth = displayMetrics.widthPixels;
-                    int screenHeight = displayMetrics.heightPixels;// - additionalDimens;
+                //Get the width of the screen
+                int screenWidth = displayMetrics.widthPixels;
+                int screenHeight = displayMetrics.heightPixels;// - additionalDimens;
 
-                    //Get the SurfaceView layout parameters
-                    FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) surfaceView.getLayoutParams();
-                    if (videoHeight / screenHeight > videoWidth / screenWidth) {// &&
+                //Get the SurfaceView layout parameters
+                FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) surfaceView.getLayoutParams();
+                if (videoHeight / screenHeight > videoWidth / screenWidth) {// &&
 //                            videoHeight - videoWidth > additionalDimens) {
-                        lp.height = screenHeight;
-                        //Set the width of the SurfaceView to match the aspect ratio of the video
-                        //be sure to cast these as floats otherwise the calculation will likely be 0
-                        lp.width = (int) (((float) videoWidth / (float) videoHeight) * (float) screenHeight);
-                    } else {
-                        //Set the width of the SurfaceView to the width of the screen
-                        lp.width = screenWidth;
+                    lp.height = screenHeight;
+                    //Set the width of the SurfaceView to match the aspect ratio of the video
+                    //be sure to cast these as floats otherwise the calculation will likely be 0
+                    lp.width = (int) (((float) videoWidth / (float) videoHeight) * (float) screenHeight);
+                } else {
+                    //Set the width of the SurfaceView to the width of the screen
+                    lp.width = screenWidth;
 
-                        //Set the height of the SurfaceView to match the aspect ratio of the video
-                        //be sure to cast these as floats otherwise the calculation will likely be 0
-                        lp.height = (int) (((float) videoHeight / (float) videoWidth) * (float) screenWidth);
-                    }
+                    //Set the height of the SurfaceView to match the aspect ratio of the video
+                    //be sure to cast these as floats otherwise the calculation will likely be 0
+                    lp.height = (int) (((float) videoHeight / (float) videoWidth) * (float) screenWidth);
+                }
 
-                    lp.gravity = Gravity.CENTER;
+                lp.gravity = Gravity.CENTER;
 
-                    //Commit the layout parameters
-                    surfaceView.setLayoutParams(lp);
+                //Commit the layout parameters
+                surfaceView.setLayoutParams(lp);
 
-                    controller.setMediaPlayer(mediaPlayerControl);
-                    controller.setAnchorView(FullscreenVideoView.this);
-                    if (mediaPlayerControl != null && isAutoStartEnabled) {
-                        mediaPlayerControl.start();
-                    }
+                controller.setMediaPlayer(mediaPlayerControl);
+                controller.setAnchorView(FullscreenVideoView.this);
+                if (mediaPlayerControl != null && isAutoStartEnabled) {
+                    mediaPlayerControl.start();
                 }
             }
         };
@@ -346,8 +343,7 @@ public class FullscreenVideoView extends FrameLayout {
         @Override
         public void surfaceDestroyed(SurfaceHolder holder) {
             if (mediaPlayer != null) {
-                shouldStart = false;
-                mediaPlayer.stop();
+                mediaPlayer.pause();
             }
         }
     };
@@ -554,6 +550,7 @@ public class FullscreenVideoView extends FrameLayout {
     }
 
     private void handleOnDestroy() {
+        controller.onDestroy();
         onPreparedListener = null;
         onTouchListener = null;
         mediaPlayer = null;
@@ -585,21 +582,14 @@ public class FullscreenVideoView extends FrameLayout {
 
 //        ((Activity) getContext()).onBackPressed();
 
-        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-            mediaPlayer.stop();
-        }
+//        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+//            mediaPlayer.stop();
+//        }
 
         return false;
     }
 
     private class LifecycleEventObserver implements LifecycleObserver {
-        @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-        void onPause() {
-            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                mediaPlayer.stop();
-            }
-        }
-
         @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         void onDestroy() {
             handleOnDestroy();
