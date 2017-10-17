@@ -40,7 +40,9 @@ class ActionBarActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
-        fullscreenVideoView.handleOnBackPressed()
+        // Must be without super.onBackPressed(), because it is called inside the library
+        if (!fullscreenVideoView.shouldHandleOnBackPressed()) {
+            super.onBackPressed()
+        }
     }
 }

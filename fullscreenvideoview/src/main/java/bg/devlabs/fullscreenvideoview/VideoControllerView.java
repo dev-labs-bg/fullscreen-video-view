@@ -88,7 +88,6 @@ class VideoControllerView extends FrameLayout {
     private boolean mUseFastForward;
     private boolean mFromXml;
     private boolean mListenersSet;
-    private boolean useFullscreen;
     private OnClickListener mNextListener, mPrevListener;
     private ImageButton mPauseButton;
     private ImageButton mFfwdButton;
@@ -208,7 +207,6 @@ class VideoControllerView extends FrameLayout {
         super(context);
 //        mContext = context;
         mUseFastForward = useFastForward;
-        this.useFullscreen = useFullscreen;
 
         Log.i(TAG, TAG);
     }
@@ -268,22 +266,19 @@ class VideoControllerView extends FrameLayout {
     }
 
     private void initControllerView(View v) {
-        mPauseButton = (ImageButton) v.findViewById(R.id.pause_media_button);
+        mPauseButton = v.findViewById(R.id.pause_media_button);
         if (mPauseButton != null) {
             mPauseButton.requestFocus();
             mPauseButton.setOnClickListener(mPauseListener);
         }
 
-        mFullscreenButton = (ImageButton) v.findViewById(R.id.fullscreen_media_button);
+        mFullscreenButton = v.findViewById(R.id.fullscreen_media_button);
         if (mFullscreenButton != null) {
             mFullscreenButton.requestFocus();
             mFullscreenButton.setOnClickListener(mFullscreenListener);
-            if (!mFromXml) {
-                mFullscreenButton.setVisibility(useFullscreen ? View.VISIBLE : View.GONE);
-            }
         }
 
-        mFfwdButton = (ImageButton) v.findViewById(R.id.forward_media_button);
+        mFfwdButton = v.findViewById(R.id.forward_media_button);
         if (mFfwdButton != null) {
             mFfwdButton.setOnClickListener(mFfwdListener);
             if (!mFromXml) {
@@ -291,7 +286,7 @@ class VideoControllerView extends FrameLayout {
             }
         }
 
-        mRewButton = (ImageButton) v.findViewById(R.id.rewind_media_button);
+        mRewButton = v.findViewById(R.id.rewind_media_button);
         if (mRewButton != null) {
             mRewButton.setOnClickListener(mRewListener);
             if (!mFromXml) {
@@ -300,11 +295,11 @@ class VideoControllerView extends FrameLayout {
         }
 
         // By default these are hidden. They will be enabled when setPrevNextListeners() is called
-        mNextButton = (ImageButton) v.findViewById(R.id.next_media_button);
+        mNextButton = v.findViewById(R.id.next_media_button);
         if (mNextButton != null && !mFromXml && !mListenersSet) {
             mNextButton.setVisibility(View.GONE);
         }
-        mPrevButton = (ImageButton) v.findViewById(R.id.previous_media_button);
+        mPrevButton = v.findViewById(R.id.previous_media_button);
         if (mPrevButton != null && !mFromXml && !mListenersSet) {
             mPrevButton.setVisibility(View.GONE);
         }
@@ -320,8 +315,8 @@ class VideoControllerView extends FrameLayout {
             mProgress.setMax(1000);
         }
 
-        mEndTime = (TextView) v.findViewById(R.id.time);
-        mCurrentTime = (TextView) v.findViewById(R.id.time_current);
+        mEndTime = v.findViewById(R.id.time);
+        mCurrentTime = v.findViewById(R.id.time_current);
         installPrevNextListeners();
     }
 

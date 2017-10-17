@@ -5,7 +5,6 @@ import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.OnLifecycleEvent;
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -30,6 +29,12 @@ import android.widget.ProgressBar;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR;
+import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
+import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
 
 /**
  * Created by Slavi Petrov on 05.10.2017
@@ -249,72 +254,80 @@ public class FullscreenVideoView extends FrameLayout {
         progressBar.animate().setDuration(shortAnimTime);
     }
 
-    VideoControllerView.MediaPlayerControl mediaPlayerControl = new VideoControllerView.MediaPlayerControl() {
-        @Override
-        public void start() {
-            mediaPlayer.start();
-        }
+    VideoControllerView.MediaPlayerControl mediaPlayerControl =
+            new VideoControllerView.MediaPlayerControl() {
+                @Override
+                public void start() {
+                    mediaPlayer.start();
+                }
 
-        @Override
-        public void pause() {
-            mediaPlayer.pause();
-        }
+                @Override
+                public void pause() {
+                    mediaPlayer.pause();
+                }
 
-        @Override
-        public int getDuration() {
-            if (mediaPlayer != null) {
-                return mediaPlayer.getDuration();
-            }
-            return 0;
-        }
+                @Override
+                public int getDuration() {
+                    if (mediaPlayer != null) {
+                        return mediaPlayer.getDuration();
+                    }
+                    return 0;
+                }
 
-        @Override
-        public int getCurrentPosition() {
-            if (mediaPlayer != null) {
-                return mediaPlayer.getCurrentPosition();
-            }
-            return 0;
-        }
+                @Override
+                public int getCurrentPosition() {
+                    if (mediaPlayer != null) {
+                        return mediaPlayer.getCurrentPosition();
+                    }
+                    return 0;
+                }
 
-        @Override
-        public void seekTo(int pos) {
-            mediaPlayer.seekTo(pos);
-        }
+                @Override
+                public void seekTo(int pos) {
+                    mediaPlayer.seekTo(pos);
+                }
 
-        @Override
-        public boolean isPlaying() {
-            return mediaPlayer != null && mediaPlayer.isPlaying();
-        }
+                @Override
+                public boolean isPlaying() {
+                    return mediaPlayer != null && mediaPlayer.isPlaying();
+                }
 
-        @Override
-        public int getBufferPercentage() {
-            return 0;
-        }
+                @Override
+                public int getBufferPercentage() {
+                    return 0;
+                }
 
-        @Override
-        public boolean canPause() {
-            return true;
-        }
+                @Override
+                public boolean canPause() {
+                    return true;
+                }
 
-        @Override
-        public boolean canSeekBackward() {
-            return true;
-        }
+                @Override
+                public boolean canSeekBackward() {
+                    return true;
+                }
 
-        @Override
-        public boolean canSeekForward() {
-            return true;
-        }
+                @Override
+                public boolean canSeekForward() {
+                    return true;
+                }
 
-        @Override
-        public boolean isFullScreen() {
-            return isFullscreen;
-        }
+                @Override
+                public boolean isFullScreen() {
+                    return isFullscreen;
+                }
 
-        @Override
-        public void toggleFullScreen() {
-        }
-    };
+                @Override
+                public void toggleFullScreen() {
+                    Activity activity = (Activity) getContext();
+                    if (isFullscreen) {
+                        activity.setRequestedOrientation(SCREEN_ORIENTATION_PORTRAIT);
+                    } else {
+                        activity.setRequestedOrientation(SCREEN_ORIENTATION_LANDSCAPE);
+                    }
+
+                }
+            };
 
     private SurfaceHolder.Callback surfaceHolderCallback = new SurfaceHolder.Callback() {
         @Override
@@ -372,7 +385,7 @@ public class FullscreenVideoView extends FrameLayout {
         this.originalWidth = getWidth();
         this.originalHeight = getHeight();
         // Change the orientation to landscape
-        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+        activity.setRequestedOrientation(SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         // TODO: Implement
 //        onVideoFullScreen();
         isFullscreen = true;
@@ -393,11 +406,9 @@ public class FullscreenVideoView extends FrameLayout {
         }
 
         ViewGroup.LayoutParams params = getLayoutParams();
-
         // TODO: Add check if the video should be landscape or portrait in isFullscreen
         params.width = width;
         params.height = height;
-
         setLayoutParams(params);
 
         // Hiding the supportToolbar
@@ -411,7 +422,7 @@ public class FullscreenVideoView extends FrameLayout {
         showOtherViews();
         Activity activity = (Activity) getContext();
         // TODO: Calculating the size according to if the view is on the whole screen or not
-        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        activity.setRequestedOrientation(SCREEN_ORIENTATION_PORTRAIT);
         isFullscreen = false;
 
 //        DisplayMetrics displayMetrics = DeviceUtils.getDisplayMetrics(getContext());
@@ -521,12 +532,12 @@ public class FullscreenVideoView extends FrameLayout {
                 Activity activity = (Activity) getContext();
                 if ((epsilonCheck(orientation, leftLandscape, epsilon) ||
                         epsilonCheck(orientation, rightLandscape, epsilon)) && !landscape) {
-                    activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+                    activity.setRequestedOrientation(SCREEN_ORIENTATION_SENSOR);
                     landscape = true;
                 }
 
                 if (epsilonCheck(orientation, portrait, epsilon) && landscape) {
-                    activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+                    activity.setRequestedOrientation(SCREEN_ORIENTATION_SENSOR);
                     landscape = false;
                 }
             }
@@ -563,21 +574,25 @@ public class FullscreenVideoView extends FrameLayout {
         }
     }
 
-    public void handleOnBackPressed() {
+    public boolean shouldHandleOnBackPressed() {
         if (isFullscreen) {
             // Locks the screen orientation to portrait
             ((Activity) getContext()).setRequestedOrientation(
-                    ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+                    SCREEN_ORIENTATION_SENSOR_PORTRAIT);
             controller.updateFullScreen();
-            return;
+            return true;
         }
+
+//        ((Activity) getContext()).onBackPressed();
 
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
         }
+
+        return false;
     }
 
-    public class LifecycleEventObserver implements LifecycleObserver {
+    private class LifecycleEventObserver implements LifecycleObserver {
         @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
         void onPause() {
             if (mediaPlayer != null && mediaPlayer.isPlaying()) {
