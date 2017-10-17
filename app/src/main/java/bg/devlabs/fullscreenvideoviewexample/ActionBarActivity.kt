@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import bg.devlabs.fullscreenvideoview.FullscreenVideoView
 import kotlinx.android.synthetic.main.activity_action_bar.*
 
 
@@ -22,13 +21,13 @@ class ActionBarActivity : AppCompatActivity() {
         }
     }
 
-    private lateinit var fullscreenVideoView: FullscreenVideoView
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_action_bar)
 
-        fullscreenVideoView = findViewById(R.id.video_player)
+        // Change the ActionBar title
+        supportActionBar?.title = getString(R.string.action_bar)
+        // Initialize the FullscreenVideoView
         fullscreenVideoView.init("http://clips.vorwaerts-gmbh.de/VfE_html5.mp4",
                 parentLayout, lifecycle)
         fullscreenVideoView.setAutoStartEnabled(true)

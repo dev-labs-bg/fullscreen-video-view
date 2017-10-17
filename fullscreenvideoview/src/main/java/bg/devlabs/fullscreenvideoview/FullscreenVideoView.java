@@ -73,14 +73,14 @@ public class FullscreenVideoView extends FrameLayout {
         init();
     }
 
-    public FullscreenVideoView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public FullscreenVideoView(@NonNull Context context, @Nullable AttributeSet attrs,
+                               int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
 
     private void init() {
-        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(
-                Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = LayoutInflater.from(getContext());
         View root = inflater.inflate(R.layout.video_player, this, true);
         this.surfaceView = root.findViewById(R.id.surface_view);
         this.progressBar = root.findViewById(R.id.progress_bar);
@@ -297,7 +297,6 @@ public class FullscreenVideoView extends FrameLayout {
                     } else {
                         activity.setRequestedOrientation(SCREEN_ORIENTATION_LANDSCAPE);
                     }
-
                 }
             };
 
@@ -363,13 +362,6 @@ public class FullscreenVideoView extends FrameLayout {
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         int width = displayMetrics.widthPixels;
         int height = displayMetrics.heightPixels;
-
-        if (DeviceUtils.hasSoftKeys(activity.getWindowManager().getDefaultDisplay()) &&
-                DeviceUtils.isSystemBarOnBottom(getContext())) {
-            height += DeviceUtils.getNavigationBarHeight(getResources());
-        } else {
-            width += DeviceUtils.getNavigationBarHeight(getResources());
-        }
 
         ViewGroup.LayoutParams params = getLayoutParams();
         // TODO: Add check if the video should be landscape or portrait in isFullscreen
@@ -509,8 +501,7 @@ public class FullscreenVideoView extends FrameLayout {
     public boolean shouldHandleOnBackPressed() {
         if (isFullscreen) {
             // Locks the screen orientation to portrait
-            ((Activity) getContext()).setRequestedOrientation(
-                    SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+            ((Activity) getContext()).setRequestedOrientation(SCREEN_ORIENTATION_SENSOR_PORTRAIT);
             controller.updateFullScreen();
             return true;
         }

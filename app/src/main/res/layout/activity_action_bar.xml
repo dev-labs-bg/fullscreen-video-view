@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <bg.devlabs.fullscreenvideoview.FullscreenVideoView
-        android:id="@+id/video_player"
+        android:id="@+id/fullscreenVideoView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </LinearLayout>
