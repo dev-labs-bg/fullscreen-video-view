@@ -18,16 +18,17 @@ class ToolbarActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_toolbar)
-        fullscreenVideoView.init("http://clips.vorwaerts-gmbh.de/VfE_html5.mp4", parentLayout)
+        fullscreenVideoView.init("http://clips.vorwaerts-gmbh.de/VfE_html5.mp4",
+                parentLayout, lifecycle)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        fullscreenVideoView.handleConfigurationChange(this, newConfig)
+        fullscreenVideoView.handleConfigurationChange(newConfig)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        fullscreenVideoView.handleOnDestroy()
+    override fun onBackPressed() {
+        super.onBackPressed()
+        fullscreenVideoView.handleOnBackPressed()
     }
 }

@@ -1,6 +1,9 @@
 package bg.devlabs.fullscreenvideoview;
 
 import android.app.Activity;
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleObserver;
+import android.arch.lifecycle.OnLifecycleEvent;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -57,6 +60,7 @@ public class FullscreenVideoView extends FrameLayout {
     private int originalWidth;
     private int originalHeight;
     private ViewGroup parentLayout;
+    private Lifecycle lifecycle;
 
     public FullscreenVideoView(@NonNull Context context) {
         super(context);
@@ -94,7 +98,7 @@ public class FullscreenVideoView extends FrameLayout {
 //    }
 
     // There is no ActionBar or Toolbar
-    public void init(String videoPath, ViewGroup parentLayout) {
+    public void init(String videoPath, ViewGroup parentLayout, Lifecycle lifecycle) {
         setupBar();
 //        if (getContext() instanceof AppCompatActivity) {
 //            if (actionBar == null && ((AppCompatActivity) getContext()).getSupportActionBar() != null) {
@@ -102,6 +106,10 @@ public class FullscreenVideoView extends FrameLayout {
 //                        "ActionBar actionBar, OnVideoSizeResetListener listener)!");
 //            }
 //        }
+
+        // Init Lifecycle
+        this.lifecycle = lifecycle;
+        this.lifecycle.addObserver(new LifecycleEventObserver());
 
         this.parentLayout = parentLayout;
         this.videoPath = videoPath;
@@ -347,18 +355,19 @@ public class FullscreenVideoView extends FrameLayout {
         activityWindow.getDecorView().setSystemUiVisibility(newUiOptions);
     }
 
-    public void handleConfigurationChange(Activity activity, Configuration newConfig) {
+    public void handleConfigurationChange(Configuration newConfig) {
         // Checks the orientation of the screen
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            makeVideoViewFullscreen(activity);
+            makeVideoViewFullscreen();
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            resetVideoViewSize(activity);
+            resetVideoViewSize();
         }
     }
 
-    public void makeVideoViewFullscreen(@NonNull Activity activity) {
+    public void makeVideoViewFullscreen() {
         hideOtherViews();
 
+        Activity activity = ((Activity) getContext());
         // Save the video player original width and height
         this.originalWidth = getWidth();
         this.originalHeight = getHeight();
@@ -398,8 +407,9 @@ public class FullscreenVideoView extends FrameLayout {
         toggleSystemUiVisibility(activity.getWindow());
     }
 
-    private void resetVideoViewSize(Activity activity) {
+    private void resetVideoViewSize() {
         showOtherViews();
+        Activity activity = (Activity) getContext();
         // TODO: Calculating the size according to if the view is on the whole screen or not
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         isFullscreen = false;
@@ -532,7 +542,7 @@ public class FullscreenVideoView extends FrameLayout {
         this.isAutoStartEnabled = isAutoStartEnabled;
     }
 
-    public void handleOnDestroy() {
+    private void handleOnDestroy() {
         onPreparedListener = null;
         onTouchListener = null;
         mediaPlayer = null;
@@ -550,6 +560,34 @@ public class FullscreenVideoView extends FrameLayout {
         if (surfaceHolder != null) {
             surfaceHolder.removeCallback(surfaceHolderCallback);
             surfaceHolder.getSurface().release();
+        }
+    }
+
+    public void handleOnBackPressed() {
+        if (isFullscreen) {
+            // Locks the screen orientation to portrait
+            ((Activity) getContext()).setRequestedOrientation(
+                    ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+            controller.updateFullScreen();
+            return;
+        }
+
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            mediaPlayer.stop();
+        }
+    }
+
+    public class LifecycleEventObserver implements LifecycleObserver {
+        @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+        void onPause() {
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                mediaPlayer.stop();
+            }
+        }
+
+        @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+        void onDestroy() {
+            handleOnDestroy();
         }
     }
 }

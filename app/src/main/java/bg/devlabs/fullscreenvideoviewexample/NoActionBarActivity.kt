@@ -18,16 +18,17 @@ class NoActionBarActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_no_action_bar)
-        fullscreenVideoView.init("http://clips.vorwaerts-gmbh.de/VfE_html5.mp4", parentLayout)
+        fullscreenVideoView.init("http://clips.vorwaerts-gmbh.de/VfE_html5.mp4",
+                parentLayout, lifecycle)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        fullscreenVideoView.handleConfigurationChange(this, newConfig)
+        fullscreenVideoView.handleConfigurationChange(newConfig)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        fullscreenVideoView.handleOnDestroy()
+    override fun onBackPressed() {
+        super.onBackPressed()
+        fullscreenVideoView.handleOnBackPressed()
     }
 }

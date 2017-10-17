@@ -29,18 +29,18 @@ class ActionBarActivity : AppCompatActivity() {
         setContentView(R.layout.activity_action_bar)
 
         fullscreenVideoView = findViewById(R.id.video_player)
-//        fullscreenVideoView.init("http://clips.vorwaerts-gmbh.de/VfE_html5.mp4", supportActionBar, this)
-        fullscreenVideoView.init("http://clips.vorwaerts-gmbh.de/VfE_html5.mp4", parentLayout)
+        fullscreenVideoView.init("http://clips.vorwaerts-gmbh.de/VfE_html5.mp4",
+                parentLayout, lifecycle)
         fullscreenVideoView.setAutoStartEnabled(true)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        fullscreenVideoView.handleConfigurationChange(this, newConfig)
+        fullscreenVideoView.handleConfigurationChange(newConfig)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        fullscreenVideoView.handleOnDestroy()
+    override fun onBackPressed() {
+        super.onBackPressed()
+        fullscreenVideoView.handleOnBackPressed()
     }
 }
