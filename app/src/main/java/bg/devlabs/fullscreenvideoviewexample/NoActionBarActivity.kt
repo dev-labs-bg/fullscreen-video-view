@@ -18,8 +18,9 @@ class NoActionBarActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_no_action_bar)
-        fullscreenVideoView.init("http://clips.vorwaerts-gmbh.de/VfE_html5.mp4",
-                parentLayout, lifecycle)
+        fullscreenVideoView.Builder(
+                "http://clips.vorwaerts-gmbh.de/VfE_html5.mp4", parentLayout, lifecycle)
+                .build()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

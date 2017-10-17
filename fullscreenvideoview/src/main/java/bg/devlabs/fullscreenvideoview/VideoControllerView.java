@@ -18,6 +18,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.DrawableRes;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -186,6 +187,8 @@ class VideoControllerView extends FrameLayout {
             show(sDefaultTimeout);
         }
     };
+    private int fullscreenShrinkDrawable = R.drawable.ic_media_fullscreen_shrink;
+    private int fullscreenStretchDrawable = R.drawable.ic_media_fullscreen_stretch;
 
     public VideoControllerView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -535,9 +538,9 @@ class VideoControllerView extends FrameLayout {
         }
 
         if (mPlayer.isFullScreen()) {
-            mFullscreenButton.setImageResource(R.drawable.ic_media_fullscreen_shrink);
+            mFullscreenButton.setImageResource(fullscreenShrinkDrawable);
         } else {
-            mFullscreenButton.setImageResource(R.drawable.ic_media_fullscreen_stretch);
+            mFullscreenButton.setImageResource(fullscreenStretchDrawable);
         }
     }
 
@@ -629,6 +632,14 @@ class VideoControllerView extends FrameLayout {
         mPlayer = null;
         mRoot = null;
         Log.d(TAG, "onDestroy: ");
+    }
+
+    public void setFullscreenStretchDrawable(@DrawableRes int fullscreenStretchDrawable) {
+        this.fullscreenStretchDrawable = fullscreenStretchDrawable;
+    }
+
+    public void setFullscreenShrinkDrawable(int fullscreenShrinkDrawable) {
+        this.fullscreenShrinkDrawable = fullscreenShrinkDrawable;
     }
 
     public interface MediaPlayerControl {

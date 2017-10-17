@@ -26,11 +26,14 @@ class ActionBarActivity : AppCompatActivity() {
         setContentView(R.layout.activity_action_bar)
 
         // Change the ActionBar title
-        supportActionBar?.title = getString(R.string.action_bar)
+        supportActionBar?.title = getString(R.string.action_bar_activity)
         // Initialize the FullscreenVideoView
-        fullscreenVideoView.init("http://clips.vorwaerts-gmbh.de/VfE_html5.mp4",
-                parentLayout, lifecycle)
-        fullscreenVideoView.setAutoStartEnabled(true)
+        fullscreenVideoView.Builder(
+                "http://clips.vorwaerts-gmbh.de/VfE_html5.mp4", parentLayout, lifecycle)
+                .fullscreenShrinkDrawable(R.drawable.ic_launcher_background)
+                .fullscreenStretchDrawable(R.drawable.ic_media_pause)
+                .autoStartEnabled(true)
+                .build()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

@@ -18,8 +18,9 @@ class ToolbarActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_toolbar)
-        fullscreenVideoView.init("http://clips.vorwaerts-gmbh.de/VfE_html5.mp4",
-                parentLayout, lifecycle)
+        fullscreenVideoView.Builder(
+                "http://clips.vorwaerts-gmbh.de/VfE_html5.mp4", parentLayout, lifecycle)
+                .build()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

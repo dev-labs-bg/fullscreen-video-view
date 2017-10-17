@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
@@ -62,6 +63,7 @@ public class FullscreenVideoView extends FrameLayout {
     private int originalWidth;
     private int originalHeight;
     private ViewGroup parentLayout;
+    private Lifecycle lifecycle;
 
     public FullscreenVideoView(@NonNull Context context) {
         super(context);
@@ -79,28 +81,68 @@ public class FullscreenVideoView extends FrameLayout {
         init();
     }
 
+    public class Builder {
+        private final String videoPath;
+        private final ViewGroup parentLayout;
+        private final Lifecycle lifecycle;
+        private boolean isAutoStartEnabled;
+        private int fullscreenStretchDrawable;
+        private int fullscreenShrinkDrawable;
+
+        public Builder(String videoPath, ViewGroup parentLayout, Lifecycle lifecycle) {
+            this.videoPath = videoPath;
+            this.parentLayout = parentLayout;
+            this.lifecycle = lifecycle;
+        }
+
+        public Builder autoStartEnabled(boolean enable) {
+            this.isAutoStartEnabled = enable;
+            return this;
+        }
+
+        public Builder fullscreenStretchDrawable(@DrawableRes int drawableResId) {
+            this.fullscreenStretchDrawable = drawableResId;
+            return this;
+        }
+
+        public Builder fullscreenShrinkDrawable(@DrawableRes int drawableResId) {
+            this.fullscreenShrinkDrawable = drawableResId;
+            return this;
+        }
+
+        public void build() {
+            init(this);
+        }
+    }
+
     private void init() {
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        View root = inflater.inflate(R.layout.video_player, this, true);
+        View root = getLayoutInflater().inflate(R.layout.video_player, this, true);
         this.surfaceView = root.findViewById(R.id.surface_view);
         this.progressBar = root.findViewById(R.id.progress_bar);
     }
 
     // There is no ActionBar or Toolbar
-    public void init(String videoPath, ViewGroup parentLayout, Lifecycle lifecycle) {
+    private void init(Builder builder) {
         setupBar();
+        this.videoPath = builder.videoPath;
+        this.parentLayout = builder.parentLayout;
+        this.lifecycle = builder.lifecycle;
         lifecycle.addObserver(new LifecycleEventObserver());
-        this.parentLayout = parentLayout;
-        this.videoPath = videoPath;
-        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(
-                Context.LAYOUT_INFLATER_SERVICE);
+        this.isAutoStartEnabled = builder.isAutoStartEnabled;
+
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(surfaceHolderCallback);
         mediaPlayer = new MediaPlayer();
-        controller = new VideoControllerView(getContext(), inflater, false, false);
+        controller = new VideoControllerView(getContext(), getLayoutInflater(), false, false);
+        controller.setFullscreenStretchDrawable(builder.fullscreenStretchDrawable);
+        controller.setFullscreenShrinkDrawable(builder.fullscreenShrinkDrawable);
         setupProgressBar();
         initOrientationListener();
         setupVideoView();
+    }
+
+    private LayoutInflater getLayoutInflater() {
+        return LayoutInflater.from(getContext());
     }
 
     private void setupBar() {
@@ -470,10 +512,6 @@ public class FullscreenVideoView extends FrameLayout {
             }
         };
         orientationEventListener.enable();
-    }
-
-    public void setAutoStartEnabled(boolean isAutoStartEnabled) {
-        this.isAutoStartEnabled = isAutoStartEnabled;
     }
 
     private void handleOnDestroy() {
