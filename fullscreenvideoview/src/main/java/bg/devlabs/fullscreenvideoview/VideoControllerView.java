@@ -450,8 +450,14 @@ class VideoControllerView extends FrameLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        performClick();
         show(sDefaultTimeout);
         return true;
+    }
+
+    @Override
+    public boolean performClick() {
+        return super.performClick();
     }
 
     @Override

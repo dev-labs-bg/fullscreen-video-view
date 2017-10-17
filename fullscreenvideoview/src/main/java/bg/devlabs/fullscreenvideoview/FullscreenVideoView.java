@@ -57,14 +57,11 @@ public class FullscreenVideoView extends FrameLayout {
     private MediaPlayer.OnPreparedListener onPreparedListener;
     private View.OnTouchListener onTouchListener;
 
-    //    private Toolbar supportToolbar;
-//    private android.widget.Toolbar toolbar;
     private ActionBar supportActionBar;
     private android.app.ActionBar actionBar;
     private int originalWidth;
     private int originalHeight;
     private ViewGroup parentLayout;
-    private Lifecycle lifecycle;
 
     public FullscreenVideoView(@NonNull Context context) {
         super(context);
@@ -89,32 +86,10 @@ public class FullscreenVideoView extends FrameLayout {
         this.progressBar = root.findViewById(R.id.progress_bar);
     }
 
-    // There is only a Toolbar
-//    public void init(String videoPath, Toolbar supportToolbar, OnVideoSizeResetListener listener) {
-//        this.supportToolbar = supportToolbar;
-//        init(videoPath, listener);
-//    }
-//
-//    // There is only an ActionBar
-//    public void init(String videoPath, ActionBar actionBar, OnVideoSizeResetListener listener) {
-//        this.actionBar = actionBar;
-//        init(videoPath, listener);
-//    }
-
     // There is no ActionBar or Toolbar
     public void init(String videoPath, ViewGroup parentLayout, Lifecycle lifecycle) {
         setupBar();
-//        if (getContext() instanceof AppCompatActivity) {
-//            if (actionBar == null && ((AppCompatActivity) getContext()).getSupportActionBar() != null) {
-//                throw new IllegalArgumentException("Please use init(String videoPath, " +
-//                        "ActionBar actionBar, OnVideoSizeResetListener listener)!");
-//            }
-//        }
-
-        // Init Lifecycle
-        this.lifecycle = lifecycle;
-        this.lifecycle.addObserver(new LifecycleEventObserver());
-
+        lifecycle.addObserver(new LifecycleEventObserver());
         this.parentLayout = parentLayout;
         this.videoPath = videoPath;
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(
@@ -387,12 +362,7 @@ public class FullscreenVideoView extends FrameLayout {
         isFullscreen = true;
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         int width = displayMetrics.widthPixels;
-//        int toolbarHeight = 0;
-//        if (supportToolbar != null) {
-//            toolbarHeight = supportToolbar.getHeight();
-//        }
-
-        int height = displayMetrics.heightPixels;// - getExtraDisplayItemsSize(toolbarHeight);
+        int height = displayMetrics.heightPixels;
 
         if (DeviceUtils.hasSoftKeys(activity.getWindowManager().getDefaultDisplay()) &&
                 DeviceUtils.isSystemBarOnBottom(getContext())) {
@@ -421,13 +391,11 @@ public class FullscreenVideoView extends FrameLayout {
         activity.setRequestedOrientation(SCREEN_ORIENTATION_PORTRAIT);
         isFullscreen = false;
 
-//        DisplayMetrics displayMetrics = DeviceUtils.getDisplayMetrics(getContext());
         int width = originalWidth;
-        int height = originalHeight;// - getExtraDisplayItemsSize();
+        int height = originalHeight;
 
         ViewGroup.LayoutParams params = getLayoutParams();
         params.width = width;
-//        params.height = getHeight();
         params.height = height;
 
         setLayoutParams(params);
@@ -465,17 +433,9 @@ public class FullscreenVideoView extends FrameLayout {
     }
 
     private void showToolbarOrActionBar() {
-//        if (supportToolbar != null) {
-//            supportToolbar.setVisibility(View.VISIBLE);
-//        }
-
         if (supportActionBar != null) {
             supportActionBar.show();
         }
-
-//        if (toolbar != null) {
-//            toolbar.setVisibility(View.VISIBLE);
-//        }
 
         if (actionBar != null) {
             actionBar.show();
@@ -483,39 +443,14 @@ public class FullscreenVideoView extends FrameLayout {
     }
 
     private void hideToolbarOrActionBar() {
-//        if (supportToolbar != null) {
-//            supportToolbar.setVisibility(View.GONE);
-//        }
-
         if (supportActionBar != null) {
             supportActionBar.hide();
         }
-
-//        if (toolbar != null) {
-//            toolbar.setVisibility(View.GONE);
-//        }
 
         if (actionBar != null) {
             actionBar.hide();
         }
     }
-
-//    /**
-//     * Calculates all of the extra display items size
-//     *
-//     * @return the height of all of the extra items
-//     */
-//    private int getExtraDisplayItemsSize() {
-//        int statusBarHeight = 0;
-//        // When fullscreen is enabled immersive mode is activated and the status bar is hidden.
-//        // Therefore it shouldn't be in the sum value of the extra items
-//        if (!isFullscreen) {
-//            statusBarHeight = DeviceUtils.getStatusBarHeight(getContext());
-//        }
-//        // The software navigation buttons
-//        int navigationBarHeight = DeviceUtils.getNavigationBarHeight(getContext().getResources());
-//        return statusBarHeight + navigationBarHeight;
-//    }
 
     private void initOrientationListener() {
         orientationEventListener = new OrientationEventListener(getContext()) {
@@ -579,12 +514,6 @@ public class FullscreenVideoView extends FrameLayout {
             controller.updateFullScreen();
             return true;
         }
-
-//        ((Activity) getContext()).onBackPressed();
-
-//        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-//            mediaPlayer.stop();
-//        }
 
         return false;
     }
