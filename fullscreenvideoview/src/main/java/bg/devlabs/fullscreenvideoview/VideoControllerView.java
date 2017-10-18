@@ -80,7 +80,7 @@ class VideoControllerView extends FrameLayout {
     private ViewGroup mAnchor;
     private View mRoot;
     private SeekBar mProgress;
-    private boolean mUseFastForward;
+    //    private boolean mUseFastForward;
     private boolean mFromXml;
     private boolean mListenersSet;
     private OnClickListener mNextListener, mPrevListener;
@@ -166,7 +166,7 @@ class VideoControllerView extends FrameLayout {
             }
 
             int pos = mPlayer.getCurrentPosition();
-            pos -= 5000; // milliseconds
+            pos -= rewindSeconds; // milliseconds
             mPlayer.seekTo(pos);
             setProgress();
 
@@ -180,7 +180,7 @@ class VideoControllerView extends FrameLayout {
             }
 
             int pos = mPlayer.getCurrentPosition();
-            pos += 15000; // milliseconds
+            pos += fastForwardSeconds; // milliseconds
             mPlayer.seekTo(pos);
             setProgress();
 
@@ -192,12 +192,14 @@ class VideoControllerView extends FrameLayout {
     private int progressBarColor = Color.WHITE;
     private int playDrawable = R.drawable.ic_media_play;
     private int pauseDrawable = R.drawable.ic_media_pause;
+    private int fastForwardSeconds = 15000;
+    private int rewindSeconds = 5000;
 
     public VideoControllerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mRoot = null;
 //        mContext = context;
-        mUseFastForward = true;
+//        mUseFastForward = true;
         mFromXml = true;
 
         Log.i(TAG, TAG);
@@ -206,7 +208,7 @@ class VideoControllerView extends FrameLayout {
     public VideoControllerView(Context context, boolean useFastForward, boolean useFullscreen) {
         super(context);
 //        mContext = context;
-        mUseFastForward = useFastForward;
+//        mUseFastForward = useFastForward;
 
         Log.i(TAG, TAG);
     }
@@ -279,17 +281,17 @@ class VideoControllerView extends FrameLayout {
         mFfwdButton = v.findViewById(R.id.forward_media_button);
         if (mFfwdButton != null) {
             mFfwdButton.setOnClickListener(mFfwdListener);
-            if (!mFromXml) {
-                mFfwdButton.setVisibility(mUseFastForward ? View.VISIBLE : View.GONE);
-            }
+//            if (!mFromXml) {
+//                mFfwdButton.setVisibility(mUseFastForward ? View.VISIBLE : View.GONE);
+//            }
         }
 
         mRewButton = v.findViewById(R.id.rewind_media_button);
         if (mRewButton != null) {
             mRewButton.setOnClickListener(mRewListener);
-            if (!mFromXml) {
-                mRewButton.setVisibility(mUseFastForward ? View.VISIBLE : View.GONE);
-            }
+//            if (!mFromXml) {
+//                mRewButton.setVisibility(mUseFastForward ? View.VISIBLE : View.GONE);
+//            }
         }
 
         // By default these are hidden. They will be enabled when setPrevNextListeners() is called
@@ -665,6 +667,14 @@ class VideoControllerView extends FrameLayout {
             return;
         }
         this.pauseDrawable = pauseDrawable;
+    }
+
+    public void setFastForwardSeconds(int fastForwardSeconds) {
+        this.fastForwardSeconds = fastForwardSeconds * 1000;
+    }
+
+    public void setRewindSeconds(int rewindSeconds) {
+        this.rewindSeconds = rewindSeconds * 1000;
     }
 
     private static class MessageHandler extends Handler {

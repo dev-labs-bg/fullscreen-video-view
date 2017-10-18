@@ -94,13 +94,15 @@ public class FullscreenVideoView extends FrameLayout {
         this.progressBar = root.findViewById(R.id.progress_bar);
     }
 
-    public FullscreenVideoView init(@NonNull File videoFile, ViewGroup parentLayout, Lifecycle lifecycle) {
+    public FullscreenVideoView init(@NonNull File videoFile, ViewGroup parentLayout,
+                                    Lifecycle lifecycle) {
         this.videoFile = videoFile;
         init(parentLayout, lifecycle);
         return this;
     }
 
-    public FullscreenVideoView init(@NonNull String videoPath, ViewGroup parentLayout, Lifecycle lifecycle) {
+    public FullscreenVideoView init(@NonNull String videoPath, ViewGroup parentLayout,
+                                    Lifecycle lifecycle) {
         this.videoPath = videoPath;
         init(parentLayout, lifecycle);
         return this;
@@ -575,6 +577,16 @@ public class FullscreenVideoView extends FrameLayout {
 
     public FullscreenVideoView pauseIcon(int pauseDrawable) {
         this.controller.setPauseDrawable(pauseDrawable);
+        return this;
+    }
+
+    public FullscreenVideoView fastForwardSeconds(int seconds) {
+        this.controller.setFastForwardSeconds(seconds);
+        return this;
+    }
+
+    public FullscreenVideoView rewindSeconds(int seconds) {
+        this.controller.setRewindSeconds(seconds);
         return this;
     }
 
