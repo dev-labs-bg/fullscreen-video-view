@@ -35,7 +35,7 @@
             android:contentDescription="@string/cd_rewind_media_button" />
 
         <ImageButton
-            android:id="@+id/pause_media_button"
+            android:id="@+id/start_pause_media_button"
             style="@android:style/MediaButton.Play"
             android:contentDescription="@string/cd_pause_media_button" />
 
@@ -69,7 +69,7 @@
             android:textStyle="bold" />
 
         <SeekBar
-            android:id="@+id/mediacontroller_progress"
+            android:id="@+id/progress_seek_bar"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="0dp"
             android:layout_height="32dp"

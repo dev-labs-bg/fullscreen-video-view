@@ -9,9 +9,9 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
@@ -54,7 +54,6 @@ public class FullscreenVideoView extends FrameLayout {
     private boolean isFullscreen;
     private String videoPath;
     private boolean landscape = false;
-    private boolean isAutoStartEnabled;
 
     // Listeners
     private OrientationEventListener orientationEventListener;
@@ -66,7 +65,8 @@ public class FullscreenVideoView extends FrameLayout {
     private int originalWidth;
     private int originalHeight;
     private ViewGroup parentLayout;
-    private Lifecycle lifecycle;
+
+    private boolean isAutoStartEnabled;
 
     public FullscreenVideoView(@NonNull Context context) {
         super(context);
@@ -84,40 +84,6 @@ public class FullscreenVideoView extends FrameLayout {
         init();
     }
 
-    public class Builder {
-        private final String videoPath;
-        private final ViewGroup parentLayout;
-        private final Lifecycle lifecycle;
-        private boolean isAutoStartEnabled;
-        private int enterFullscreenDrawable;
-        private int exitFullscreenDrawable;
-
-        public Builder(String videoPath, ViewGroup parentLayout, Lifecycle lifecycle) {
-            this.videoPath = videoPath;
-            this.parentLayout = parentLayout;
-            this.lifecycle = lifecycle;
-        }
-
-        public Builder autoStartEnabled(boolean enable) {
-            this.isAutoStartEnabled = enable;
-            return this;
-        }
-
-        public Builder enterFullscreenDrawable(@DrawableRes int drawableResId) {
-            this.enterFullscreenDrawable = drawableResId;
-            return this;
-        }
-
-        public Builder exitFullscreenDrawable(@DrawableRes int drawableResId) {
-            this.exitFullscreenDrawable = drawableResId;
-            return this;
-        }
-
-        public void build() {
-            init(this);
-        }
-    }
-
     private void init() {
         LayoutInflater layoutInflater = getLayoutInflater();
         View root = layoutInflater.inflate(R.layout.video_player, this, true);
@@ -126,24 +92,23 @@ public class FullscreenVideoView extends FrameLayout {
     }
 
     // There is no ActionBar or Toolbar
-    private void init(Builder builder) {
+    public FullscreenVideoView init(String videoPath, ViewGroup parentLayout, Lifecycle lifecycle) {
         setupBar();
-        this.videoPath = builder.videoPath;
-        this.parentLayout = builder.parentLayout;
-        this.lifecycle = builder.lifecycle;
+
+        this.videoPath = videoPath;
+        this.parentLayout = parentLayout;
         lifecycle.addObserver(new LifecycleEventObserver());
-        this.isAutoStartEnabled = builder.isAutoStartEnabled;
 
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(surfaceHolderCallback);
         mediaPlayer = new MediaPlayer();
         controller = new VideoControllerView(getContext(), getLayoutInflater(), false, false);
-        controller.setEnterFullscreenDrawable(builder.enterFullscreenDrawable);
-        controller.setExitFullscreenDrawable(builder.exitFullscreenDrawable);
 
         setupProgressBar();
         initOrientationListener();
         setupVideoView();
+
+        return this;
     }
 
     private LayoutInflater getLayoutInflater() {
@@ -561,6 +526,36 @@ public class FullscreenVideoView extends FrameLayout {
         }
 
         return false;
+    }
+
+    public FullscreenVideoView isAutoStartEnabled(boolean autoStartEnabled) {
+        isAutoStartEnabled = autoStartEnabled;
+        return this;
+    }
+
+    public FullscreenVideoView enterFullscreenDrawable(int enterFullscreenDrawable) {
+        this.controller.setEnterFullscreenDrawable(enterFullscreenDrawable);
+        return this;
+    }
+
+    public FullscreenVideoView exitFullscreenDrawable(int exitFullscreenDrawable) {
+        this.controller.setExitFullscreenDrawable(exitFullscreenDrawable);
+        return this;
+    }
+
+    public FullscreenVideoView progressBarColor(int progressBarColor) {
+        this.controller.setProgressBarColor(ContextCompat.getColor(getContext(), progressBarColor));
+        return this;
+    }
+
+    public FullscreenVideoView playIcon(int playDrawable) {
+        this.controller.setPlayDrawable(playDrawable);
+        return this;
+    }
+
+    public FullscreenVideoView pauseIcon(int pauseDrawable) {
+        this.controller.setPauseDrawable(pauseDrawable);
+        return this;
     }
 
     private class LifecycleEventObserver implements LifecycleObserver {

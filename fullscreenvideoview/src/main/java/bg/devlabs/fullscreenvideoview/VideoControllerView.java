@@ -1,5 +1,6 @@
 package bg.devlabs.fullscreenvideoview;/*
  * Copyright (C) 2006 The Android Open Source Project
+ * Modifications Copyright (C) 2017 Dev Labs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +17,7 @@ package bg.devlabs.fullscreenvideoview;/*
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.DrawableRes;
@@ -29,7 +31,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -75,16 +76,15 @@ class VideoControllerView extends FrameLayout {
     boolean mShowing;
     boolean mDragging;
     Handler mHandler = new MessageHandler(this);
-    //    private Context             mContext;
     private LayoutInflater mLayoutInflater;
     private ViewGroup mAnchor;
     private View mRoot;
-    private ProgressBar mProgress;
+    private SeekBar mProgress;
     private boolean mUseFastForward;
     private boolean mFromXml;
     private boolean mListenersSet;
     private OnClickListener mNextListener, mPrevListener;
-    private ImageButton mPauseButton;
+    private ImageButton mStartPauseButton;
     private ImageButton mFfwdButton;
     private ImageButton mRewButton;
     private ImageButton mNextButton;
@@ -129,22 +129,22 @@ class VideoControllerView extends FrameLayout {
             mHandler.removeMessages(SHOW_PROGRESS);
         }
 
-        public void onProgressChanged(SeekBar bar, int progress, boolean fromuser) {
+        public void onProgressChanged(SeekBar bar, int progress, boolean fromUser) {
             if (mPlayer == null) {
                 return;
             }
 
-            if (!fromuser) {
+            if (!fromUser) {
                 // We're not interested in programmatically generated changes to
                 // the progress bar's position.
                 return;
             }
 
             long duration = mPlayer.getDuration();
-            long newposition = (duration * progress) / 1000L;
-            mPlayer.seekTo((int) newposition);
+            long newPosition = (duration * progress) / 1000L;
+            mPlayer.seekTo((int) newPosition);
             if (mCurrentTime != null)
-                mCurrentTime.setText(stringForTime((int) newposition));
+                mCurrentTime.setText(stringForTime((int) newPosition));
         }
 
         public void onStopTrackingTouch(SeekBar bar) {
@@ -189,6 +189,9 @@ class VideoControllerView extends FrameLayout {
     };
     private int exitFullscreenDrawable = R.drawable.ic_media_fullscreen_shrink;
     private int enterFullscreenDrawable = R.drawable.ic_media_fullscreen_stretch;
+    private int progressBarColor = Color.WHITE;
+    private int playDrawable = R.drawable.ic_media_play;
+    private int pauseDrawable = R.drawable.ic_media_pause;
 
     public VideoControllerView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -256,17 +259,15 @@ class VideoControllerView extends FrameLayout {
     protected View makeControllerView(ViewGroup view) {
         mRoot = mLayoutInflater.inflate(R.layout.media_controller, (ViewGroup) view.getRootView(),
                 false);
-
         initControllerView(mRoot);
-
         return mRoot;
     }
 
     private void initControllerView(View v) {
-        mPauseButton = v.findViewById(R.id.pause_media_button);
-        if (mPauseButton != null) {
-            mPauseButton.requestFocus();
-            mPauseButton.setOnClickListener(mPauseListener);
+        mStartPauseButton = v.findViewById(R.id.start_pause_media_button);
+        if (mStartPauseButton != null) {
+            mStartPauseButton.requestFocus();
+            mStartPauseButton.setOnClickListener(mPauseListener);
         }
 
         mFullscreenButton = v.findViewById(R.id.fullscreen_media_button);
@@ -301,14 +302,14 @@ class VideoControllerView extends FrameLayout {
             mPrevButton.setVisibility(View.GONE);
         }
 
-        mProgress = (SeekBar) v.findViewById(R.id.mediacontroller_progress);
-        mProgress.getProgressDrawable().setColorFilter(
-                Color.RED, android.graphics.PorterDuff.Mode.SRC_IN);
+        mProgress = v.findViewById(R.id.progress_seek_bar);
         if (mProgress != null) {
-            if (mProgress instanceof SeekBar) {
-                SeekBar seeker = (SeekBar) mProgress;
-                seeker.setOnSeekBarChangeListener(mSeekListener);
-            }
+            mProgress.getProgressDrawable().setColorFilter(progressBarColor, PorterDuff.Mode.SRC_IN);
+            mProgress.getThumb().setColorFilter(progressBarColor, PorterDuff.Mode.SRC_IN);
+//            if (mProgress instanceof SeekBar) {
+//                SeekBar seeker = mProgress;
+            mProgress.setOnSeekBarChangeListener(mSeekListener);
+//            }
             mProgress.setMax(1000);
         }
 
@@ -335,8 +336,8 @@ class VideoControllerView extends FrameLayout {
         }
 
         try {
-            if (mPauseButton != null && !mPlayer.canPause()) {
-                mPauseButton.setEnabled(false);
+            if (mStartPauseButton != null && !mPlayer.canPause()) {
+                mStartPauseButton.setEnabled(false);
             }
             if (mRewButton != null && !mPlayer.canSeekBackward()) {
                 mRewButton.setEnabled(false);
@@ -362,8 +363,8 @@ class VideoControllerView extends FrameLayout {
     public void show(int timeout) {
         if (!mShowing && mAnchor != null) {
             setProgress();
-            if (mPauseButton != null) {
-                mPauseButton.requestFocus();
+            if (mStartPauseButton != null) {
+                mStartPauseButton.requestFocus();
             }
             disableUnsupportedButtons();
 
@@ -484,8 +485,8 @@ class VideoControllerView extends FrameLayout {
             if (uniqueDown) {
                 doPauseResume();
                 show(sDefaultTimeout);
-                if (mPauseButton != null) {
-                    mPauseButton.requestFocus();
+                if (mStartPauseButton != null) {
+                    mStartPauseButton.requestFocus();
                 }
             }
             return true;
@@ -521,14 +522,14 @@ class VideoControllerView extends FrameLayout {
     }
 
     public void updatePausePlay() {
-        if (mRoot == null || mPauseButton == null || mPlayer == null) {
+        if (mRoot == null || mStartPauseButton == null || mPlayer == null) {
             return;
         }
 
         if (mPlayer.isPlaying()) {
-            mPauseButton.setImageResource(R.drawable.ic_media_pause);
+            mStartPauseButton.setImageResource(pauseDrawable);
         } else {
-            mPauseButton.setImageResource(R.drawable.ic_media_play);
+            mStartPauseButton.setImageResource(playDrawable);
         }
     }
 
@@ -568,8 +569,8 @@ class VideoControllerView extends FrameLayout {
 
     @Override
     public void setEnabled(boolean enabled) {
-        if (mPauseButton != null) {
-            mPauseButton.setEnabled(enabled);
+        if (mStartPauseButton != null) {
+            mStartPauseButton.setEnabled(enabled);
         }
         if (mFfwdButton != null) {
             mFfwdButton.setEnabled(enabled);
@@ -646,6 +647,24 @@ class VideoControllerView extends FrameLayout {
             return;
         }
         this.exitFullscreenDrawable = exitFullscreenDrawable;
+    }
+
+    public void setProgressBarColor(int progressBarColor) {
+        this.progressBarColor = progressBarColor;
+    }
+
+    public void setPlayDrawable(int playDrawable) {
+        if (playDrawable == 0) {
+            return;
+        }
+        this.playDrawable = playDrawable;
+    }
+
+    public void setPauseDrawable(int pauseDrawable) {
+        if (pauseDrawable == 0) {
+            return;
+        }
+        this.pauseDrawable = pauseDrawable;
     }
 
     private static class MessageHandler extends Handler {

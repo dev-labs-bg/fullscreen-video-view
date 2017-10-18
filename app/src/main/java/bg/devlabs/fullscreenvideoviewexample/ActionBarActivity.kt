@@ -27,13 +27,13 @@ class ActionBarActivity : AppCompatActivity() {
 
         // Change the ActionBar title
         supportActionBar?.title = getString(R.string.action_bar_activity)
-        // Initialize the FullscreenVideoView
-        fullscreenVideoView.Builder(
+        fullscreenVideoView.init(
                 "http://clips.vorwaerts-gmbh.de/VfE_html5.mp4", parentLayout, lifecycle)
                 .exitFullscreenDrawable(R.drawable.ic_launcher_background)
                 .enterFullscreenDrawable(R.drawable.ic_media_pause)
-                .autoStartEnabled(true)
-                .build()
+                .progressBarColor(R.color.colorAccent)
+                .pauseIcon(R.drawable.ic_launcher_background)
+                .isAutoStartEnabled(true)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
