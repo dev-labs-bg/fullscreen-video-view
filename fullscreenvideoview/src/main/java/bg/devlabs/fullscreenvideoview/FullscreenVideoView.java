@@ -6,6 +6,7 @@ import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.OnLifecycleEvent;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.support.annotation.DrawableRes;
@@ -15,6 +16,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -24,6 +26,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
@@ -76,7 +79,7 @@ public class FullscreenVideoView extends FrameLayout {
     }
 
     public FullscreenVideoView(@NonNull Context context, @Nullable AttributeSet attrs,
-                               int defStyleAttr) {
+                                int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
@@ -116,7 +119,8 @@ public class FullscreenVideoView extends FrameLayout {
     }
 
     private void init() {
-        View root = getLayoutInflater().inflate(R.layout.video_player, this, true);
+        LayoutInflater layoutInflater = getLayoutInflater();
+        View root = layoutInflater.inflate(R.layout.video_player, this, true);
         this.surfaceView = root.findViewById(R.id.surface_view);
         this.progressBar = root.findViewById(R.id.progress_bar);
     }
@@ -142,16 +146,16 @@ public class FullscreenVideoView extends FrameLayout {
     }
 
     private LayoutInflater getLayoutInflater() {
-        return LayoutInflater.from(getContext());
+        Context context = getContext();
+        return LayoutInflater.from(context);
     }
 
     private void setupBar() {
-        if (getContext() instanceof Activity) {
-            this.actionBar = ((Activity) getContext()).getActionBar();
-        }
-
-        if (getContext() instanceof AppCompatActivity) {
-            this.supportActionBar = ((AppCompatActivity) getContext()).getSupportActionBar();
+        Context context = getContext();
+        if (context instanceof AppCompatActivity) {
+            this.supportActionBar = ((AppCompatActivity) context).getSupportActionBar();
+        } else if (context instanceof Activity) {
+            this.actionBar = ((Activity) context).getActionBar();
         }
     }
 
@@ -389,7 +393,7 @@ public class FullscreenVideoView extends FrameLayout {
         }
     }
 
-    public void makeVideoViewFullscreen() {
+    private void makeVideoViewFullscreen() {
         hideOtherViews();
 
         Activity activity = ((Activity) getContext());
@@ -401,21 +405,43 @@ public class FullscreenVideoView extends FrameLayout {
         // TODO: Implement
 //        onVideoFullScreen();
         isFullscreen = true;
-        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        int width = displayMetrics.widthPixels;
-        int height = displayMetrics.heightPixels;
 
-        ViewGroup.LayoutParams params = getLayoutParams();
         // TODO: Add check if the video should be landscape or portrait in isFullscreen
-        params.width = width;
-        params.height = height;
-        setLayoutParams(params);
+        updateLayoutParams(activity);
 
         // Hiding the supportToolbar
         hideToolbarOrActionBar();
 
         // Hide status bar
-        toggleSystemUiVisibility(activity.getWindow());
+        Window window = activity.getWindow();
+        toggleSystemUiVisibility(window);
+    }
+
+    @SuppressWarnings("SuspiciousNameCombination")
+    private void updateLayoutParams(Activity activity) {
+        ViewGroup.LayoutParams params = getLayoutParams();
+        Resources resources = getResources();
+        DisplayMetrics displayMetrics = resources.getDisplayMetrics();
+        WindowManager windowManager = activity.getWindowManager();
+        Display display = windowManager.getDefaultDisplay();
+        boolean hasSoftKeys = DeviceUtils.hasSoftKeys(display);
+        boolean isSystemBarOnBottom = DeviceUtils.isSystemBarOnBottom(activity);
+        int navBarHeight = DeviceUtils.getNavigationBarHeight(resources);
+        int height = displayMetrics.heightPixels;
+        int width = displayMetrics.widthPixels;
+
+        if (hasSoftKeys) {
+            if (isSystemBarOnBottom) {
+                height += navBarHeight;
+            } else {
+                width += navBarHeight;
+            }
+        }
+
+        params.width = width;
+        params.height = height;
+
+        setLayoutParams(params);
     }
 
     private void resetVideoViewSize() {
