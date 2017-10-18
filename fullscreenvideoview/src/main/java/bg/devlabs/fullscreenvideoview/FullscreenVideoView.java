@@ -30,6 +30,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +54,7 @@ public class FullscreenVideoView extends FrameLayout {
     private VideoControllerView controller;
     private boolean isFullscreen;
     private String videoPath;
+    private File videoFile;
     private boolean landscape = false;
 
     // Listeners
@@ -67,6 +69,7 @@ public class FullscreenVideoView extends FrameLayout {
     private ViewGroup parentLayout;
 
     private boolean isAutoStartEnabled;
+
 
     public FullscreenVideoView(@NonNull Context context) {
         super(context);
@@ -91,11 +94,20 @@ public class FullscreenVideoView extends FrameLayout {
         this.progressBar = root.findViewById(R.id.progress_bar);
     }
 
-    // There is no ActionBar or Toolbar
-    public FullscreenVideoView init(String videoPath, ViewGroup parentLayout, Lifecycle lifecycle) {
-        setupBar();
+    public FullscreenVideoView init(@NonNull File videoFile, ViewGroup parentLayout, Lifecycle lifecycle) {
+        this.videoFile = videoFile;
+        init(parentLayout, lifecycle);
+        return this;
+    }
 
+    public FullscreenVideoView init(@NonNull String videoPath, ViewGroup parentLayout, Lifecycle lifecycle) {
         this.videoPath = videoPath;
+        init(parentLayout, lifecycle);
+        return this;
+    }
+
+    private void init(ViewGroup parentLayout, Lifecycle lifecycle) {
+        setupBar();
         this.parentLayout = parentLayout;
         lifecycle.addObserver(new LifecycleEventObserver());
 
@@ -107,8 +119,6 @@ public class FullscreenVideoView extends FrameLayout {
         setupProgressBar();
         initOrientationListener();
         setupVideoView();
-
-        return this;
     }
 
     private LayoutInflater getLayoutInflater() {
@@ -155,7 +165,7 @@ public class FullscreenVideoView extends FrameLayout {
     protected void setupVideoView() {
         setupOnTouchListener();
         setupOnPreparedListener();
-        setupMediaPlayer(videoPath);
+        setupMediaPlayer();
         setOnTouchListener(onTouchListener);
     }
 
@@ -207,15 +217,25 @@ public class FullscreenVideoView extends FrameLayout {
         };
     }
 
-    private void setupMediaPlayer(String videoUrl) {
+    private void setupMediaPlayer() {
         try {
-            mediaPlayer.setDataSource(videoUrl);
+            mediaPlayer.setDataSource(getVideoPath());
             showProgress();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.setOnPreparedListener(onPreparedListener);
             mediaPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private String getVideoPath() {
+        if (videoPath != null) {
+            return videoPath;
+        } else if (videoFile != null) {
+            return videoFile.getPath();
+        } else {
+            return null;
         }
     }
 
