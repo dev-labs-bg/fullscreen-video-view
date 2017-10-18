@@ -187,8 +187,8 @@ class VideoControllerView extends FrameLayout {
             show(sDefaultTimeout);
         }
     };
-    private int fullscreenShrinkDrawable = R.drawable.ic_media_fullscreen_shrink;
-    private int fullscreenStretchDrawable = R.drawable.ic_media_fullscreen_stretch;
+    private int exitFullscreenDrawable = R.drawable.ic_media_fullscreen_shrink;
+    private int enterFullscreenDrawable = R.drawable.ic_media_fullscreen_stretch;
 
     public VideoControllerView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -225,7 +225,7 @@ class VideoControllerView extends FrameLayout {
     public void setMediaPlayer(MediaPlayerControl player) {
         mPlayer = player;
         updatePausePlay();
-        updateFullScreen();
+        updateFullScreenDrawable();
     }
 
     /**
@@ -377,7 +377,7 @@ class VideoControllerView extends FrameLayout {
             mShowing = true;
         }
         updatePausePlay();
-        updateFullScreen();
+        updateFullScreenDrawable();
 
         // cause the progress bar to be updated even if mShowing
         // was already true.  This happens, for example, if we're
@@ -532,15 +532,15 @@ class VideoControllerView extends FrameLayout {
         }
     }
 
-    public void updateFullScreen() {
+    public void updateFullScreenDrawable() {
         if (mRoot == null || mFullscreenButton == null || mPlayer == null) {
             return;
         }
 
         if (mPlayer.isFullScreen()) {
-            mFullscreenButton.setImageResource(fullscreenShrinkDrawable);
+            mFullscreenButton.setImageResource(exitFullscreenDrawable);
         } else {
-            mFullscreenButton.setImageResource(fullscreenStretchDrawable);
+            mFullscreenButton.setImageResource(enterFullscreenDrawable);
         }
     }
 
@@ -634,38 +634,18 @@ class VideoControllerView extends FrameLayout {
         Log.d(TAG, "onDestroy: ");
     }
 
-    public void setFullscreenStretchDrawable(@DrawableRes int fullscreenStretchDrawable) {
-        this.fullscreenStretchDrawable = fullscreenStretchDrawable;
+    public void setEnterFullscreenDrawable(@DrawableRes int enterFullscreenDrawable) {
+        if (enterFullscreenDrawable == 0) {
+            return;
+        }
+        this.enterFullscreenDrawable = enterFullscreenDrawable;
     }
 
-    public void setFullscreenShrinkDrawable(int fullscreenShrinkDrawable) {
-        this.fullscreenShrinkDrawable = fullscreenShrinkDrawable;
-    }
-
-    public interface MediaPlayerControl {
-        void start();
-
-        void pause();
-
-        int getDuration();
-
-        int getCurrentPosition();
-
-        void seekTo(int pos);
-
-        boolean isPlaying();
-
-        int getBufferPercentage();
-
-        boolean canPause();
-
-        boolean canSeekBackward();
-
-        boolean canSeekForward();
-
-        boolean isFullScreen();
-
-        void toggleFullScreen();
+    public void setExitFullscreenDrawable(@DrawableRes int exitFullscreenDrawable) {
+        if (exitFullscreenDrawable == 0) {
+            return;
+        }
+        this.exitFullscreenDrawable = exitFullscreenDrawable;
     }
 
     private static class MessageHandler extends Handler {

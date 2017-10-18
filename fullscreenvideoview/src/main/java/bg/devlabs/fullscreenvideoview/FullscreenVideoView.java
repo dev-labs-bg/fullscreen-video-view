@@ -79,7 +79,7 @@ public class FullscreenVideoView extends FrameLayout {
     }
 
     public FullscreenVideoView(@NonNull Context context, @Nullable AttributeSet attrs,
-                                int defStyleAttr) {
+                               int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
@@ -89,8 +89,8 @@ public class FullscreenVideoView extends FrameLayout {
         private final ViewGroup parentLayout;
         private final Lifecycle lifecycle;
         private boolean isAutoStartEnabled;
-        private int fullscreenStretchDrawable;
-        private int fullscreenShrinkDrawable;
+        private int enterFullscreenDrawable;
+        private int exitFullscreenDrawable;
 
         public Builder(String videoPath, ViewGroup parentLayout, Lifecycle lifecycle) {
             this.videoPath = videoPath;
@@ -103,13 +103,13 @@ public class FullscreenVideoView extends FrameLayout {
             return this;
         }
 
-        public Builder fullscreenStretchDrawable(@DrawableRes int drawableResId) {
-            this.fullscreenStretchDrawable = drawableResId;
+        public Builder enterFullscreenDrawable(@DrawableRes int drawableResId) {
+            this.enterFullscreenDrawable = drawableResId;
             return this;
         }
 
-        public Builder fullscreenShrinkDrawable(@DrawableRes int drawableResId) {
-            this.fullscreenShrinkDrawable = drawableResId;
+        public Builder exitFullscreenDrawable(@DrawableRes int drawableResId) {
+            this.exitFullscreenDrawable = drawableResId;
             return this;
         }
 
@@ -138,8 +138,9 @@ public class FullscreenVideoView extends FrameLayout {
         surfaceHolder.addCallback(surfaceHolderCallback);
         mediaPlayer = new MediaPlayer();
         controller = new VideoControllerView(getContext(), getLayoutInflater(), false, false);
-        controller.setFullscreenStretchDrawable(builder.fullscreenStretchDrawable);
-        controller.setFullscreenShrinkDrawable(builder.fullscreenShrinkDrawable);
+        controller.setEnterFullscreenDrawable(builder.enterFullscreenDrawable);
+        controller.setExitFullscreenDrawable(builder.exitFullscreenDrawable);
+
         setupProgressBar();
         initOrientationListener();
         setupVideoView();
@@ -208,15 +209,13 @@ public class FullscreenVideoView extends FrameLayout {
 
                 DisplayMetrics displayMetrics = DeviceUtils.getDisplayMetrics(getContext());
 
-//                    int additionalDimens = getExtraDisplayItemsSize(toolbarHeight);
                 //Get the width of the screen
                 int screenWidth = displayMetrics.widthPixels;
                 int screenHeight = displayMetrics.heightPixels;// - additionalDimens;
 
                 //Get the SurfaceView layout parameters
                 FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) surfaceView.getLayoutParams();
-                if (videoHeight / screenHeight > videoWidth / screenWidth) {// &&
-//                            videoHeight - videoWidth > additionalDimens) {
+                if (videoHeight / screenHeight > videoWidth / screenWidth) {
                     lp.height = screenHeight;
                     //Set the width of the SurfaceView to match the aspect ratio of the video
                     //be sure to cast these as floats otherwise the calculation will likely be 0
@@ -224,7 +223,6 @@ public class FullscreenVideoView extends FrameLayout {
                 } else {
                     //Set the width of the SurfaceView to the width of the screen
                     lp.width = screenWidth;
-
                     //Set the height of the SurfaceView to match the aspect ratio of the video
                     //be sure to cast these as floats otherwise the calculation will likely be 0
                     lp.height = (int) (((float) videoHeight / (float) videoWidth) * (float) screenWidth);
@@ -272,98 +270,77 @@ public class FullscreenVideoView extends FrameLayout {
         progressBar.animate().setDuration(shortAnimTime);
     }
 
-    VideoControllerView.MediaPlayerControl mediaPlayerControl =
-            new VideoControllerView.MediaPlayerControl() {
-                @Override
-                public void start() {
-                    mediaPlayer.start();
-                }
-
-                @Override
-                public void pause() {
-                    mediaPlayer.pause();
-                }
-
-                @Override
-                public int getDuration() {
-                    if (mediaPlayer != null) {
-                        return mediaPlayer.getDuration();
-                    }
-                    return 0;
-                }
-
-                @Override
-                public int getCurrentPosition() {
-                    if (mediaPlayer != null) {
-                        return mediaPlayer.getCurrentPosition();
-                    }
-                    return 0;
-                }
-
-                @Override
-                public void seekTo(int pos) {
-                    mediaPlayer.seekTo(pos);
-                }
-
-                @Override
-                public boolean isPlaying() {
-                    return mediaPlayer != null && mediaPlayer.isPlaying();
-                }
-
-                @Override
-                public int getBufferPercentage() {
-                    return 0;
-                }
-
-                @Override
-                public boolean canPause() {
-                    return true;
-                }
-
-                @Override
-                public boolean canSeekBackward() {
-                    return true;
-                }
-
-                @Override
-                public boolean canSeekForward() {
-                    return true;
-                }
-
-                @Override
-                public boolean isFullScreen() {
-                    return isFullscreen;
-                }
-
-                @Override
-                public void toggleFullScreen() {
-                    Activity activity = (Activity) getContext();
-                    if (isFullscreen) {
-                        activity.setRequestedOrientation(SCREEN_ORIENTATION_PORTRAIT);
-                    } else {
-                        activity.setRequestedOrientation(SCREEN_ORIENTATION_LANDSCAPE);
-                    }
-                }
-            };
-
-    private SurfaceHolder.Callback surfaceHolderCallback = new SurfaceHolder.Callback() {
+    MediaPlayerControl mediaPlayerControl = new MediaPlayerControl() {
         @Override
-        public void surfaceCreated(SurfaceHolder holder) {
-            if (mediaPlayer == null) {
-                return;
-            }
-            mediaPlayer.setDisplay(surfaceView.getHolder());
+        public void start() {
+            mediaPlayer.start();
         }
 
         @Override
-        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
+        public void pause() {
+            mediaPlayer.pause();
         }
 
         @Override
-        public void surfaceDestroyed(SurfaceHolder holder) {
+        public int getDuration() {
             if (mediaPlayer != null) {
-                mediaPlayer.pause();
+                return mediaPlayer.getDuration();
+            }
+            return 0;
+        }
+
+        @Override
+        public int getCurrentPosition() {
+            if (mediaPlayer != null) {
+                return mediaPlayer.getCurrentPosition();
+            }
+            return 0;
+        }
+
+        @Override
+        public void seekTo(int pos) {
+            mediaPlayer.seekTo(pos);
+        }
+
+        @Override
+        public boolean isPlaying() {
+            return mediaPlayer != null && mediaPlayer.isPlaying();
+        }
+
+        @Override
+        public int getBufferPercentage() {
+            return 0;
+        }
+
+        @Override
+        public boolean canPause() {
+            return true;
+        }
+
+        @Override
+        public boolean canSeekBackward() {
+            return true;
+        }
+
+        @Override
+        public boolean canSeekForward() {
+            return true;
+        }
+
+        @Override
+        public boolean isFullScreen() {
+            return isFullscreen;
+        }
+
+        @Override
+        public void toggleFullScreen() {
+            Activity activity = (Activity) getContext();
+            if (isFullscreen) {
+                isFullscreen = false;
+                activity.setRequestedOrientation(SCREEN_ORIENTATION_PORTRAIT);
+            } else {
+                isFullscreen = true;
+                activity.setRequestedOrientation(SCREEN_ORIENTATION_LANDSCAPE);
             }
         }
     };
@@ -394,18 +371,27 @@ public class FullscreenVideoView extends FrameLayout {
     }
 
     private void makeVideoViewFullscreen() {
+        // Update isFullscreen flag
+        if (!isFullscreen) {
+            isFullscreen = true;
+        }
+
+        // Update the fullscreen button drawable
+        controller.updateFullScreenDrawable();
+
+        // Change the screen orientation to SENSOR_LANDSCAPE
+        Activity activity = ((Activity) getContext());
+        activity.setRequestedOrientation(SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+
         hideOtherViews();
 
-        Activity activity = ((Activity) getContext());
         // Save the video player original width and height
         this.originalWidth = getWidth();
         this.originalHeight = getHeight();
         // Change the orientation to landscape
-        activity.setRequestedOrientation(SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+
         // TODO: Implement
 //        onVideoFullScreen();
-        isFullscreen = true;
-
         // TODO: Add check if the video should be landscape or portrait in isFullscreen
         updateLayoutParams(activity);
 
@@ -413,8 +399,7 @@ public class FullscreenVideoView extends FrameLayout {
         hideToolbarOrActionBar();
 
         // Hide status bar
-        Window window = activity.getWindow();
-        toggleSystemUiVisibility(window);
+        toggleSystemUiVisibility(activity.getWindow());
     }
 
     @SuppressWarnings("SuspiciousNameCombination")
@@ -445,19 +430,24 @@ public class FullscreenVideoView extends FrameLayout {
     }
 
     private void resetVideoViewSize() {
-        showOtherViews();
+        // Update isFullscreen flag
+        if (isFullscreen) {
+            isFullscreen = false;
+        }
+
+        // Update the fullscreen button drawable
+        controller.updateFullScreenDrawable();
+
+        // Change the screen orientation to PORTRAIT
         Activity activity = (Activity) getContext();
         // TODO: Calculating the size according to if the view is on the whole screen or not
         activity.setRequestedOrientation(SCREEN_ORIENTATION_PORTRAIT);
-        isFullscreen = false;
 
-        int width = originalWidth;
-        int height = originalHeight;
+        showOtherViews();
 
         ViewGroup.LayoutParams params = getLayoutParams();
-        params.width = width;
-        params.height = height;
-
+        params.width = originalWidth;
+        params.height = originalHeight;
         setLayoutParams(params);
 
         // Show the supportToolbar again
@@ -566,7 +556,7 @@ public class FullscreenVideoView extends FrameLayout {
         if (isFullscreen) {
             // Locks the screen orientation to portrait
             ((Activity) getContext()).setRequestedOrientation(SCREEN_ORIENTATION_SENSOR_PORTRAIT);
-            controller.updateFullScreen();
+            controller.updateFullScreenDrawable();
             return true;
         }
 
@@ -579,4 +569,26 @@ public class FullscreenVideoView extends FrameLayout {
             handleOnDestroy();
         }
     }
+
+    private SurfaceHolder.Callback surfaceHolderCallback = new SurfaceHolder.Callback() {
+        @Override
+        public void surfaceCreated(SurfaceHolder holder) {
+            if (mediaPlayer == null) {
+                return;
+            }
+            mediaPlayer.setDisplay(surfaceView.getHolder());
+        }
+
+        @Override
+        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+        }
+
+        @Override
+        public void surfaceDestroyed(SurfaceHolder holder) {
+            if (mediaPlayer != null) {
+                mediaPlayer.pause();
+            }
+        }
+    };
 }

@@ -30,8 +30,8 @@ class ActionBarActivity : AppCompatActivity() {
         // Initialize the FullscreenVideoView
         fullscreenVideoView.Builder(
                 "http://clips.vorwaerts-gmbh.de/VfE_html5.mp4", parentLayout, lifecycle)
-                .fullscreenShrinkDrawable(R.drawable.ic_launcher_background)
-                .fullscreenStretchDrawable(R.drawable.ic_media_pause)
+                .exitFullscreenDrawable(R.drawable.ic_launcher_background)
+                .enterFullscreenDrawable(R.drawable.ic_media_pause)
                 .autoStartEnabled(true)
                 .build()
     }
