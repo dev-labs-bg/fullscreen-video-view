@@ -1,4 +1,4 @@
-package bg.devlabs.fullscreenvideoview;
+package bg.devlabs.fullscreenvideoview.util;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -61,7 +61,7 @@ public class DeviceUtils {
         return result;
     }
 
-    protected static boolean isSystemBarOnBottom(Context context) {
+    public static boolean isSystemBarOnBottom(Context context) {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Point realPoint = new Point();
         Display display = wm.getDefaultDisplay();
