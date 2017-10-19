@@ -16,7 +16,12 @@ import android.view.WindowManager;
  * slavi@devlabs.bg
  */
 public class DeviceUtils {
-
+    /**
+     * Check if the device has software keys
+     *
+     * @param display the display from the Activity class
+     * @return true or false according to whether the device has software keys or not
+     */
     public static boolean hasSoftKeys(Display display) {
         boolean hasSoftwareKeys;
 
@@ -37,6 +42,12 @@ public class DeviceUtils {
         return hasSoftwareKeys;
     }
 
+    /**
+     * Get the navigation bar height
+     *
+     * @param resources the resources from the context
+     * @return the navigation bar height in pixels
+     */
     public static int getNavigationBarHeight(Resources resources) {
         int resourceId = resources.getIdentifier("navigation_bar_height", "dimen",
                 "android");
@@ -46,21 +57,22 @@ public class DeviceUtils {
         return 0;
     }
 
+    /**
+     * Get the device display metrics
+     *
+     * @param context the app's context
+     * @return the device display metrics
+     */
     public static DisplayMetrics getDisplayMetrics(Context context) {
         return context.getResources().getDisplayMetrics();
     }
 
-    public static int getStatusBarHeight(Context context) {
-        int result = 0;
-        Resources resources = context.getResources();
-        int resourceId = resources.getIdentifier("status_bar_height", "dimen",
-                "android");
-        if (resourceId > 0) {
-            result = resources.getDimensionPixelSize(resourceId);
-        }
-        return result;
-    }
-
+    /**
+     * Check the position of the system bar
+     *
+     * @param context the app's context
+     * @return true or false according to whether the system bar is on bottom or on top
+     */
     public static boolean isSystemBarOnBottom(Context context) {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Point realPoint = new Point();
@@ -75,6 +87,12 @@ public class DeviceUtils {
         return (!canMove || metrics.widthPixels < metrics.heightPixels);
     }
 
+    /**
+     * Check if the device's rotation is enabled
+     *
+     * @param contentResolver from the app's context
+     * @return true or false according to whether the rotation is enabled or disabled
+     */
     public static boolean isRotationEnabled(ContentResolver contentResolver) {
         return Settings.System.getInt(contentResolver, Settings.System.ACCELEROMETER_ROTATION,
                 0) == 1;
