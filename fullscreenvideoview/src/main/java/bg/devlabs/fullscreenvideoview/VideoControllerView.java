@@ -188,8 +188,6 @@ class VideoControllerView extends FrameLayout {
     private int pauseDrawable = R.drawable.ic_media_pause;
     private int fastForwardSeconds = 15000;
     private int rewindSeconds = 5000;
-    private int mediaControllerGravity = Gravity.BOTTOM;
-    private int mediaControllerLayout = R.layout.media_controller;
 
     public VideoControllerView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -242,7 +240,7 @@ class VideoControllerView extends FrameLayout {
      * @return The controller view.
      */
     protected View makeControllerView(ViewGroup view) {
-        mRoot = mLayoutInflater.inflate(mediaControllerLayout, (ViewGroup) view.getRootView(),
+        mRoot = mLayoutInflater.inflate(R.layout.media_controller, (ViewGroup) view.getRootView(),
                 false);
         initControllerView(mRoot);
         return mRoot;
@@ -336,7 +334,7 @@ class VideoControllerView extends FrameLayout {
             LayoutParams tlp = new LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT,
-                    mediaControllerGravity
+                    Gravity.BOTTOM
             );
 
             mAnchor.addView(this, tlp);
@@ -601,14 +599,6 @@ class VideoControllerView extends FrameLayout {
 
     public void setRewindSeconds(int rewindSeconds) {
         this.rewindSeconds = rewindSeconds * 1000;
-    }
-
-    public void setMediaControllerLayout(int mediaControllerLayout) {
-        this.mediaControllerLayout = mediaControllerLayout;
-    }
-
-    public void setMediaControllerGravity(int mediaControllerGravity) {
-        this.mediaControllerGravity = mediaControllerGravity;
     }
 
     private static class MessageHandler extends Handler {

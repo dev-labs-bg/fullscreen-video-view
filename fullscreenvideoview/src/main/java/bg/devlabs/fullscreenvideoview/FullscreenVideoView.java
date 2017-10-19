@@ -590,11 +590,6 @@ public class FullscreenVideoView extends FrameLayout {
         return this;
     }
 
-    public void mediaControllerLayout(int layout, int gravity) {
-        this.controller.setMediaControllerLayout(layout);
-        this.controller.setMediaControllerGravity(gravity);
-    }
-
     private class LifecycleEventObserver implements LifecycleObserver {
         @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         void onDestroy() {
