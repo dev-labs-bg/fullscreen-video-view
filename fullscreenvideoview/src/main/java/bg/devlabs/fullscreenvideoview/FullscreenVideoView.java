@@ -55,7 +55,7 @@ public class FullscreenVideoView extends FrameLayout {
     private boolean isFullscreen;
     private String videoPath;
     private File videoFile;
-    private boolean landscape = false;
+    private boolean landscape;
 
     // Listeners
     private OrientationEventListener orientationEventListener;
@@ -67,9 +67,7 @@ public class FullscreenVideoView extends FrameLayout {
     private int originalWidth;
     private int originalHeight;
     private ViewGroup parentLayout;
-
     private boolean isAutoStartEnabled;
-
 
     public FullscreenVideoView(@NonNull Context context) {
         super(context);
@@ -110,13 +108,14 @@ public class FullscreenVideoView extends FrameLayout {
 
     private void init(ViewGroup parentLayout, Lifecycle lifecycle) {
         setupBar();
+
         this.parentLayout = parentLayout;
         lifecycle.addObserver(new LifecycleEventObserver());
 
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(surfaceHolderCallback);
         mediaPlayer = new MediaPlayer();
-        controller = new VideoControllerView(getContext(), getLayoutInflater(), false, false);
+        controller = new VideoControllerView(getContext(), getLayoutInflater());
 
         setupProgressBar();
         initOrientationListener();
@@ -207,11 +206,12 @@ public class FullscreenVideoView extends FrameLayout {
 
                 lp.gravity = Gravity.CENTER;
 
-                //Commit the layout parameters
+                // Commit the layout parameters
                 surfaceView.setLayoutParams(lp);
 
                 controller.setMediaPlayer(mediaPlayerControl);
                 controller.setAnchorView(FullscreenVideoView.this);
+
                 if (mediaPlayerControl != null && isAutoStartEnabled) {
                     mediaPlayerControl.start();
                 }
@@ -588,6 +588,11 @@ public class FullscreenVideoView extends FrameLayout {
     public FullscreenVideoView rewindSeconds(int seconds) {
         this.controller.setRewindSeconds(seconds);
         return this;
+    }
+
+    public void mediaControllerLayout(int layout, int gravity) {
+        this.controller.setMediaControllerLayout(layout);
+        this.controller.setMediaControllerGravity(gravity);
     }
 
     private class LifecycleEventObserver implements LifecycleObserver {

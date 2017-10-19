@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.Gravity
 import kotlinx.android.synthetic.main.activity_action_bar.*
 
 
@@ -34,6 +35,7 @@ class ActionBarActivity : AppCompatActivity() {
                 .progressBarColor(R.color.colorAccent)
                 .pauseIcon(R.drawable.ic_launcher_background)
                 .isAutoStartEnabled(true)
+                .mediaControllerLayout(R.layout.custom_media_controller, Gravity.NO_GRAVITY)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

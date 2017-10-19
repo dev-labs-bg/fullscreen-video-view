@@ -80,15 +80,9 @@ class VideoControllerView extends FrameLayout {
     private ViewGroup mAnchor;
     private View mRoot;
     private SeekBar mProgress;
-    //    private boolean mUseFastForward;
-    private boolean mFromXml;
-    private boolean mListenersSet;
-    private OnClickListener mNextListener, mPrevListener;
     private ImageButton mStartPauseButton;
     private ImageButton mFfwdButton;
     private ImageButton mRewButton;
-    private ImageButton mNextButton;
-    private ImageButton mPrevButton;
     private ImageButton mFullscreenButton;
     private OnClickListener mPauseListener = new OnClickListener() {
         @Override
@@ -194,28 +188,17 @@ class VideoControllerView extends FrameLayout {
     private int pauseDrawable = R.drawable.ic_media_pause;
     private int fastForwardSeconds = 15000;
     private int rewindSeconds = 5000;
+    private int mediaControllerGravity = Gravity.BOTTOM;
+    private int mediaControllerLayout = R.layout.media_controller;
 
     public VideoControllerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mRoot = null;
-//        mContext = context;
-//        mUseFastForward = true;
-        mFromXml = true;
-
         Log.i(TAG, TAG);
     }
 
-    public VideoControllerView(Context context, boolean useFastForward, boolean useFullscreen) {
+    public VideoControllerView(Context context, LayoutInflater layoutInflater) {
         super(context);
-//        mContext = context;
-//        mUseFastForward = useFastForward;
-
-        Log.i(TAG, TAG);
-    }
-
-    public VideoControllerView(Context context, LayoutInflater layoutInflater,
-                               boolean useFastForward, boolean useFullScreen) {
-        this(context, useFastForward, useFullScreen);
         this.mLayoutInflater = layoutInflater;
         Log.i(TAG, TAG);
     }
@@ -259,7 +242,7 @@ class VideoControllerView extends FrameLayout {
      * @return The controller view.
      */
     protected View makeControllerView(ViewGroup view) {
-        mRoot = mLayoutInflater.inflate(R.layout.media_controller, (ViewGroup) view.getRootView(),
+        mRoot = mLayoutInflater.inflate(mediaControllerLayout, (ViewGroup) view.getRootView(),
                 false);
         initControllerView(mRoot);
         return mRoot;
@@ -281,43 +264,23 @@ class VideoControllerView extends FrameLayout {
         mFfwdButton = v.findViewById(R.id.forward_media_button);
         if (mFfwdButton != null) {
             mFfwdButton.setOnClickListener(mFfwdListener);
-//            if (!mFromXml) {
-//                mFfwdButton.setVisibility(mUseFastForward ? View.VISIBLE : View.GONE);
-//            }
         }
 
         mRewButton = v.findViewById(R.id.rewind_media_button);
         if (mRewButton != null) {
             mRewButton.setOnClickListener(mRewListener);
-//            if (!mFromXml) {
-//                mRewButton.setVisibility(mUseFastForward ? View.VISIBLE : View.GONE);
-//            }
-        }
-
-        // By default these are hidden. They will be enabled when setPrevNextListeners() is called
-        mNextButton = v.findViewById(R.id.next_media_button);
-        if (mNextButton != null && !mFromXml && !mListenersSet) {
-            mNextButton.setVisibility(View.GONE);
-        }
-        mPrevButton = v.findViewById(R.id.previous_media_button);
-        if (mPrevButton != null && !mFromXml && !mListenersSet) {
-            mPrevButton.setVisibility(View.GONE);
         }
 
         mProgress = v.findViewById(R.id.progress_seek_bar);
         if (mProgress != null) {
             mProgress.getProgressDrawable().setColorFilter(progressBarColor, PorterDuff.Mode.SRC_IN);
             mProgress.getThumb().setColorFilter(progressBarColor, PorterDuff.Mode.SRC_IN);
-//            if (mProgress instanceof SeekBar) {
-//                SeekBar seeker = mProgress;
             mProgress.setOnSeekBarChangeListener(mSeekListener);
-//            }
             mProgress.setMax(1000);
         }
 
         mEndTime = v.findViewById(R.id.time);
         mCurrentTime = v.findViewById(R.id.time_current);
-        installPrevNextListeners();
     }
 
     /**
@@ -373,7 +336,7 @@ class VideoControllerView extends FrameLayout {
             LayoutParams tlp = new LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT,
-                    Gravity.BOTTOM
+                    mediaControllerGravity
             );
 
             mAnchor.addView(this, tlp);
@@ -580,12 +543,6 @@ class VideoControllerView extends FrameLayout {
         if (mRewButton != null) {
             mRewButton.setEnabled(enabled);
         }
-        if (mNextButton != null) {
-            mNextButton.setEnabled(enabled && mNextListener != null);
-        }
-        if (mPrevButton != null) {
-            mPrevButton.setEnabled(enabled && mPrevListener != null);
-        }
         if (mProgress != null) {
             mProgress.setEnabled(enabled);
         }
@@ -593,41 +550,10 @@ class VideoControllerView extends FrameLayout {
         super.setEnabled(enabled);
     }
 
-    private void installPrevNextListeners() {
-        if (mNextButton != null) {
-            mNextButton.setOnClickListener(mNextListener);
-            mNextButton.setEnabled(mNextListener != null);
-        }
-
-        if (mPrevButton != null) {
-            mPrevButton.setOnClickListener(mPrevListener);
-            mPrevButton.setEnabled(mPrevListener != null);
-        }
-    }
-
-    public void setPrevNextListeners(OnClickListener next, OnClickListener prev) {
-        mNextListener = next;
-        mPrevListener = prev;
-        mListenersSet = true;
-
-        if (mRoot != null) {
-            installPrevNextListeners();
-
-            if (mNextButton != null && !mFromXml) {
-                mNextButton.setVisibility(View.VISIBLE);
-            }
-            if (mPrevButton != null && !mFromXml) {
-                mPrevButton.setVisibility(View.VISIBLE);
-            }
-        }
-    }
-
     public void onDestroy() {
         mFfwdListener = null;
         mFullscreenListener = null;
-        mNextListener = null;
         mPauseListener = null;
-        mPrevListener = null;
         mRewListener = null;
         mSeekListener = null;
         mAnchor = null;
@@ -675,6 +601,14 @@ class VideoControllerView extends FrameLayout {
 
     public void setRewindSeconds(int rewindSeconds) {
         this.rewindSeconds = rewindSeconds * 1000;
+    }
+
+    public void setMediaControllerLayout(int mediaControllerLayout) {
+        this.mediaControllerLayout = mediaControllerLayout;
+    }
+
+    public void setMediaControllerGravity(int mediaControllerGravity) {
+        this.mediaControllerGravity = mediaControllerGravity;
     }
 
     private static class MessageHandler extends Handler {
