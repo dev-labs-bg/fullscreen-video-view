@@ -37,7 +37,6 @@ import java.util.List;
 
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR;
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
 
@@ -375,10 +374,6 @@ public class FullscreenVideoView extends FrameLayout {
         // Save the video player original width and height
         this.originalWidth = getWidth();
         this.originalHeight = getHeight();
-        // Change the orientation to landscape
-
-        // TODO: Implement
-//        onVideoFullScreen();
         // TODO: Add check if the video should be landscape or portrait in isFullscreen
         updateLayoutParams(activity);
 
@@ -493,6 +488,11 @@ public class FullscreenVideoView extends FrameLayout {
         orientationEventListener = new OrientationEventListener(getContext()) {
             @Override
             public void onOrientationChanged(int orientation) {
+                // If the device's rotation is not enabled do not proceed further with the logic
+                if (!DeviceUtils.isRotationEnabled(getContext().getContentResolver())) {
+                    return;
+                }
+
                 int epsilon = 10;
                 int leftLandscape = 90;
                 int rightLandscape = 270;
@@ -500,12 +500,12 @@ public class FullscreenVideoView extends FrameLayout {
                 Activity activity = (Activity) getContext();
                 if ((epsilonCheck(orientation, leftLandscape, epsilon) ||
                         epsilonCheck(orientation, rightLandscape, epsilon)) && !landscape) {
-                    activity.setRequestedOrientation(SCREEN_ORIENTATION_SENSOR);
+                    activity.setRequestedOrientation(SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
                     landscape = true;
                 }
 
                 if (epsilonCheck(orientation, portrait, epsilon) && landscape) {
-                    activity.setRequestedOrientation(SCREEN_ORIENTATION_SENSOR);
+                    activity.setRequestedOrientation(SCREEN_ORIENTATION_PORTRAIT);
                     landscape = false;
                 }
             }

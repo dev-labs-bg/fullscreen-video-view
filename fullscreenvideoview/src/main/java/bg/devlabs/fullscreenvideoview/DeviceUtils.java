@@ -1,9 +1,11 @@
 package bg.devlabs.fullscreenvideoview;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Point;
+import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
@@ -71,5 +73,10 @@ public class DeviceUtils {
                 cfg.smallestScreenWidthDp < 600);
 
         return (!canMove || metrics.widthPixels < metrics.heightPixels);
+    }
+
+    public static boolean isRotationEnabled(ContentResolver contentResolver) {
+        return Settings.System.getInt(contentResolver, Settings.System.ACCELEROMETER_ROTATION,
+                0) == 1;
     }
 }
