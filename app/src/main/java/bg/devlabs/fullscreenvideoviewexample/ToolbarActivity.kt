@@ -2,7 +2,6 @@ package bg.devlabs.fullscreenvideoviewexample
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_toolbar.*
@@ -20,16 +19,5 @@ class ToolbarActivity : AppCompatActivity() {
         setContentView(R.layout.activity_toolbar)
         fullscreenVideoView.init(
                 "http://clips.vorwaerts-gmbh.de/VfE_html5.mp4", parentLayout, lifecycle)
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        fullscreenVideoView.handleConfigurationChange(newConfig)
-    }
-
-    override fun onBackPressed() {
-        if (!fullscreenVideoView.shouldHandleOnBackPressed()) {
-            super.onBackPressed()
-        }
     }
 }

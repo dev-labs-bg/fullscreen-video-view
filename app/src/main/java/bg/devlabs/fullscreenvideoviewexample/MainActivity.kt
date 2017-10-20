@@ -21,5 +21,9 @@ class MainActivity : AppCompatActivity() {
         noActionBarButton.setOnClickListener {
             NoActionBarActivity.start(this)
         }
+
+        regularActivityButton.setOnClickListener{
+            RegularActivity.start(this)
+        }
     }
 }

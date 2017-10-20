@@ -2,7 +2,6 @@ package bg.devlabs.fullscreenvideoviewexample
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_action_bar.*
@@ -34,17 +33,5 @@ class ActionBarActivity : AppCompatActivity() {
                 .progressBarColor(R.color.colorAccent)
                 .pauseIcon(R.drawable.ic_launcher_background)
                 .isAutoStartEnabled(true)
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        fullscreenVideoView.handleConfigurationChange(newConfig)
-    }
-
-    override fun onBackPressed() {
-        // Must be without super.onBackPressed(), because it is called inside the library
-        if (!fullscreenVideoView.shouldHandleOnBackPressed()) {
-            super.onBackPressed()
-        }
     }
 }

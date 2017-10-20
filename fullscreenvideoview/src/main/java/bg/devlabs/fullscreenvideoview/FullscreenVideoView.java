@@ -16,6 +16,7 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.OrientationEventListener;
@@ -165,28 +166,16 @@ public class FullscreenVideoView extends FrameLayout implements OnLifecycleEvent
     }
 
     public FullscreenVideoView init(@NonNull File videoFile, @NonNull ViewGroup parentLayout,
-                                    @NonNull Lifecycle lifecycle) {
+                                    Lifecycle lifecycle) {
         this.videoFile = videoFile;
         init(parentLayout, lifecycle);
         return this;
     }
 
     public FullscreenVideoView init(@NonNull String videoPath, @NonNull ViewGroup parentLayout,
-                                    @NonNull Lifecycle lifecycle) {
+                                    Lifecycle lifecycle) {
         this.videoPath = videoPath;
         init(parentLayout, lifecycle);
-        return this;
-    }
-
-    public FullscreenVideoView init(@NonNull File videoFile, @NonNull ViewGroup parentLayout) {
-        this.videoFile = videoFile;
-        init(parentLayout, null);
-        return this;
-    }
-
-    public FullscreenVideoView init(@NonNull String videoPath, @NonNull ViewGroup parentLayout) {
-        this.videoPath = videoPath;
-        init(parentLayout, null);
         return this;
     }
 
@@ -205,12 +194,36 @@ public class FullscreenVideoView extends FrameLayout implements OnLifecycleEvent
 
         setupProgressBar();
         initOrientationListener();
+        initOnBackPressedListener();
         setupVideoView();
+    }
+
+    private void initOnBackPressedListener() {
+        setFocusableInTouchMode(true);
+        requestFocus();
+        setOnKeyListener(new OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                return event.getAction() == KeyEvent.ACTION_UP &&
+                        keyCode == KeyEvent.KEYCODE_BACK &&
+                        shouldHandleOnBackPressed();
+            }
+        });
     }
 
     private LayoutInflater getLayoutInflater() {
         Context context = getContext();
         return LayoutInflater.from(context);
+    }
+
+    @Override
+    protected void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            activateFullscreen();
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            exitFullscreen();
+        }
     }
 
     private void setupBar() {
@@ -337,15 +350,6 @@ public class FullscreenVideoView extends FrameLayout implements OnLifecycleEvent
         activityWindow.getDecorView().setSystemUiVisibility(newUiOptions);
     }
 
-    public void handleConfigurationChange(Configuration newConfig) {
-        // Checks the orientation of the screen
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            activateFullscreen();
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            exitFullscreen();
-        }
-    }
-
     private void activateFullscreen() {
         // Update isFullscreen flag
         if (!isFullscreen) {
@@ -448,6 +452,8 @@ public class FullscreenVideoView extends FrameLayout implements OnLifecycleEvent
 
     private void initOrientationListener() {
         orientationEventListener = new OrientationEventListener(getContext()) {
+            boolean isLandscape;
+
             @Override
             public void onOrientationChanged(int orientation) {
                 // If the device's rotation is not enabled do not proceed further with the logic
@@ -460,11 +466,13 @@ public class FullscreenVideoView extends FrameLayout implements OnLifecycleEvent
                 int rightLandscape = 270;
                 int portrait = 0;
                 if ((epsilonCheck(orientation, leftLandscape, epsilon) ||
-                        epsilonCheck(orientation, rightLandscape, epsilon)) && !isFullscreen) {
+                        epsilonCheck(orientation, rightLandscape, epsilon)) && !isLandscape) {
+                    isLandscape = true;
                     setOrientation(SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
                 }
 
-                if (epsilonCheck(orientation, portrait, epsilon) && isFullscreen) {
+                if (epsilonCheck(orientation, portrait, epsilon) && isLandscape) {
+                    isLandscape = false;
                     setOrientation(SCREEN_ORIENTATION_PORTRAIT);
                 }
             }
@@ -476,7 +484,7 @@ public class FullscreenVideoView extends FrameLayout implements OnLifecycleEvent
         orientationEventListener.enable();
     }
 
-    private void handleOnDestroy() {
+    public void handleOnDestroy() {
         controller.onDestroy();
         onPreparedListener = null;
         onTouchListener = null;
