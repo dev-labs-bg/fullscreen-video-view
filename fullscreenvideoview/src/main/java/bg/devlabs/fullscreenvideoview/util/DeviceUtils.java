@@ -76,15 +76,19 @@ public class DeviceUtils {
     public static boolean isSystemBarOnBottom(Context context) {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Point realPoint = new Point();
-        Display display = wm.getDefaultDisplay();
-        display.getRealSize(realPoint);
-        DisplayMetrics metrics = new DisplayMetrics();
-        wm.getDefaultDisplay().getMetrics(metrics);
-        Configuration cfg = context.getResources().getConfiguration();
-        boolean canMove = (metrics.widthPixels != metrics.heightPixels &&
-                cfg.smallestScreenWidthDp < 600);
+        Display display;
+        if (wm != null) {
+            display = wm.getDefaultDisplay();
+            display.getRealSize(realPoint);
+            DisplayMetrics metrics = new DisplayMetrics();
+            wm.getDefaultDisplay().getMetrics(metrics);
+            Configuration cfg = context.getResources().getConfiguration();
+            boolean canMove = (metrics.widthPixels != metrics.heightPixels &&
+                    cfg.smallestScreenWidthDp < 600);
 
-        return (!canMove || metrics.widthPixels < metrics.heightPixels);
+            return (!canMove || metrics.widthPixels < metrics.heightPixels);
+        }
+        return true;
     }
 
     /**

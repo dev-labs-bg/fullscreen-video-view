@@ -1,7 +1,6 @@
 package bg.devlabs.fullscreenvideoview;
 
 import android.app.Activity;
-import android.arch.lifecycle.Lifecycle;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -32,10 +31,6 @@ import android.widget.ProgressBar;
 import java.io.File;
 import java.io.IOException;
 
-import bg.devlabs.fullscreenvideoview.lifecycle.LifecycleEventObserver;
-import bg.devlabs.fullscreenvideoview.lifecycle.OnLifecycleEventListener;
-import bg.devlabs.fullscreenvideoview.surface.OnSurfaceEventListener;
-import bg.devlabs.fullscreenvideoview.surface.SurfaceHolderCallback;
 import bg.devlabs.fullscreenvideoview.util.DeviceUtils;
 import bg.devlabs.fullscreenvideoview.util.UiUtils;
 
@@ -48,8 +43,7 @@ import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAP
  * Dev Labs
  * slavi@devlabs.bg
  */
-public class FullscreenVideoView extends FrameLayout implements OnLifecycleEventListener,
-        OnSurfaceEventListener {
+public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Callback {
     private SurfaceView surfaceView;
     private SurfaceHolder surfaceHolder;
     private ProgressBar progressBar;
@@ -139,7 +133,6 @@ public class FullscreenVideoView extends FrameLayout implements OnLifecycleEvent
     private OrientationEventListener orientationEventListener;
     private MediaPlayer.OnPreparedListener onPreparedListener;
     private View.OnTouchListener onTouchListener;
-    private SurfaceHolder.Callback surfaceHolderCallback = new SurfaceHolderCallback(this);
     private boolean isMediaPlayerPrepared;
 
     public FullscreenVideoView(@NonNull Context context) {
@@ -165,30 +158,24 @@ public class FullscreenVideoView extends FrameLayout implements OnLifecycleEvent
         this.progressBar = root.findViewById(R.id.progress_bar);
     }
 
-    public FullscreenVideoView init(@NonNull File videoFile, @NonNull ViewGroup parentLayout,
-                                    Lifecycle lifecycle) {
+    public FullscreenVideoView init(@NonNull File videoFile, @NonNull ViewGroup parentLayout) {
         this.videoFile = videoFile;
-        init(parentLayout, lifecycle);
+        init(parentLayout);
         return this;
     }
 
-    public FullscreenVideoView init(@NonNull String videoPath, @NonNull ViewGroup parentLayout,
-                                    Lifecycle lifecycle) {
+    public FullscreenVideoView init(@NonNull String videoPath, @NonNull ViewGroup parentLayout) {
         this.videoPath = videoPath;
-        init(parentLayout, lifecycle);
+        init(parentLayout);
         return this;
     }
 
-    private void init(@NonNull ViewGroup parentLayout, Lifecycle lifecycle) {
+    private void init(@NonNull ViewGroup parentLayout) {
         setupBar();
-
-        if (lifecycle != null) {
-            lifecycle.addObserver(new LifecycleEventObserver(this));
-        }
 
         this.parentLayout = parentLayout;
         surfaceHolder = surfaceView.getHolder();
-        surfaceHolder.addCallback(surfaceHolderCallback);
+        surfaceHolder.addCallback(this);
         mediaPlayer = new MediaPlayer();
         controller = new VideoControllerView(getContext(), getLayoutInflater());
 
@@ -223,6 +210,34 @@ public class FullscreenVideoView extends FrameLayout implements OnLifecycleEvent
             activateFullscreen();
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             exitFullscreen();
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        handleOnDetach();
+    }
+
+    public void handleOnDetach() {
+        controller.onDestroy();
+        onPreparedListener = null;
+        onTouchListener = null;
+        // Disable and null the OrientationEventListener
+        if (orientationEventListener != null) {
+            orientationEventListener.disable();
+            orientationEventListener = null;
+        }
+
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
+            mediaPlayerControl = null;
+        }
+
+        if (surfaceHolder != null) {
+            surfaceHolder.removeCallback(this);
+            surfaceHolder.getSurface().release();
         }
     }
 
@@ -484,27 +499,6 @@ public class FullscreenVideoView extends FrameLayout implements OnLifecycleEvent
         orientationEventListener.enable();
     }
 
-    public void handleOnDestroy() {
-        controller.onDestroy();
-        onPreparedListener = null;
-        onTouchListener = null;
-        // Disable and null the OrientationEventListener
-        if (orientationEventListener != null) {
-            orientationEventListener.disable();
-            orientationEventListener = null;
-        }
-
-        if (mediaPlayer != null) {
-            mediaPlayer.release();
-            mediaPlayer = null;
-            mediaPlayerControl = null;
-        }
-
-        if (surfaceHolder != null) {
-            surfaceHolder.removeCallback(surfaceHolderCallback);
-            surfaceHolder.getSurface().release();
-        }
-    }
 
     public boolean shouldHandleOnBackPressed() {
         if (isFullscreen) {
@@ -558,19 +552,19 @@ public class FullscreenVideoView extends FrameLayout implements OnLifecycleEvent
     }
 
     @Override
-    public void onDestroy() {
-        handleOnDestroy();
-    }
-
-    @Override
-    public void onSurfaceCreated() {
+    public void surfaceCreated(SurfaceHolder holder) {
         if (mediaPlayer != null) {
             mediaPlayer.setDisplay(surfaceView.getHolder());
         }
     }
 
     @Override
-    public void onSurfaceDestroyed() {
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        // Not used
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
         if (mediaPlayer != null && isMediaPlayerPrepared) {
             mediaPlayer.pause();
         }

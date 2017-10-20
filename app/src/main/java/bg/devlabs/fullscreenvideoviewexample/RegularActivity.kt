@@ -17,12 +17,7 @@ class RegularActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_regular)
-        fullscreenVideoView.init(
-                "http://clips.vorwaerts-gmbh.de/VfE_html5.mp4", parentLayout, null)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        fullscreenVideoView.handleOnDestroy()
+        val videoPath = "http://clips.vorwaerts-gmbh.de/VfE_html5.mp4"
+        fullscreenVideoView.init(videoPath, parentLayout)
     }
 }
