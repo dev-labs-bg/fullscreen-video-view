@@ -43,86 +43,14 @@ import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAP
  * Dev Labs
  * slavi@devlabs.bg
  */
-public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Callback {
+public class FullscreenVideoView extends FrameLayout implements IFullscreenVideoView,
+        SurfaceHolder.Callback {
     private SurfaceView surfaceView;
     private SurfaceHolder surfaceHolder;
     private ProgressBar progressBar;
-    private MediaPlayer mediaPlayer;
     private VideoControllerView controller;
     private boolean isFullscreen, isAutoStartEnabled;
-    MediaPlayerControl mediaPlayerControl = new MediaPlayerControl() {
-        @Override
-        public void start() {
-            mediaPlayer.start();
-        }
-
-        @Override
-        public void pause() {
-            mediaPlayer.pause();
-        }
-
-        @Override
-        public int getDuration() {
-            if (mediaPlayer != null) {
-                return mediaPlayer.getDuration();
-            }
-            return 0;
-        }
-
-        @Override
-        public int getCurrentPosition() {
-            if (mediaPlayer != null) {
-                return mediaPlayer.getCurrentPosition();
-            }
-            return 0;
-        }
-
-        @Override
-        public void seekTo(int pos) {
-            mediaPlayer.seekTo(pos);
-        }
-
-        @Override
-        public boolean isPlaying() {
-            return mediaPlayer != null && mediaPlayer.isPlaying();
-        }
-
-        @Override
-        public int getBufferPercentage() {
-            return 0;
-        }
-
-        @Override
-        public boolean canPause() {
-            return true;
-        }
-
-        @Override
-        public boolean canSeekBackward() {
-            return true;
-        }
-
-        @Override
-        public boolean canSeekForward() {
-            return true;
-        }
-
-        @Override
-        public boolean isFullScreen() {
-            return isFullscreen;
-        }
-
-        @Override
-        public void toggleFullScreen() {
-            if (isFullscreen) {
-                isFullscreen = false;
-                setOrientation(SCREEN_ORIENTATION_PORTRAIT);
-            } else {
-                isFullscreen = true;
-                setOrientation(SCREEN_ORIENTATION_LANDSCAPE);
-            }
-        }
-    };
+    VideoMediaPlayer videoMediaPlayer = new VideoMediaPlayer(this);
     private String videoPath;
     private File videoFile;
     private ActionBar supportActionBar;
@@ -176,7 +104,6 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
         this.parentLayout = parentLayout;
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
-        mediaPlayer = new MediaPlayer();
         controller = new VideoControllerView(getContext(), getLayoutInflater());
 
         setupProgressBar();
@@ -229,11 +156,7 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
             orientationEventListener = null;
         }
 
-        if (mediaPlayer != null) {
-            mediaPlayer.release();
-            mediaPlayer = null;
-            mediaPlayerControl = null;
-        }
+        videoMediaPlayer.release();
 
         if (surfaceHolder != null) {
             surfaceHolder.removeCallback(this);
@@ -267,7 +190,7 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
                 hideProgress();
                 updateSurfaceViewLayoutParams();
                 // Setup controller
-                controller.setMediaPlayer(mediaPlayerControl);
+                controller.setMediaPlayer(videoMediaPlayer);
                 controller.setAnchorView(FullscreenVideoView.this);
                 // Start media player if auto start is enabled
                 if (mediaPlayer != null && isAutoStartEnabled) {
@@ -280,8 +203,8 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
 
     private void updateSurfaceViewLayoutParams() {
         // Get the dimensions of the video
-        int videoWidth = mediaPlayer.getVideoWidth();
-        int videoHeight = mediaPlayer.getVideoHeight();
+        int videoWidth = videoMediaPlayer.getVideoWidth();
+        int videoHeight = videoMediaPlayer.getVideoHeight();
         // Get the Display Metrics
         DisplayMetrics displayMetrics = DeviceUtils.getDisplayMetrics(getContext());
         // Get the width of the screen
@@ -310,10 +233,10 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
     private void setupMediaPlayer() {
         try {
             showProgress();
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mediaPlayer.setDataSource(getVideoPath());
-            mediaPlayer.setOnPreparedListener(onPreparedListener);
-            mediaPlayer.prepareAsync();
+            videoMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            videoMediaPlayer.setDataSource(getVideoPath());
+            videoMediaPlayer.setOnPreparedListener(onPreparedListener);
+            videoMediaPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -499,7 +422,6 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
         orientationEventListener.enable();
     }
 
-
     public boolean shouldHandleOnBackPressed() {
         if (isFullscreen) {
             // Locks the screen orientation to portrait
@@ -511,62 +433,86 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
         return false;
     }
 
+
     public FullscreenVideoView isAutoStartEnabled(boolean autoStartEnabled) {
         isAutoStartEnabled = autoStartEnabled;
         return this;
     }
+
 
     public FullscreenVideoView enterFullscreenDrawable(int enterFullscreenDrawable) {
         this.controller.setEnterFullscreenDrawable(enterFullscreenDrawable);
         return this;
     }
 
+
     public FullscreenVideoView exitFullscreenDrawable(int exitFullscreenDrawable) {
         this.controller.setExitFullscreenDrawable(exitFullscreenDrawable);
         return this;
     }
+
 
     public FullscreenVideoView progressBarColor(int progressBarColor) {
         this.controller.setProgressBarColor(ContextCompat.getColor(getContext(), progressBarColor));
         return this;
     }
 
+
     public FullscreenVideoView playIcon(int playDrawable) {
         this.controller.setPlayDrawable(playDrawable);
         return this;
     }
+
 
     public FullscreenVideoView pauseIcon(int pauseDrawable) {
         this.controller.setPauseDrawable(pauseDrawable);
         return this;
     }
 
+
     public FullscreenVideoView fastForwardSeconds(int seconds) {
         this.controller.setFastForwardSeconds(seconds);
         return this;
     }
+
 
     public FullscreenVideoView rewindSeconds(int seconds) {
         this.controller.setRewindSeconds(seconds);
         return this;
     }
 
-    @Override
+
     public void surfaceCreated(SurfaceHolder holder) {
-        if (mediaPlayer != null) {
-            mediaPlayer.setDisplay(surfaceView.getHolder());
+        if (videoMediaPlayer != null) {
+            videoMediaPlayer.setDisplay(surfaceView.getHolder());
         }
     }
 
-    @Override
+
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         // Not used
     }
 
-    @Override
+
     public void surfaceDestroyed(SurfaceHolder holder) {
-        if (mediaPlayer != null && isMediaPlayerPrepared) {
-            mediaPlayer.pause();
+        if (videoMediaPlayer != null && isMediaPlayerPrepared) {
+            videoMediaPlayer.pause();
+        }
+    }
+
+    @Override
+    public boolean isFullscreen() {
+        return isFullscreen;
+    }
+
+    @Override
+    public void toggleFullscreen() {
+        if (isFullscreen) {
+            isFullscreen = false;
+            setOrientation(SCREEN_ORIENTATION_PORTRAIT);
+        } else {
+            isFullscreen = true;
+            setOrientation(SCREEN_ORIENTATION_LANDSCAPE);
         }
     }
 }
