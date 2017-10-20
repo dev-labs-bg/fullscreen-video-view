@@ -28,7 +28,7 @@ class ActionBarActivity : AppCompatActivity() {
         // Change the ActionBar title
         supportActionBar?.title = getString(R.string.action_bar_activity)
         fullscreenVideoView.init(
-                "http://clips.vorwaerts-gmbh.de/VfE_html5.mp4", parentLayout)
+                "http://clips.vorwaerts-gmbh.de/VfE_html5.mp4", parentLayout, lifecycle)
                 .exitFullscreenDrawable(R.drawable.ic_launcher_background)
                 .enterFullscreenDrawable(R.drawable.ic_media_pause)
                 .progressBarColor(R.color.colorAccent)

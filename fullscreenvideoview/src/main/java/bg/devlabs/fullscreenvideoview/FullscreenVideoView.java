@@ -139,6 +139,7 @@ public class FullscreenVideoView extends FrameLayout implements OnLifecycleEvent
     private MediaPlayer.OnPreparedListener onPreparedListener;
     private View.OnTouchListener onTouchListener;
     private SurfaceHolder.Callback surfaceHolderCallback = new SurfaceHolderCallback(this);
+    private boolean isMediaPlayerPrepared;
 
     public FullscreenVideoView(@NonNull Context context) {
         super(context);
@@ -242,6 +243,7 @@ public class FullscreenVideoView extends FrameLayout implements OnLifecycleEvent
                 controller.setAnchorView(FullscreenVideoView.this);
                 // Start media player if auto start is enabled
                 if (mediaPlayer != null && isAutoStartEnabled) {
+                    isMediaPlayerPrepared = true;
                     mediaPlayer.start();
                 }
             }
@@ -279,9 +281,9 @@ public class FullscreenVideoView extends FrameLayout implements OnLifecycleEvent
 
     private void setupMediaPlayer() {
         try {
-            mediaPlayer.setDataSource(getVideoPath());
             showProgress();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.setDataSource(getVideoPath());
             mediaPlayer.setOnPreparedListener(onPreparedListener);
             mediaPlayer.prepareAsync();
         } catch (IOException e) {
@@ -478,8 +480,6 @@ public class FullscreenVideoView extends FrameLayout implements OnLifecycleEvent
         controller.onDestroy();
         onPreparedListener = null;
         onTouchListener = null;
-        mediaPlayer = null;
-        mediaPlayerControl = null;
         // Disable and null the OrientationEventListener
         if (orientationEventListener != null) {
             orientationEventListener.disable();
@@ -488,6 +488,8 @@ public class FullscreenVideoView extends FrameLayout implements OnLifecycleEvent
 
         if (mediaPlayer != null) {
             mediaPlayer.release();
+            mediaPlayer = null;
+            mediaPlayerControl = null;
         }
 
         if (surfaceHolder != null) {
@@ -561,7 +563,7 @@ public class FullscreenVideoView extends FrameLayout implements OnLifecycleEvent
 
     @Override
     public void onSurfaceDestroyed() {
-        if (mediaPlayer != null) {
+        if (mediaPlayer != null && isMediaPlayerPrepared) {
             mediaPlayer.pause();
         }
     }
