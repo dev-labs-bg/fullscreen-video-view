@@ -56,7 +56,6 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
     private ActionBar supportActionBar;
     private android.app.ActionBar actionBar;
     private int originalWidth, originalHeight;
-    private ViewGroup parentLayout;
     // Listeners
     private OrientationEventListener orientationEventListener;
     private MediaPlayer.OnPreparedListener onPreparedListener;
@@ -86,22 +85,21 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         this.progressBar = root.findViewById(R.id.progress_bar);
     }
 
-    public FullscreenVideoView init(@NonNull File videoFile, @NonNull ViewGroup parentLayout) {
+    public FullscreenVideoView init(@NonNull File videoFile) {
         this.videoFile = videoFile;
-        init(parentLayout);
+        init();
         return this;
     }
 
-    public FullscreenVideoView init(@NonNull String videoPath, @NonNull ViewGroup parentLayout) {
+    public FullscreenVideoView init(@NonNull String videoPath) {
         this.videoPath = videoPath;
-        init(parentLayout);
+        setupView();
         return this;
     }
 
-    private void init(@NonNull ViewGroup parentLayout) {
+    private void setupView() {
         setupBar();
 
-        this.parentLayout = parentLayout;
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
         controller = new VideoControllerView(getContext(), getLayoutInflater());
@@ -301,7 +299,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         Activity activity = ((Activity) getContext());
         setOrientation(SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
 
-        UiUtils.hideOtherViews(parentLayout);
+        UiUtils.hideOtherViews((ViewGroup) getParent());
 
         // Save the video player original width and height
         this.originalWidth = getWidth();
@@ -357,7 +355,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         // TODO: Calculating the size according to if the view is on the whole screen or not
         setOrientation(SCREEN_ORIENTATION_PORTRAIT);
 
-        UiUtils.showOtherViews(parentLayout);
+        UiUtils.showOtherViews((ViewGroup) getParent());
 
         ViewGroup.LayoutParams params = getLayoutParams();
         params.width = originalWidth;
@@ -389,36 +387,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
     }
 
     private void initOrientationListener() {
-        orientationEventListener = new OrientationEventListener(getContext()) {
-            boolean isLandscape;
-
-            @Override
-            public void onOrientationChanged(int orientation) {
-                // If the device's rotation is not enabled do not proceed further with the logic
-                if (!DeviceUtils.isRotationEnabled(getContext().getContentResolver())) {
-                    return;
-                }
-
-                int epsilon = 10;
-                int leftLandscape = 90;
-                int rightLandscape = 270;
-                int portrait = 0;
-                if ((epsilonCheck(orientation, leftLandscape, epsilon) ||
-                        epsilonCheck(orientation, rightLandscape, epsilon)) && !isLandscape) {
-                    isLandscape = true;
-                    setOrientation(SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-                }
-
-                if (epsilonCheck(orientation, portrait, epsilon) && isLandscape) {
-                    isLandscape = false;
-                    setOrientation(SCREEN_ORIENTATION_PORTRAIT);
-                }
-            }
-
-            private boolean epsilonCheck(int a, int b, int epsilon) {
-                return a > b - epsilon && a < b + epsilon;
-            }
-        };
+        orientationEventListener = new OrientationEventHandler(getContext(), this);
         orientationEventListener.enable();
     }
 

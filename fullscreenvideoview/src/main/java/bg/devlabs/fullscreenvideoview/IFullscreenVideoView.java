@@ -9,4 +9,6 @@ interface IFullscreenVideoView {
     boolean isFullscreen();
 
     void toggleFullscreen();
+
+    void setOrientation(int screenOrientation);
 }
