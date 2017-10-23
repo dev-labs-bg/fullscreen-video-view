@@ -14,13 +14,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.OrientationEventListener;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -45,12 +43,12 @@ import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAP
  */
 public class FullscreenVideoView extends FrameLayout implements IFullscreenVideoView,
         SurfaceHolder.Callback {
-    private SurfaceView surfaceView;
+    private VideoSurfaceView surfaceView;
     private SurfaceHolder surfaceHolder;
     private ProgressBar progressBar;
     private VideoControllerView controller;
     private boolean isFullscreen, isAutoStartEnabled;
-    VideoMediaPlayer videoMediaPlayer = new VideoMediaPlayer(this);
+    private VideoMediaPlayer videoMediaPlayer = new VideoMediaPlayer(this);
     private String videoPath;
     private File videoFile;
     private ActionBar supportActionBar;
@@ -107,7 +105,11 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         setupProgressBar();
         initOrientationListener();
         initOnBackPressedListener();
-        setupVideoView();
+        // Setup VideoView
+        setupOnTouchListener();
+        setupOnPreparedListener();
+
+        setupMediaPlayer();
     }
 
     private void initOnBackPressedListener() {
@@ -171,13 +173,6 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         }
     }
 
-    protected void setupVideoView() {
-        setupOnTouchListener();
-        setupOnPreparedListener();
-        setupMediaPlayer();
-        setOnTouchListener(onTouchListener);
-    }
-
     private void setupOnPreparedListener() {
         onPreparedListener = new MediaPlayer.OnPreparedListener() {
             @Override
@@ -186,7 +181,10 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
                     return;
                 }
                 hideProgress();
-                updateSurfaceViewLayoutParams();
+                // Get the dimensions of the video
+                int videoWidth = videoMediaPlayer.getVideoWidth();
+                int videoHeight = videoMediaPlayer.getVideoHeight();
+                surfaceView.updateLayoutParams(videoWidth, videoHeight);
                 // Setup controller
                 controller.setMediaPlayer(videoMediaPlayer);
                 controller.setAnchorView(FullscreenVideoView.this);
@@ -197,35 +195,6 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
                 }
             }
         };
-    }
-
-    private void updateSurfaceViewLayoutParams() {
-        // Get the dimensions of the video
-        int videoWidth = videoMediaPlayer.getVideoWidth();
-        int videoHeight = videoMediaPlayer.getVideoHeight();
-        // Get the Display Metrics
-        DisplayMetrics displayMetrics = DeviceUtils.getDisplayMetrics(getContext());
-        // Get the width of the screen
-        int screenWidth = displayMetrics.widthPixels;
-        int screenHeight = displayMetrics.heightPixels;
-        // Get the SurfaceView layout parameters
-        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) surfaceView.getLayoutParams();
-        if (videoHeight / screenHeight > videoWidth / screenWidth) {
-            lp.height = screenHeight;
-            // Set the width of the SurfaceView to match the aspect ratio of the video
-            // be sure to cast these as floats otherwise the calculation will likely be 0
-            lp.width = (int) (((float) videoWidth / (float) videoHeight) * (float) screenHeight);
-        } else {
-            // Set the width of the SurfaceView to the width of the screen
-            lp.width = screenWidth;
-            // Set the height of the SurfaceView to match the aspect ratio of the video
-            // be sure to cast these as floats otherwise the calculation will likely be 0
-            lp.height = (int) (((float) videoHeight / (float) videoWidth) * (float) screenWidth);
-        }
-        // Change the gravity to center
-        lp.gravity = Gravity.CENTER;
-        // Commit the layout parameters
-        surfaceView.setLayoutParams(lp);
     }
 
     private void setupMediaPlayer() {
@@ -259,6 +228,8 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
                 return false;
             }
         };
+
+        setOnTouchListener(onTouchListener);
     }
 
     private void setupProgressBar() {
@@ -296,7 +267,6 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         controller.updateFullScreenDrawable();
 
         // Change the screen orientation to SENSOR_LANDSCAPE
-        Activity activity = ((Activity) getContext());
         setOrientation(SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
 
         UiUtils.hideOtherViews((ViewGroup) getParent());
@@ -305,6 +275,8 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         this.originalWidth = getWidth();
         this.originalHeight = getHeight();
         // TODO: Add check if the video should be landscape or portrait in isFullscreen
+        Activity activity = (Activity) getContext();
+        // Get the dimensions of the video
         updateLayoutParams(activity);
 
         // Hiding the supportToolbar
@@ -351,7 +323,6 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         controller.updateFullScreenDrawable();
 
         // Change the screen orientation to PORTRAIT
-        Activity activity = (Activity) getContext();
         // TODO: Calculating the size according to if the view is on the whole screen or not
         setOrientation(SCREEN_ORIENTATION_PORTRAIT);
 
@@ -363,6 +334,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         setLayoutParams(params);
 
         showActionBar();
+        Activity activity = (Activity) getContext();
         toggleSystemUiVisibility(activity.getWindow());
     }
 
@@ -402,54 +374,45 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         return false;
     }
 
-
     public FullscreenVideoView isAutoStartEnabled(boolean autoStartEnabled) {
         isAutoStartEnabled = autoStartEnabled;
         return this;
     }
-
 
     public FullscreenVideoView enterFullscreenDrawable(int enterFullscreenDrawable) {
         this.controller.setEnterFullscreenDrawable(enterFullscreenDrawable);
         return this;
     }
 
-
     public FullscreenVideoView exitFullscreenDrawable(int exitFullscreenDrawable) {
         this.controller.setExitFullscreenDrawable(exitFullscreenDrawable);
         return this;
     }
-
 
     public FullscreenVideoView progressBarColor(int progressBarColor) {
         this.controller.setProgressBarColor(ContextCompat.getColor(getContext(), progressBarColor));
         return this;
     }
 
-
     public FullscreenVideoView playIcon(int playDrawable) {
         this.controller.setPlayDrawable(playDrawable);
         return this;
     }
-
 
     public FullscreenVideoView pauseIcon(int pauseDrawable) {
         this.controller.setPauseDrawable(pauseDrawable);
         return this;
     }
 
-
     public FullscreenVideoView fastForwardSeconds(int seconds) {
         this.controller.setFastForwardSeconds(seconds);
         return this;
     }
 
-
     public FullscreenVideoView rewindSeconds(int seconds) {
         this.controller.setRewindSeconds(seconds);
         return this;
     }
-
 
     public void surfaceCreated(SurfaceHolder holder) {
         if (videoMediaPlayer != null) {
@@ -457,11 +420,9 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         }
     }
 
-
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         // Not used
     }
-
 
     public void surfaceDestroyed(SurfaceHolder holder) {
         if (videoMediaPlayer != null && isMediaPlayerPrepared) {
