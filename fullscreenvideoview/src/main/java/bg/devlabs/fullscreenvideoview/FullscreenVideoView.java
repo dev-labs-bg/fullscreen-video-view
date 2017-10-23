@@ -41,6 +41,7 @@ import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAP
  * Dev Labs
  * slavi@devlabs.bg
  */
+//todo move design stuff to the xml definition of the layout
 public class FullscreenVideoView extends FrameLayout implements IFullscreenVideoView,
         SurfaceHolder.Callback {
     private VideoSurfaceView surfaceView;
@@ -48,56 +49,37 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
     private ProgressBar progressBar;
     private VideoControllerView controller;
     private boolean isFullscreen, isAutoStartEnabled;
-    private VideoMediaPlayer videoMediaPlayer = new VideoMediaPlayer(this);
+    VideoMediaPlayer videoMediaPlayer = new VideoMediaPlayer(this);
     private String videoPath;
     private File videoFile;
     private ActionBar supportActionBar;
     private android.app.ActionBar actionBar;
     private int originalWidth, originalHeight;
     // Listeners
-    private OrientationEventListener orientationEventListener;
-    private MediaPlayer.OnPreparedListener onPreparedListener;
-    private View.OnTouchListener onTouchListener;
+    private OrientationEventListener orientationEventListener; //our class
+    private MediaPlayer.OnPreparedListener onPreparedListener; //no need to create our class for this
+    private View.OnTouchListener onTouchListener;//no need to create our class for this
     private boolean isMediaPlayerPrepared;
 
     public FullscreenVideoView(@NonNull Context context) {
         super(context);
-        init();
+        onCreate();
     }
 
     public FullscreenVideoView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        init();
+        onCreate();
     }
 
     public FullscreenVideoView(@NonNull Context context, @Nullable AttributeSet attrs,
                                int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        onCreate();
     }
 
-    private void init() {
-        LayoutInflater layoutInflater = getLayoutInflater();
-        View root = layoutInflater.inflate(R.layout.video_player, this, true);
-        this.surfaceView = root.findViewById(R.id.surface_view);
-        this.progressBar = root.findViewById(R.id.progress_bar);
-    }
-
-    public FullscreenVideoView init(@NonNull File videoFile) {
-        this.videoFile = videoFile;
-        init();
-        return this;
-    }
-
-    public FullscreenVideoView init(@NonNull String videoPath) {
-        this.videoPath = videoPath;
-        setupView();
-        return this;
-    }
-
-    private void setupView() {
+    private void onCreate() {
+        inflate();
         setupBar();
-
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
         controller = new VideoControllerView(getContext(), getLayoutInflater());
@@ -105,11 +87,29 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         setupProgressBar();
         initOrientationListener();
         initOnBackPressedListener();
-        // Setup VideoView
+
+        //setup VideoView
         setupOnTouchListener();
         setupOnPreparedListener();
+    }
 
+    private void inflate() {
+        LayoutInflater layoutInflater = getLayoutInflater();
+        View root = layoutInflater.inflate(R.layout.video_player, this, true);
+        this.surfaceView = root.findViewById(R.id.surface_view);
+        this.progressBar = root.findViewById(R.id.progress_bar);
+    }
+
+    public FullscreenVideoView videoFile(@NonNull File videoFile) {
+        this.videoFile = videoFile;
         setupMediaPlayer();
+        return this;
+    }
+
+    public FullscreenVideoView videoPath(@NonNull String videoPath) {
+        this.videoPath = videoPath;
+        setupMediaPlayer();
+        return this;
     }
 
     private void initOnBackPressedListener() {
@@ -267,6 +267,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         controller.updateFullScreenDrawable();
 
         // Change the screen orientation to SENSOR_LANDSCAPE
+        Activity activity = ((Activity) getContext());
         setOrientation(SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
 
         UiUtils.hideOtherViews((ViewGroup) getParent());
@@ -275,8 +276,6 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         this.originalWidth = getWidth();
         this.originalHeight = getHeight();
         // TODO: Add check if the video should be landscape or portrait in isFullscreen
-        Activity activity = (Activity) getContext();
-        // Get the dimensions of the video
         updateLayoutParams(activity);
 
         // Hiding the supportToolbar
@@ -323,6 +322,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         controller.updateFullScreenDrawable();
 
         // Change the screen orientation to PORTRAIT
+        Activity activity = (Activity) getContext();
         // TODO: Calculating the size according to if the view is on the whole screen or not
         setOrientation(SCREEN_ORIENTATION_PORTRAIT);
 
@@ -334,7 +334,6 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         setLayoutParams(params);
 
         showActionBar();
-        Activity activity = (Activity) getContext();
         toggleSystemUiVisibility(activity.getWindow());
     }
 
@@ -373,6 +372,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
 
         return false;
     }
+
 
     public FullscreenVideoView isAutoStartEnabled(boolean autoStartEnabled) {
         isAutoStartEnabled = autoStartEnabled;
