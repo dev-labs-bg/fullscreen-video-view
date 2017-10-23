@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_action_bar.*
 
-
 /**
  * Created by Slavi Petrov on 13.10.2017
  * Dev Labs

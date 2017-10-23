@@ -13,6 +13,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -49,7 +50,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
     private ProgressBar progressBar;
     private VideoControllerView controller;
     private boolean isFullscreen, isAutoStartEnabled;
-    VideoMediaPlayer videoMediaPlayer = new VideoMediaPlayer(this);
+    private VideoMediaPlayer videoMediaPlayer = new VideoMediaPlayer(this);
     private String videoPath;
     private File videoFile;
     private ActionBar supportActionBar;
@@ -63,22 +64,21 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
 
     public FullscreenVideoView(@NonNull Context context) {
         super(context);
-        onCreate();
     }
 
     public FullscreenVideoView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        onCreate();
     }
 
     public FullscreenVideoView(@NonNull Context context, @Nullable AttributeSet attrs,
                                int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        onCreate();
     }
 
-    private void onCreate() {
-        inflate();
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        findChildViews();
         setupBar();
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
@@ -93,7 +93,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         setupOnPreparedListener();
     }
 
-    private void inflate() {
+    private void findChildViews() {
         LayoutInflater layoutInflater = getLayoutInflater();
         View root = layoutInflater.inflate(R.layout.video_player, this, true);
         this.surfaceView = root.findViewById(R.id.surface_view);
@@ -142,13 +142,15 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
 
     @Override
     protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
         handleOnDetach();
+        super.onDetachedFromWindow();
     }
 
     public void handleOnDetach() {
+        Log.d(FullscreenVideoView.class.getSimpleName(), "onDetachedFromWindow: ");
         controller.onDestroy();
-        onPreparedListener = null;
+        controller = null;
+
         onTouchListener = null;
         // Disable and null the OrientationEventListener
         if (orientationEventListener != null) {
@@ -156,12 +158,30 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
             orientationEventListener = null;
         }
 
-        videoMediaPlayer.release();
+        if (videoMediaPlayer != null) {
+            videoMediaPlayer.clearFullscreenVideoView();
+            videoMediaPlayer.setOnPreparedListener(null);
+            videoMediaPlayer.stop();
+            videoMediaPlayer.release();
+            videoMediaPlayer = null;
+        }
+        onPreparedListener = null;
 
         if (surfaceHolder != null) {
             surfaceHolder.removeCallback(this);
             surfaceHolder.getSurface().release();
+            surfaceHolder = null;
         }
+
+        if (surfaceView != null) {
+            surfaceView.invalidate();
+            surfaceView.destroyDrawingCache();
+            surfaceView = null;
+        }
+
+        progressBar = null;
+        setOnKeyListener(null);
+        setOnTouchListener(null);
     }
 
     private void setupBar() {
@@ -177,6 +197,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         onPreparedListener = new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {
+                Log.d(FullscreenVideoView.class.getSimpleName(), "onPrepared: ");
                 if (((Activity) getContext()).isDestroyed()) {
                     return;
                 }
@@ -414,16 +435,19 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         return this;
     }
 
+    @Override
     public void surfaceCreated(SurfaceHolder holder) {
         if (videoMediaPlayer != null) {
             videoMediaPlayer.setDisplay(surfaceView.getHolder());
         }
     }
 
+    @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         // Not used
     }
 
+    @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         if (videoMediaPlayer != null && isMediaPlayerPrepared) {
             videoMediaPlayer.pause();

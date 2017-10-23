@@ -48,4 +48,8 @@ public class VideoMediaPlayer extends MediaPlayer implements VideoMediaPlayerCon
     public void toggleFullScreen() {
         fullscreenVideoView.toggleFullscreen();
     }
+
+    public void clearFullscreenVideoView() {
+        fullscreenVideoView = null;
+    }
 }
