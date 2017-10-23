@@ -3,6 +3,7 @@ package bg.devlabs.fullscreenvideoviewexample
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_action_bar.*
 
@@ -27,10 +28,10 @@ class ActionBarActivity : AppCompatActivity() {
         supportActionBar?.title = getString(R.string.action_bar_activity)
         val videoPath = "http://clips.vorwaerts-gmbh.de/VfE_html5.mp4"
         fullscreenVideoView.videoPath(videoPath)
-                .exitFullscreenDrawable(R.drawable.ic_launcher_background)
-                .enterFullscreenDrawable(R.drawable.ic_media_pause)
+                .exitFullscreenDrawable(ContextCompat.getDrawable(this, R.drawable.ic_launcher_background))
+                .enterFullscreenDrawable(ContextCompat.getDrawable(this, R.drawable.ic_media_pause))
                 .progressBarColor(R.color.colorAccent)
-                .pauseIcon(R.drawable.ic_launcher_background)
+                .pauseIcon(ContextCompat.getDrawable(this, R.drawable.ic_launcher_background))
                 .isAutoStartEnabled(true)
     }
 }
