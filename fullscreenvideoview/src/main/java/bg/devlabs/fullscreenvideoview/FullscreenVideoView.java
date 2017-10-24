@@ -48,11 +48,11 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
     private VideoSurfaceView surfaceView;
     private SurfaceHolder surfaceHolder;
     private ProgressBar progressBar;
-    private VideoControllerView controller;
+    VideoControllerView controller;
     // MediaPlayer
     private VideoMediaPlayer videoMediaPlayer;
 
-    private boolean isFullscreen;
+    private boolean isLandscape;
     private boolean isAutoStartEnabled;
     private boolean isMediaPlayerPrepared;
     private int originalWidth;
@@ -93,22 +93,13 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
 
-        setupController(attrs);
+        controller.init(videoMediaPlayer, attrs);
         setupProgressBarColor();
         initOnBackPressedListener();
 
         // Setup VideoView
         setupOnTouchListener();
         setupOnPreparedListener();
-    }
-
-    @SuppressWarnings("InstanceVariableUsedBeforeInitialized")
-    private void setupController(AttributeSet attrs) {
-        controller.setupXmlAttributes(attrs);
-        if (!isInEditMode()) {
-            controller.setAnchorView(this);
-        }
-        controller.setMediaPlayer(videoMediaPlayer);
     }
 
     private void initOrientationListener() {
@@ -204,44 +195,18 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
     }
 
     private void setupOnPreparedListener() {
-        onPreparedListener = new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mediaPlayer) {
-                Log.d(FullscreenVideoView.class.getSimpleName(), "onPrepared: ");
-                if (((Activity) getContext()).isDestroyed()) {
-                    return;
-                }
-                hideProgress();
-                // Get the dimensions of the video
-                int videoWidth = videoMediaPlayer.getVideoWidth();
-                int videoHeight = videoMediaPlayer.getVideoHeight();
-                surfaceView.updateLayoutParams(videoWidth, videoHeight);
-                // Start media player if auto start is enabled
-                if (mediaPlayer != null && isAutoStartEnabled) {
-                    isMediaPlayerPrepared = true;
-                    mediaPlayer.start();
-                }
-            }
-        };
+        onPreparedListener = new VideoOnPreparedListener();
     }
 
     private void setupMediaPlayer() {
         try {
             showProgress();
             videoMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            videoMediaPlayer.setDataSource(getVideoPath());
+            videoMediaPlayer.setDataSource(videoPath);
             videoMediaPlayer.setOnPreparedListener(onPreparedListener);
             videoMediaPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    private String getVideoPath() {
-        if (videoPath != null) {
-            return videoPath;
-        } else {
-            return null;
         }
     }
 
@@ -284,9 +249,9 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
     }
 
     private void activateFullscreen() {
-        // Update isFullscreen flag
-        if (!isFullscreen) {
-            isFullscreen = true;
+        // Update isLandscape flag
+        if (!isLandscape) {
+            isLandscape = true;
         }
 
         // Update the fullscreen button drawable
@@ -299,9 +264,9 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         UiUtils.hideOtherViews((ViewGroup) getParent());
 
         // Save the video player original width and height
-        this.originalWidth = getWidth();
-        this.originalHeight = getHeight();
-        // TODO: Add check if the video should be landscape or portrait in isFullscreen
+        originalWidth = getWidth();
+        originalHeight = getHeight();
+        // TODO: Add check if the video should be landscape or portrait in isLandscape
         updateLayoutParams(activity);
 
         // Hiding the supportToolbar
@@ -339,9 +304,9 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
     }
 
     private void exitFullscreen() {
-        // Update isFullscreen flag
-        if (isFullscreen) {
-            isFullscreen = false;
+        // Update isLandscape flag
+        if (isLandscape) {
+            isLandscape = false;
         }
 
         // Update the fullscreen button drawable
@@ -388,7 +353,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
     }
 
     boolean shouldHandleOnBackPressed() {
-        if (isFullscreen) {
+        if (isLandscape) {
             // Locks the screen orientation to portrait
             setOrientation(portraitOrientation.getValue());
             controller.updateFullScreenDrawable();
@@ -468,19 +433,19 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
     }
 
     @Override
-    public boolean isFullscreen() {
-        return isFullscreen;
+    public boolean isLandscape() {
+        return isLandscape;
     }
 
     @Override
     public void toggleFullscreen() {
-        if (isFullscreen) {
-            isFullscreen = false;
-            setOrientation(portraitOrientation.getValue());
-        } else {
-            isFullscreen = true;
-            setOrientation(landscapeOrientation.getValue());
+        int newOrientation = landscapeOrientation.getValue();
+        if (isLandscape) {
+            newOrientation = portraitOrientation.getValue();
         }
+
+        isLandscape = !isLandscape;
+        setOrientation(newOrientation);
     }
 
     private class VideoOnKeyListener implements View.OnKeyListener {
@@ -489,6 +454,25 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
             return (event.getAction() == KeyEvent.ACTION_UP) &&
                     (keyCode == KeyEvent.KEYCODE_BACK) &&
                     shouldHandleOnBackPressed();
+        }
+    }
+
+    private class VideoOnPreparedListener implements MediaPlayer.OnPreparedListener {
+        @Override
+        public void onPrepared(MediaPlayer mediaPlayer) {
+            Log.d(FullscreenVideoView.class.getSimpleName(), "onPrepared: ");
+            if (!((Activity) getContext()).isDestroyed()) {
+                hideProgress();
+                // Get the dimensions of the video
+                int videoWidth = videoMediaPlayer.getVideoWidth();
+                int videoHeight = videoMediaPlayer.getVideoHeight();
+                surfaceView.updateLayoutParams(videoWidth, videoHeight);
+                // Start media player if auto start is enabled
+                if (mediaPlayer != null && isAutoStartEnabled) {
+                    isMediaPlayerPrepared = true;
+                    mediaPlayer.start();
+                }
+            }
         }
     }
 }

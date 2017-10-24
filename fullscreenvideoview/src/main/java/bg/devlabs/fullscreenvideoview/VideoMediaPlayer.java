@@ -41,7 +41,7 @@ public class VideoMediaPlayer extends MediaPlayer implements IVideoMediaPlayer {
 
     @Override
     public boolean isFullScreen() {
-        return fullscreenVideoView.isFullscreen();
+        return fullscreenVideoView.isLandscape();
     }
 
     @Override

@@ -213,7 +213,7 @@ class VideoControllerView extends FrameLayout {
 //        rootView = null;
 
         final LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        layoutInflater.inflate(R.layout.media_controller, this, true);
+        layoutInflater.inflate(R.layout.video_controller, this, true);
         initControllerView();
         setupXmlAttributes(attrs);
     }
@@ -221,25 +221,25 @@ class VideoControllerView extends FrameLayout {
     public VideoControllerView(Context context) {
         super(context);
         final LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        layoutInflater.inflate(R.layout.media_controller, this, true);
+        layoutInflater.inflate(R.layout.video_controller, this, true);
         initControllerView();
     }
 
     public void setupXmlAttributes(AttributeSet attrs) {
-        TypedArray a = getContext().obtainStyledAttributes(attrs,
-                R.styleable.FullscreenVideoView, 0, 0);
-        setupPlayPauseButton(a);
-        setupFullscreenButton(a);
-        setupFastForwardButton(a);
-        setupRewindButton(a);
-        setupProgressBar(a);
+        TypedArray typedArr = getContext().obtainStyledAttributes(attrs,
+                R.styleable.VideoControllerView, 0, 0);
+        setupPlayPauseButton(typedArr);
+        setupFullscreenButton(typedArr);
+        setupFastForwardButton(typedArr);
+        setupRewindButton(typedArr);
+        setupProgressBar(typedArr);
         // Recycle the TypedArray
-        a.recycle();
+        typedArr.recycle();
     }
 
     void setupProgressBar(TypedArray a) {
         // TODO: Add different setters for the background and the thumb of the progress bar
-        int progressBarColor = a.getColor(R.styleable.FullscreenVideoView_progress_color, 0);
+        int progressBarColor = a.getColor(R.styleable.VideoControllerView_progress_color, 0);
         if (progressBarColor != 0) {
             mProgress.getProgressDrawable().setColorFilter(progressBarColor, PorterDuff.Mode.SRC_IN);
             mProgress.getThumb().setColorFilter(progressBarColor, PorterDuff.Mode.SRC_IN);
@@ -252,7 +252,7 @@ class VideoControllerView extends FrameLayout {
     }
 
     void setupRewindButton(TypedArray a) {
-        Drawable rewindDrawable = a.getDrawable(R.styleable.FullscreenVideoView_rew_drawable);
+        Drawable rewindDrawable = a.getDrawable(R.styleable.VideoControllerView_rew_drawable);
         if (rewindDrawable != null) {
             mRewButton.setImageDrawable(rewindDrawable);
             setRewindDrawable(rewindDrawable);
@@ -262,7 +262,7 @@ class VideoControllerView extends FrameLayout {
     }
 
     void setupFastForwardButton(TypedArray a) {
-        Drawable ffwdDrawable = a.getDrawable(R.styleable.FullscreenVideoView_ffwd_drawable);
+        Drawable ffwdDrawable = a.getDrawable(R.styleable.VideoControllerView_ffwd_drawable);
         if (ffwdDrawable != null) {
             mFfwdButton.setImageDrawable(ffwdDrawable);
             setFastForwardDrawable(ffwdDrawable);
@@ -273,7 +273,7 @@ class VideoControllerView extends FrameLayout {
 
     void setupFullscreenButton(TypedArray a) {
         Drawable enterFullscreenDrawable = a.getDrawable(
-                R.styleable.FullscreenVideoView_enter_fullscreen_drawable);
+                R.styleable.VideoControllerView_enter_fullscreen_drawable);
         if (enterFullscreenDrawable != null) {
             mFullscreenButton.setImageDrawable(enterFullscreenDrawable);
             setEnterFullscreenDrawable(enterFullscreenDrawable);
@@ -283,7 +283,7 @@ class VideoControllerView extends FrameLayout {
         }
 
         Drawable exitFullscreenDrawable = a.getDrawable(
-                R.styleable.FullscreenVideoView_exit_fullscreen_drawable);
+                R.styleable.VideoControllerView_exit_fullscreen_drawable);
         // The exitFullscreenDrawable is not null, therefore pass it to the controller,
         // else there is a default value for it in the controller
         if (exitFullscreenDrawable != null) {
@@ -292,7 +292,7 @@ class VideoControllerView extends FrameLayout {
     }
 
     void setupPlayPauseButton(TypedArray a) {
-        Drawable playDrawable = a.getDrawable(R.styleable.FullscreenVideoView_play_drawable);
+        Drawable playDrawable = a.getDrawable(R.styleable.VideoControllerView_play_drawable);
         if (playDrawable != null) {
             mStartPauseButton.setImageDrawable(playDrawable);
             setPlayDrawable(playDrawable);
@@ -301,7 +301,7 @@ class VideoControllerView extends FrameLayout {
             mStartPauseButton.setImageResource(R.drawable.ic_play_arrow_white_48dp);
         }
 
-        Drawable pauseDrawable = a.getDrawable(R.styleable.FullscreenVideoView_pause_drawable);
+        Drawable pauseDrawable = a.getDrawable(R.styleable.VideoControllerView_pause_drawable);
         // The pauseDrawable is not null, therefore pass it to the controller, else there is a
         // default value for it in the controller
         if (pauseDrawable != null) {
@@ -429,23 +429,14 @@ class VideoControllerView extends FrameLayout {
      */
     public void show(int timeout) {
         if (!isShowing()) {
-//            setProgress();
-//            if (mStartPauseButton != null) {
-//                mStartPauseButton.requestFocus();
-//            }
-//            disableUnsupportedButtons();
-//
-//            LayoutParams tlp = new LayoutParams(
-//                    ViewGroup.LayoutParams.MATCH_PARENT,
-//                    ViewGroup.LayoutParams.WRAP_CONTENT,
-//                    Gravity.BOTTOM
-//            );
-//
-//            mAnchor.addView(this, tlp);
-//            mShowing = true;
+            setProgress();
+            if (mStartPauseButton != null) {
+                mStartPauseButton.requestFocus();
+            }
+            disableUnsupportedButtons();
             setVisibility(VISIBLE);
-//            mShowing = true;
         }
+
         updatePausePlay();
         updateFullScreenDrawable();
 
@@ -469,18 +460,12 @@ class VideoControllerView extends FrameLayout {
      * Remove the controller from the screen.
      */
     public void hide() {
-//        if (mAnchor == null) {
-//            return;
-//        }
-
         try {
-//            mAnchor.removeView(this);
             setVisibility(INVISIBLE);
             mHandler.removeMessages(SHOW_PROGRESS);
         } catch (IllegalArgumentException ex) {
             Log.w("MediaController", "already removed");
         }
-//        mShowing = false;
     }
 
     String stringForTime(int timeMs) {
@@ -727,6 +712,14 @@ class VideoControllerView extends FrameLayout {
         this.rewindDrawable = rewindDrawable;
     }
 
+    public void init(IVideoMediaPlayer videoMediaPlayer, AttributeSet attrs) {
+        setupXmlAttributes(attrs);
+        if (!isInEditMode()) {
+            mAnchor = this;
+        }
+        setMediaPlayer(videoMediaPlayer);
+    }
+
     private static class MessageHandler extends Handler {
         private final WeakReference<VideoControllerView> mView;
 
@@ -754,6 +747,13 @@ class VideoControllerView extends FrameLayout {
                     }
                     break;
             }
+        }
+
+        @Override
+        public String toString() {
+            return "MessageHandler{" +
+                    "mView=" + mView +
+                    '}';
         }
     }
 }

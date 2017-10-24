@@ -6,7 +6,7 @@ package bg.devlabs.fullscreenvideoview;
  * slavi@devlabs.bg
  */
 public interface IFullscreenVideoView {
-    boolean isFullscreen();
+    boolean isLandscape();
 
     void toggleFullscreen();
 
