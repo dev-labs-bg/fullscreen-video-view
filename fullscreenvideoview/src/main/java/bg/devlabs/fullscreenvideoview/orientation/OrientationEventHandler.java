@@ -21,15 +21,24 @@ public class OrientationEventHandler extends OrientationEventListener {
     private ContentResolver contentResolver;
     private boolean isLandscape;
     private IFullscreenVideoView videoView;
+
     public OrientationEventHandler(Context context, FullscreenVideoView videoView) {
         super(context);
         this.contentResolver = context.getContentResolver();
         this.videoView = videoView;
     }
+
+    /**
+     *
+     * @param a
+     * @param b
+     * @param epsilon
+     * @return
+     */
     private boolean epsilonCheck(int a, int b, int epsilon) {
         return a > b - epsilon && a < b + epsilon;
     }
-    //if not remove context
+
     @Override
     public void onOrientationChanged(int orientation) {
         // If the device's rotation is not enabled do not proceed further with the logic
@@ -40,11 +49,13 @@ public class OrientationEventHandler extends OrientationEventListener {
         int leftLandscape = 90;
         int rightLandscape = 270;
         int portrait = 0;
+
         if ((epsilonCheck(orientation, leftLandscape, epsilon) ||
                 epsilonCheck(orientation, rightLandscape, epsilon)) && !isLandscape) {
             isLandscape = true;
             videoView.setOrientation(SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         }
+
         if (epsilonCheck(orientation, portrait, epsilon) && isLandscape) {
             isLandscape = false;
             videoView.setOrientation(SCREEN_ORIENTATION_PORTRAIT);

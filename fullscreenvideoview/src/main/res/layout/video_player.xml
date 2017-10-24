@@ -11,9 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <include
-        android:id="@+id/media_controller"
-        layout="@layout/media_controller"
+    <bg.devlabs.fullscreenvideoview.VideoControllerView
+        android:id="@+id/video_controller"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom" />
