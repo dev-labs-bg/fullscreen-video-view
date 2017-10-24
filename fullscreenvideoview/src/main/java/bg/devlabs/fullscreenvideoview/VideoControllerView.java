@@ -26,7 +26,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,7 +76,6 @@ class VideoControllerView extends FrameLayout {
     boolean mShowing;
     boolean mDragging;
     Handler mHandler = new MessageHandler(this);
-    private LayoutInflater mLayoutInflater;
     private ViewGroup mAnchor;
     private View rootView;
     private SeekBar mProgress;
@@ -183,19 +181,18 @@ class VideoControllerView extends FrameLayout {
         }
     };
     private Drawable exitFullscreenDrawable = ContextCompat.getDrawable(getContext(),
-            R.drawable.ic_media_fullscreen_shrink);
+            R.drawable.ic_fullscreen_exit_white_48dp);
     private Drawable enterFullscreenDrawable = ContextCompat.getDrawable(getContext(),
-            R.drawable.ic_media_fullscreen_stretch);
-    private int progressBarColor = Color.WHITE;
+            R.drawable.ic_fullscreen_white_48dp);
     private Drawable playDrawable = ContextCompat.getDrawable(getContext(),
-            R.drawable.ic_media_play);
+            R.drawable.ic_play_arrow_white_48dp);
     private Drawable pauseDrawable = ContextCompat.getDrawable(getContext(),
-            R.drawable.ic_media_pause);
-    // TODO: Add resources for fast forward and rewind
-    private Drawable fastForwardDrawable;//= ContextCompat.getDrawable(getContext(),
-    //            R.drawable.ic_fast_forward);
-    private Drawable rewindDrawable;// = ContextCompat.getDrawable(getContext(),
-    //            R.drawable.ic_rewind);
+            R.drawable.ic_pause_white_48dp);
+    private Drawable fastForwardDrawable = ContextCompat.getDrawable(getContext(),
+            R.drawable.ic_fast_forward_white_48dp);
+    private Drawable rewindDrawable = ContextCompat.getDrawable(getContext(),
+            R.drawable.ic_fast_rewind_white_48dp);
+    private int progressBarColor = Color.WHITE;
 
     private int fastForwardSeconds = 15000;
     private int rewindSeconds = 5000;
@@ -206,9 +203,8 @@ class VideoControllerView extends FrameLayout {
         Log.i(TAG, TAG);
     }
 
-    public VideoControllerView(Context context, LayoutInflater layoutInflater) {
+    public VideoControllerView(Context context) {
         super(context);
-        this.mLayoutInflater = layoutInflater;
         Log.i(TAG, TAG);
     }
 
@@ -223,6 +219,8 @@ class VideoControllerView extends FrameLayout {
         videoViewControl = player;
         updatePausePlay();
         updateFullScreenDrawable();
+        updateFastForwardDrawable();
+        updateRewindDrawable();
     }
 
     /**
@@ -494,6 +492,22 @@ class VideoControllerView extends FrameLayout {
 
         show(sDefaultTimeout);
         return super.dispatchKeyEvent(event);
+    }
+
+    private void updateRewindDrawable() {
+        if (rootView == null || mRewButton == null || videoViewControl == null) {
+            return;
+        }
+
+        mRewButton.setImageDrawable(rewindDrawable);
+    }
+
+    private void updateFastForwardDrawable() {
+        if (rootView == null || mFfwdButton == null || videoViewControl == null) {
+            return;
+        }
+
+        mFfwdButton.setImageDrawable(fastForwardDrawable);
     }
 
     public void updatePausePlay() {

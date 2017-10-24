@@ -55,7 +55,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
     private SurfaceHolder surfaceHolder;
     private ProgressBar progressBar;
     private VideoControllerView controller;
-    private boolean isFullscreen, isAutoStartEnabled;
+    private boolean isFullscreen, isAutoStartEnabled, isMediaPlayerPrepared;
     private VideoMediaPlayer videoMediaPlayer;
     private String videoPath;
     private File videoFile;
@@ -66,7 +66,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
     private OrientationEventListener orientationEventListener;
     private MediaPlayer.OnPreparedListener onPreparedListener;
     private View.OnTouchListener onTouchListener;
-    private boolean isMediaPlayerPrepared;
+    private View controllerRootView;
 
     public FullscreenVideoView(@NonNull Context context) {
         super(context);
@@ -95,14 +95,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
 
-        controller = new VideoControllerView(getContext(), getLayoutInflater());
-        View controllerRootView = findViewById(R.id.media_controller);
-        controller.setRootView(controllerRootView);
-
-        if (!isInEditMode()) {
-            controller.setAnchorView(FullscreenVideoView.this);
-        }
-        controller.setMediaPlayer(videoMediaPlayer);
+        setupController();
         setupProgressBarColor();
         initOnBackPressedListener();
 
@@ -110,23 +103,33 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         setupOnTouchListener();
         setupOnPreparedListener();
 
-        setupXmlViews(controllerRootView, attrs);
+        setupXmlViews(attrs);
     }
 
-    private void setupXmlViews(View controllerRootView, AttributeSet attrs) {
+    private void setupController() {
+        controllerRootView = findViewById(R.id.media_controller);
+        controller = new VideoControllerView(getContext());
+        controller.setRootView(controllerRootView);
+
+        if (!isInEditMode()) {
+            controller.setAnchorView(FullscreenVideoView.this);
+        }
+        controller.setMediaPlayer(videoMediaPlayer);
+    }
+
+    private void setupXmlViews(AttributeSet attrs) {
         TypedArray a = getContext().obtainStyledAttributes(attrs,
                 R.styleable.FullscreenVideoView, 0, 0);
-
-        setupPlayPauseButton(controllerRootView, a);
-        setupFullscreenButton(controllerRootView, a);
-        setupFastForwardButton(controllerRootView, a);
-        setupRewindButton(controllerRootView, a);
-        setupProgressBar(controllerRootView, a);
-
+        setupPlayPauseButton(a);
+        setupFullscreenButton(a);
+        setupFastForwardButton(a);
+        setupRewindButton(a);
+        setupProgressBar(a);
+        // Recycle the TypedArray
         a.recycle();
     }
 
-    private void setupProgressBar(View controllerRootView, TypedArray a) {
+    private void setupProgressBar(TypedArray a) {
         SeekBar progressBar = controllerRootView.findViewById(R.id.progress_seek_bar);
 
         // TODO: Add different setters for the background and the thumb of the progress bar
@@ -143,7 +146,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
 
     }
 
-    private void setupRewindButton(View controllerRootView, TypedArray a) {
+    private void setupRewindButton(TypedArray a) {
         ImageButton rewindButton = controllerRootView.findViewById(R.id.rewind_media_button);
 
         Drawable rewindDrawable = a.getDrawable(R.styleable.FullscreenVideoView_rew_drawable);
@@ -151,12 +154,11 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
             rewindButton.setImageDrawable(rewindDrawable);
             controller.setRewindDrawable(rewindDrawable);
         } else {
-            // TODO: Add resource for rewind
-//            rewindButton.setImageResource(R.drawable.rewind);
+            rewindButton.setImageResource(R.drawable.ic_fast_rewind_white_48dp);
         }
     }
 
-    private void setupFastForwardButton(View controllerRootView, TypedArray a) {
+    private void setupFastForwardButton(TypedArray a) {
         ImageButton ffwdButton = controllerRootView.findViewById(R.id.forward_media_button);
 
         Drawable ffwdDrawable = a.getDrawable(R.styleable.FullscreenVideoView_ffwd_drawable);
@@ -164,12 +166,11 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
             ffwdButton.setImageDrawable(ffwdDrawable);
             controller.setFastForwardDrawable(ffwdDrawable);
         } else {
-            // TODO: Add resource for fast forward
-//            ffwdButton.setImageResource(R.drawable.fast_forward);
+            ffwdButton.setImageResource(R.drawable.ic_fast_forward_white_48dp);
         }
     }
 
-    private void setupFullscreenButton(View controllerRootView, TypedArray a) {
+    private void setupFullscreenButton(TypedArray a) {
         ImageButton fullscreenButton = controllerRootView.findViewById(R.id.fullscreen_media_button);
 
         Drawable enterFullscreenDrawable = a.getDrawable(
@@ -179,7 +180,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
             controller.setEnterFullscreenDrawable(enterFullscreenDrawable);
         } else {
             // Set the default drawable
-            fullscreenButton.setImageResource(R.drawable.ic_media_fullscreen_stretch);
+            fullscreenButton.setImageResource(R.drawable.ic_fullscreen_white_48dp);
         }
 
         Drawable exitFullscreenDrawable = a.getDrawable(
@@ -191,7 +192,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         }
     }
 
-    private void setupPlayPauseButton(View controllerRootView, TypedArray a) {
+    private void setupPlayPauseButton(TypedArray a) {
         ImageButton playPauseButton = controllerRootView.findViewById(R.id.start_pause_media_button);
 
         Drawable playDrawable = a.getDrawable(R.styleable.FullscreenVideoView_play_drawable);
@@ -200,7 +201,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
             controller.setPlayDrawable(playDrawable);
         } else {
             // Set the default drawable
-            playPauseButton.setImageResource(R.drawable.ic_media_play);
+            playPauseButton.setImageResource(R.drawable.ic_play_arrow_white_48dp);
         }
 
         Drawable pauseDrawable = a.getDrawable(R.styleable.FullscreenVideoView_pause_drawable);
@@ -331,13 +332,6 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
                 int videoWidth = videoMediaPlayer.getVideoWidth();
                 int videoHeight = videoMediaPlayer.getVideoHeight();
                 surfaceView.updateLayoutParams(videoWidth, videoHeight);
-                // Setup controller
-
-//                controller.setRootView(getLayoutInflater().inflate(R.layout.media_controller,
-//                        (ViewGroup) getRootView(),
-//                        false));
-
-//                controller.setAnchorView(FullscreenVideoView.this);
                 // Start media player if auto start is enabled
                 if (mediaPlayer != null && isAutoStartEnabled) {
                     isMediaPlayerPrepared = true;

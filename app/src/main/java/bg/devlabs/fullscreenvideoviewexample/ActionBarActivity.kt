@@ -28,10 +28,11 @@ class ActionBarActivity : AppCompatActivity() {
         supportActionBar?.title = getString(R.string.action_bar_activity)
         val videoPath = "http://clips.vorwaerts-gmbh.de/VfE_html5.mp4"
         fullscreenVideoView.videoPath(videoPath)
-                .exitFullscreenDrawable(ContextCompat.getDrawable(this, R.drawable.ic_launcher_background))
-                .enterFullscreenDrawable(ContextCompat.getDrawable(this, R.drawable.ic_media_pause))
+                .exitFullscreenDrawable(
+                        ContextCompat.getDrawable(this, R.drawable.ic_launcher_background))
+                .enterFullscreenDrawable(
+                        ContextCompat.getDrawable(this, R.drawable.ic_pause_white_48dp))
                 .progressBarColor(R.color.colorAccent)
-                .pauseIcon(ContextCompat.getDrawable(this, R.drawable.ic_launcher_background))
                 .isAutoStartEnabled(true)
     }
 }
