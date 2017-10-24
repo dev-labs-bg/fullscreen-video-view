@@ -16,6 +16,7 @@ package bg.devlabs.fullscreenvideoview;/*
  */
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -238,7 +239,7 @@ class VideoControllerView extends FrameLayout {
         );
 
         removeAllViews();
-        View v = makeControllerView(view);
+        View v = makeControllerView();
         ((ViewGroup) rootView.getParent()).removeView(rootView);
         addView(v, frameParams);
     }
@@ -249,9 +250,7 @@ class VideoControllerView extends FrameLayout {
      *
      * @return The controller view.
      */
-    protected View makeControllerView(ViewGroup view) {
-//        rootView = mLayoutInflater.inflate(R.layout.media_controller, (ViewGroup) view.getRootView(),
-//                false);
+    protected View makeControllerView() {
         initControllerView(rootView);
         return rootView;
     }
@@ -637,6 +636,100 @@ class VideoControllerView extends FrameLayout {
 
     public void setRewindDrawable(Drawable rewindDrawable) {
         this.rewindDrawable = rewindDrawable;
+    }
+
+    public void setupXmlAttributes(AttributeSet attrs) {
+        TypedArray a = getContext().obtainStyledAttributes(attrs,
+                R.styleable.VideoControllerView, 0, 0);
+        setupPlayPauseButton(a);
+        setupFullscreenButton(a);
+        setupFastForwardButton(a);
+        setupRewindButton(a);
+        setupProgressBar(a);
+        // Recycle the TypedArray
+        a.recycle();
+    }
+
+    private void setupProgressBar(TypedArray a) {
+        SeekBar progressBar = rootView.findViewById(R.id.progress_seek_bar);
+
+        // TODO: Add different setters for the background and the thumb of the progress bar
+        int progressBarColor = a.getColor(R.styleable.VideoControllerView_progress_color, 0);
+        if (progressBarColor != 0) {
+            progressBar.getProgressDrawable().setColorFilter(progressBarColor, PorterDuff.Mode.SRC_IN);
+            progressBar.getThumb().setColorFilter(progressBarColor, PorterDuff.Mode.SRC_IN);
+            setProgressBarColor(progressBarColor);
+        } else {
+            // Set the default color
+            progressBar.getProgressDrawable().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+            progressBar.getThumb().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+        }
+    }
+
+    private void setupRewindButton(TypedArray a) {
+        ImageButton rewindButton = rootView.findViewById(R.id.rewind_media_button);
+
+        Drawable rewindDrawable = a.getDrawable(R.styleable.VideoControllerView_rew_drawable);
+        if (rewindDrawable != null) {
+            rewindButton.setImageDrawable(rewindDrawable);
+            setRewindDrawable(rewindDrawable);
+        } else {
+            rewindButton.setImageResource(R.drawable.ic_fast_rewind_white_48dp);
+        }
+    }
+
+    private void setupFastForwardButton(TypedArray a) {
+        ImageButton ffwdButton = rootView.findViewById(R.id.forward_media_button);
+
+        Drawable ffwdDrawable = a.getDrawable(R.styleable.VideoControllerView_ffwd_drawable);
+        if (ffwdDrawable != null) {
+            ffwdButton.setImageDrawable(ffwdDrawable);
+            setFastForwardDrawable(ffwdDrawable);
+        } else {
+            ffwdButton.setImageResource(R.drawable.ic_fast_forward_white_48dp);
+        }
+    }
+
+    private void setupFullscreenButton(TypedArray a) {
+        ImageButton fullscreenButton = rootView.findViewById(R.id.fullscreen_media_button);
+
+        Drawable enterFullscreenDrawable = a.getDrawable(
+                R.styleable.VideoControllerView_enter_fullscreen_drawable);
+        if (enterFullscreenDrawable != null) {
+            fullscreenButton.setImageDrawable(enterFullscreenDrawable);
+            setEnterFullscreenDrawable(enterFullscreenDrawable);
+        } else {
+            // Set the default drawable
+            fullscreenButton.setImageResource(R.drawable.ic_fullscreen_white_48dp);
+        }
+
+        Drawable exitFullscreenDrawable = a.getDrawable(
+                R.styleable.VideoControllerView_exit_fullscreen_drawable);
+        // The exitFullscreenDrawable is not null, therefore pass it to the controller,
+        // else there is a default value for it in the controller
+        if (exitFullscreenDrawable != null) {
+            setExitFullscreenDrawable(exitFullscreenDrawable);
+        }
+    }
+
+    private void setupPlayPauseButton(TypedArray a) {
+        ImageButton playPauseButton = rootView.findViewById(R.id.start_pause_media_button);
+
+        Drawable playDrawable = a.getDrawable(R.styleable.VideoControllerView_play_drawable);
+        if (playDrawable != null) {
+            playPauseButton.setImageDrawable(playDrawable);
+            setPlayDrawable(playDrawable);
+        } else {
+            // Set the default drawable
+            playPauseButton.setImageResource(R.drawable.ic_play_arrow_white_48dp);
+        }
+
+        Drawable pauseDrawable = a.getDrawable(R.styleable.VideoControllerView_pause_drawable);
+        // The pauseDrawable is not null, therefore pass it to the controller, else there is a
+        // default value for it in the controller
+        if (pauseDrawable != null) {
+            setPauseDrawable(pauseDrawable);
+        }
     }
 
     private static class MessageHandler extends Handler {
