@@ -3,28 +3,19 @@ package bg.devlabs.fullscreenvideoview;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.OrientationEventListener;
 import android.view.SurfaceHolder;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
@@ -32,10 +23,8 @@ import java.io.File;
 import java.io.IOException;
 
 import bg.devlabs.fullscreenvideoview.orientation.LandscapeOrientation;
-import bg.devlabs.fullscreenvideoview.orientation.OrientationEventHandler;
+import bg.devlabs.fullscreenvideoview.orientation.OrientationDelegate;
 import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation;
-import bg.devlabs.fullscreenvideoview.util.DeviceUtils;
-import bg.devlabs.fullscreenvideoview.util.UiUtils;
 
 /**
  * Created by Slavi Petrov on 05.10.2017
@@ -52,20 +41,15 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
     // MediaPlayer
     private VideoMediaPlayer videoMediaPlayer;
 
-    private boolean isLandscape;
     private boolean isAutoStartEnabled;
     private boolean isMediaPlayerPrepared;
-    private int originalWidth;
-    private int originalHeight;
+
     private String videoPath;
+    private OrientationDelegate orientationDelegate;
 
     // Listeners
-    private OrientationEventListener orientationEventListener;
     private MediaPlayer.OnPreparedListener onPreparedListener;
     private View.OnTouchListener onTouchListener;
-    // Orientation
-    private LandscapeOrientation landscapeOrientation = LandscapeOrientation.SENSOR;
-    private PortraitOrientation portraitOrientation = PortraitOrientation.PORTRAIT;
 
     public FullscreenVideoView(@NonNull final Context context) {
         super(context);
@@ -87,13 +71,13 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         // Skip this init rows - needed when changing FullscreenVideoView properties in XML
         if (!isInEditMode()) {
             videoMediaPlayer = new VideoMediaPlayer(this);
-            initOrientationListener();
+            initOrientationHandlers();
         }
 
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
 
-        controller.init(videoMediaPlayer, attrs);
+        controller.init(this, videoMediaPlayer, attrs);
         setupProgressBarColor();
         initOnBackPressedListener();
 
@@ -102,10 +86,16 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         setupOnPreparedListener();
     }
 
-    private void initOrientationListener() {
+    private void initOrientationHandlers() {
         if (!isInEditMode()) {
-            orientationEventListener = new OrientationEventHandler(getContext(), this);
-            orientationEventListener.enable();
+            orientationDelegate = new OrientationDelegate(getContext(), this) {
+                @Override
+                public void onFullscreen() {
+                    // Update the fullscreen button drawable
+                    controller.updateFullScreenDrawable();
+                }
+            };
+            orientationDelegate.enable();
         }
     }
 
@@ -144,9 +134,9 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
     protected void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            activateFullscreen();
+            orientationDelegate.activateFullscreen();
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            exitFullscreen();
+            orientationDelegate.exitFullscreen();
         }
     }
 
@@ -163,9 +153,9 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
 
         onTouchListener = null;
         // Disable and null the OrientationEventListener
-        if (orientationEventListener != null) {
-            orientationEventListener.disable();
-            orientationEventListener = null;
+        if (orientationDelegate != null) {
+            orientationDelegate.disable();
+            orientationDelegate = null;
         }
 
         if (videoMediaPlayer != null) {
@@ -228,139 +218,12 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         progressBar.animate().setDuration(shortAnimTime);
     }
 
-    public void setOrientation(int orientation) {
-        ((Activity) getContext()).setRequestedOrientation(orientation);
-    }
-
     private void hideProgress() {
         progressBar.setVisibility(View.INVISIBLE);
     }
 
     private void showProgress() {
         progressBar.setVisibility(View.VISIBLE);
-    }
-
-    private void toggleSystemUiVisibility(Window activityWindow) {
-        int newUiOptions = activityWindow.getDecorView().getSystemUiVisibility();
-        newUiOptions ^= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-        newUiOptions ^= View.SYSTEM_UI_FLAG_FULLSCREEN;
-        newUiOptions ^= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-        activityWindow.getDecorView().setSystemUiVisibility(newUiOptions);
-    }
-
-    private void activateFullscreen() {
-        // Update isLandscape flag
-        if (!isLandscape) {
-            isLandscape = true;
-        }
-
-        // Update the fullscreen button drawable
-        controller.updateFullScreenDrawable();
-
-        // Change the screen orientation to SENSOR_LANDSCAPE
-        Activity activity = ((Activity) getContext());
-        setOrientation(landscapeOrientation.getValue());
-
-        UiUtils.hideOtherViews((ViewGroup) getParent());
-
-        // Save the video player original width and height
-        originalWidth = getWidth();
-        originalHeight = getHeight();
-        // TODO: Add check if the video should be landscape or portrait in isLandscape
-        updateLayoutParams(activity);
-
-        // Hiding the supportToolbar
-        hideActionBar();
-
-        // Hide status bar
-        toggleSystemUiVisibility(activity.getWindow());
-    }
-
-    @SuppressWarnings("SuspiciousNameCombination")
-    private void updateLayoutParams(Activity activity) {
-        ViewGroup.LayoutParams params = getLayoutParams();
-        Resources resources = getResources();
-        DisplayMetrics displayMetrics = resources.getDisplayMetrics();
-        WindowManager windowManager = activity.getWindowManager();
-        Display display = windowManager.getDefaultDisplay();
-        boolean hasSoftKeys = DeviceUtils.hasSoftKeys(display);
-        boolean isSystemBarOnBottom = DeviceUtils.isSystemBarOnBottom(activity);
-        int navBarHeight = DeviceUtils.getNavigationBarHeight(resources);
-        int height = displayMetrics.heightPixels;
-        int width = displayMetrics.widthPixels;
-
-        if (hasSoftKeys) {
-            if (isSystemBarOnBottom) {
-                height += navBarHeight;
-            } else {
-                width += navBarHeight;
-            }
-        }
-
-        params.width = width;
-        params.height = height;
-
-        setLayoutParams(params);
-    }
-
-    private void exitFullscreen() {
-        // Update isLandscape flag
-        if (isLandscape) {
-            isLandscape = false;
-        }
-
-        // Update the fullscreen button drawable
-        controller.updateFullScreenDrawable();
-
-        // Change the screen orientation to PORTRAIT
-        Activity activity = (Activity) getContext();
-        // TODO: Calculating the size according to if the view is on the whole screen or not
-        setOrientation(portraitOrientation.getValue());
-
-        UiUtils.showOtherViews((ViewGroup) getParent());
-
-        ViewGroup.LayoutParams params = getLayoutParams();
-        params.width = originalWidth;
-        params.height = originalHeight;
-        setLayoutParams(params);
-
-        showActionBar();
-        toggleSystemUiVisibility(activity.getWindow());
-    }
-
-    private void showActionBar() {
-        ActionBar supportActionBar = ((AppCompatActivity) getContext()).getSupportActionBar();
-        if (supportActionBar != null) {
-            supportActionBar.show();
-        }
-
-        android.app.ActionBar actionBar = ((Activity) getContext()).getActionBar();
-        if (actionBar != null) {
-            actionBar.show();
-        }
-    }
-
-    private void hideActionBar() {
-        ActionBar supportActionBar = ((AppCompatActivity) getContext()).getSupportActionBar();
-        if (supportActionBar != null) {
-            supportActionBar.hide();
-        }
-
-        android.app.ActionBar actionBar = ((Activity) getContext()).getActionBar();
-        if (actionBar != null) {
-            actionBar.hide();
-        }
-    }
-
-    boolean shouldHandleOnBackPressed() {
-        if (isLandscape) {
-            // Locks the screen orientation to portrait
-            setOrientation(portraitOrientation.getValue());
-            controller.updateFullScreenDrawable();
-            return true;
-        }
-
-        return false;
     }
 
     public FullscreenVideoView isAutoStartEnabled(boolean autoStartEnabled) {
@@ -404,12 +267,12 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
     }
 
     public FullscreenVideoView landscapeOrientation(LandscapeOrientation landscapeOrientation) {
-        this.landscapeOrientation = landscapeOrientation;
+        orientationDelegate.setLandscapeOrientation(landscapeOrientation);
         return this;
     }
 
     public FullscreenVideoView portraitOrientation(PortraitOrientation portraitOrientation) {
-        this.portraitOrientation = portraitOrientation;
+        orientationDelegate.setPortraitOrientation(portraitOrientation);
         return this;
     }
 
@@ -434,18 +297,12 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
 
     @Override
     public boolean isLandscape() {
-        return isLandscape;
+        return orientationDelegate.isLandscape();
     }
 
     @Override
     public void toggleFullscreen() {
-        int newOrientation = landscapeOrientation.getValue();
-        if (isLandscape) {
-            newOrientation = portraitOrientation.getValue();
-        }
-
-        isLandscape = !isLandscape;
-        setOrientation(newOrientation);
+        orientationDelegate.toggleFullscreen();
     }
 
     private class VideoOnKeyListener implements View.OnKeyListener {
@@ -453,7 +310,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         public boolean onKey(final View v, final int keyCode, final KeyEvent event) {
             return (event.getAction() == KeyEvent.ACTION_UP) &&
                     (keyCode == KeyEvent.KEYCODE_BACK) &&
-                    shouldHandleOnBackPressed();
+                    orientationDelegate.shouldHandleOnBackPressed();
         }
     }
 

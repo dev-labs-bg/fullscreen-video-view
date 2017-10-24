@@ -26,7 +26,5 @@ interface IVideoMediaPlayer {
 
     boolean canSeekForward();
 
-    boolean isFullScreen();
-
     void toggleFullScreen();
 }

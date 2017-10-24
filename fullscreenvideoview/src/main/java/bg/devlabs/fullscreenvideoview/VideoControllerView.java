@@ -74,7 +74,7 @@ class VideoControllerView extends FrameLayout {
     private static final int FADE_OUT = 1;
     private static final int SHOW_PROGRESS = 2;
     @Nullable
-    private IVideoMediaPlayer videoViewControl;
+    private IVideoMediaPlayer videoMediaPlayer;
     private TextView mEndTime, mCurrentTime;
     //    boolean mShowing;
     boolean mDragging;
@@ -132,7 +132,7 @@ class VideoControllerView extends FrameLayout {
         }
 
         public void onProgressChanged(SeekBar bar, int progress, boolean fromUser) {
-            if (videoViewControl == null) {
+            if (videoMediaPlayer == null) {
                 return;
             }
 
@@ -142,9 +142,9 @@ class VideoControllerView extends FrameLayout {
                 return;
             }
 
-            long duration = videoViewControl.getDuration();
+            long duration = videoMediaPlayer.getDuration();
             long newPosition = (duration * progress) / 1000L;
-            videoViewControl.seekTo((int) newPosition);
+            videoMediaPlayer.seekTo((int) newPosition);
             if (mCurrentTime != null)
                 mCurrentTime.setText(stringForTime((int) newPosition));
         }
@@ -164,13 +164,13 @@ class VideoControllerView extends FrameLayout {
     @Nullable
     private OnClickListener mRewListener = new OnClickListener() {
         public void onClick(View v) {
-            if (videoViewControl == null) {
+            if (videoMediaPlayer == null) {
                 return;
             }
 
-            int pos = videoViewControl.getCurrentPosition();
+            int pos = videoMediaPlayer.getCurrentPosition();
             pos -= rewindSeconds; // milliseconds
-            videoViewControl.seekTo(pos);
+            videoMediaPlayer.seekTo(pos);
             setProgress();
 
             show(sDefaultTimeout);
@@ -179,13 +179,13 @@ class VideoControllerView extends FrameLayout {
     @Nullable
     private OnClickListener mFfwdListener = new OnClickListener() {
         public void onClick(View v) {
-            if (videoViewControl == null) {
+            if (videoMediaPlayer == null) {
                 return;
             }
 
-            int pos = videoViewControl.getCurrentPosition();
+            int pos = videoMediaPlayer.getCurrentPosition();
             pos += fastForwardSeconds; // milliseconds
-            videoViewControl.seekTo(pos);
+            videoMediaPlayer.seekTo(pos);
             setProgress();
 
             show(sDefaultTimeout);
@@ -207,6 +207,7 @@ class VideoControllerView extends FrameLayout {
 
     private int fastForwardSeconds = 15000;
     private int rewindSeconds = 5000;
+    private IFullscreenVideoView fullscreenVideoView;
 
     public VideoControllerView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -310,11 +311,12 @@ class VideoControllerView extends FrameLayout {
     }
 
     public void setMediaPlayer(IVideoMediaPlayer player) {
-        videoViewControl = player;
-        updatePausePlay();
-        updateFullScreenDrawable();
-        updateFastForwardDrawable();
-        updateRewindDrawable();
+        videoMediaPlayer = player;
+        // TODO: Check
+//        updatePausePlay();
+//        updateFullScreenDrawable();
+//        updateFastForwardDrawable();
+//        updateRewindDrawable();
     }
 
     /**
@@ -398,18 +400,18 @@ class VideoControllerView extends FrameLayout {
      * This requires the control interface to be a MediaPlayerControlExt
      */
     private void disableUnsupportedButtons() {
-        if (videoViewControl == null) {
+        if (videoMediaPlayer == null) {
             return;
         }
 
         try {
-            if (mStartPauseButton != null && !videoViewControl.canPause()) {
+            if (mStartPauseButton != null && !videoMediaPlayer.canPause()) {
                 mStartPauseButton.setEnabled(false);
             }
-            if (mRewButton != null && !videoViewControl.canSeekBackward()) {
+            if (mRewButton != null && !videoMediaPlayer.canSeekBackward()) {
                 mRewButton.setEnabled(false);
             }
-            if (mFfwdButton != null && !videoViewControl.canSeekForward()) {
+            if (mFfwdButton != null && !videoMediaPlayer.canSeekForward()) {
                 mFfwdButton.setEnabled(false);
             }
         } catch (IncompatibleClassChangeError ex) {
@@ -483,19 +485,19 @@ class VideoControllerView extends FrameLayout {
     }
 
     int setProgress() {
-        if (videoViewControl == null || mDragging) {
+        if (videoMediaPlayer == null || mDragging) {
             return 0;
         }
 
-        int position = videoViewControl.getCurrentPosition();
-        int duration = videoViewControl.getDuration();
+        int position = videoMediaPlayer.getCurrentPosition();
+        int duration = videoMediaPlayer.getDuration();
         if (mProgress != null) {
             if (duration > 0) {
                 // use long to avoid overflow
                 long pos = 1000L * position / duration;
                 mProgress.setProgress((int) pos);
             }
-            int percent = videoViewControl.getBufferPercentage();
+            int percent = videoMediaPlayer.getBufferPercentage();
             mProgress.setSecondaryProgress(percent * 10);
         }
 
@@ -527,7 +529,7 @@ class VideoControllerView extends FrameLayout {
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (videoViewControl == null) {
+        if (videoMediaPlayer == null) {
             return true;
         }
 
@@ -546,16 +548,16 @@ class VideoControllerView extends FrameLayout {
             }
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY) {
-            if (uniqueDown && !videoViewControl.isPlaying()) {
-                videoViewControl.start();
+            if (uniqueDown && !videoMediaPlayer.isPlaying()) {
+                videoMediaPlayer.start();
                 updatePausePlay();
                 show(sDefaultTimeout);
             }
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_MEDIA_STOP
                 || keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE) {
-            if (uniqueDown && videoViewControl.isPlaying()) {
-                videoViewControl.pause();
+            if (uniqueDown && videoMediaPlayer.isPlaying()) {
+                videoMediaPlayer.pause();
                 updatePausePlay();
                 show(sDefaultTimeout);
             }
@@ -577,7 +579,7 @@ class VideoControllerView extends FrameLayout {
     }
 
     private void updateRewindDrawable() {
-        if (mRewButton == null || videoViewControl == null) {
+        if (mRewButton == null || videoMediaPlayer == null) {
             return;
         }
 
@@ -585,7 +587,7 @@ class VideoControllerView extends FrameLayout {
     }
 
     private void updateFastForwardDrawable() {
-        if (mFfwdButton == null || videoViewControl == null) {
+        if (mFfwdButton == null || videoMediaPlayer == null) {
             return;
         }
 
@@ -593,11 +595,11 @@ class VideoControllerView extends FrameLayout {
     }
 
     public void updatePausePlay() {
-        if (mStartPauseButton == null || videoViewControl == null) {
+        if (mStartPauseButton == null || videoMediaPlayer == null) {
             return;
         }
 
-        if (videoViewControl.isPlaying()) {
+        if (videoMediaPlayer.isPlaying()) {
             mStartPauseButton.setImageDrawable(pauseDrawable);
         } else {
             mStartPauseButton.setImageDrawable(playDrawable);
@@ -605,11 +607,11 @@ class VideoControllerView extends FrameLayout {
     }
 
     public void updateFullScreenDrawable() {
-        if (mFullscreenButton == null || videoViewControl == null) {
+        if (mFullscreenButton == null || videoMediaPlayer == null) {
             return;
         }
 
-        if (videoViewControl.isFullScreen()) {
+        if (fullscreenVideoView.isLandscape()) {
             mFullscreenButton.setImageDrawable(exitFullscreenDrawable);
         } else {
             mFullscreenButton.setImageDrawable(enterFullscreenDrawable);
@@ -617,25 +619,25 @@ class VideoControllerView extends FrameLayout {
     }
 
     void doPauseResume() {
-        if (videoViewControl == null) {
+        if (videoMediaPlayer == null) {
             return;
         }
 
-        if (videoViewControl.isPlaying()) {
-            videoViewControl.pause();
+        if (videoMediaPlayer.isPlaying()) {
+            videoMediaPlayer.pause();
         } else {
-            videoViewControl.start();
+            videoMediaPlayer.start();
         }
 
         updatePausePlay();
     }
 
     void doToggleFullscreen() {
-        if (videoViewControl == null) {
+        if (videoMediaPlayer == null) {
             return;
         }
 
-        videoViewControl.toggleFullScreen();
+        videoMediaPlayer.toggleFullScreen();
     }
 
     @Override
@@ -664,7 +666,7 @@ class VideoControllerView extends FrameLayout {
         mSeekListener = null;
         mAnchor = null;
         mHandler = null;
-        videoViewControl = null;
+        videoMediaPlayer = null;
         Log.d(TAG, "onDestroy: ");
     }
 
@@ -712,12 +714,14 @@ class VideoControllerView extends FrameLayout {
         this.rewindDrawable = rewindDrawable;
     }
 
-    public void init(IVideoMediaPlayer videoMediaPlayer, AttributeSet attrs) {
+    public void init(IFullscreenVideoView fullscreenVideoView, IVideoMediaPlayer videoMediaPlayer,
+                     AttributeSet attrs) {
         setupXmlAttributes(attrs);
         if (!isInEditMode()) {
             mAnchor = this;
         }
         setMediaPlayer(videoMediaPlayer);
+        this.fullscreenVideoView = fullscreenVideoView;
     }
 
     private static class MessageHandler extends Handler {
@@ -730,7 +734,7 @@ class VideoControllerView extends FrameLayout {
         @Override
         public void handleMessage(Message msg) {
             VideoControllerView view = mView.get();
-            if (view == null || view.videoViewControl == null) {
+            if (view == null || view.videoMediaPlayer == null) {
                 return;
             }
 
@@ -741,7 +745,7 @@ class VideoControllerView extends FrameLayout {
                     break;
                 case SHOW_PROGRESS:
                     pos = view.setProgress();
-                    if (!view.mDragging && view.isShowing() && view.videoViewControl.isPlaying()) {
+                    if (!view.mDragging && view.isShowing() && view.videoMediaPlayer.isPlaying()) {
                         msg = obtainMessage(SHOW_PROGRESS);
                         sendMessageDelayed(msg, 1000 - (pos % 1000));
                     }

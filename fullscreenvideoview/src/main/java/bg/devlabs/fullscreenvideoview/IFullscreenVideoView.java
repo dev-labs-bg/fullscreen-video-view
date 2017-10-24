@@ -1,5 +1,10 @@
 package bg.devlabs.fullscreenvideoview;
 
+import android.content.Context;
+import android.content.res.Resources;
+import android.view.ViewGroup;
+import android.view.ViewParent;
+
 /**
  * Created by Slavi Petrov on 20.10.2017
  * Dev Labs
@@ -10,5 +15,17 @@ public interface IFullscreenVideoView {
 
     void toggleFullscreen();
 
-    void setOrientation(int screenOrientation);
+    Context getContext();
+
+    ViewParent getParent();
+
+    int getWidth();
+
+    int getHeight();
+
+    ViewGroup.LayoutParams getLayoutParams();
+
+    void setLayoutParams(ViewGroup.LayoutParams params);
+
+    Resources getResources();
 }
