@@ -22,8 +22,8 @@ public class DeviceUtils {
      * @param display the display from the Activity class
      * @return true or false according to whether the device has software keys or not
      */
-    public static boolean hasSoftKeys(Display display) {
-        boolean hasSoftwareKeys;
+    public static boolean hasSoftKeys(WindowManager windowManager) {
+        Display display = windowManager.getDefaultDisplay();
 
         DisplayMetrics realDisplayMetrics = new DisplayMetrics();
         display.getRealMetrics(realDisplayMetrics);
@@ -37,9 +37,7 @@ public class DeviceUtils {
         int displayHeight = displayMetrics.heightPixels;
         int displayWidth = displayMetrics.widthPixels;
 
-        hasSoftwareKeys = (realWidth - displayWidth) > 0 || (realHeight - displayHeight) > 0;
-
-        return hasSoftwareKeys;
+        return (realWidth - displayWidth) > 0 || (realHeight - displayHeight) > 0;
     }
 
     /**
@@ -70,19 +68,19 @@ public class DeviceUtils {
     /**
      * Check the position of the system bar
      *
-     * @param context the app's context
+     * @param
      * @return true or false according to whether the system bar is on bottom or on top
      */
-    public static boolean isSystemBarOnBottom(Context context) {
-        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+    public static boolean isSystemBarOnBottom(WindowManager windowManager,
+                                              Resources resources) {
         Point realPoint = new Point();
         Display display;
-        if (wm != null) {
-            display = wm.getDefaultDisplay();
+        if (windowManager != null) {
+            display = windowManager.getDefaultDisplay();
             display.getRealSize(realPoint);
             DisplayMetrics metrics = new DisplayMetrics();
-            wm.getDefaultDisplay().getMetrics(metrics);
-            Configuration cfg = context.getResources().getConfiguration();
+            windowManager.getDefaultDisplay().getMetrics(metrics);
+            Configuration cfg = resources.getConfiguration();
             boolean canMove = (metrics.widthPixels != metrics.heightPixels &&
                     cfg.smallestScreenWidthDp < 600);
 
@@ -100,5 +98,50 @@ public class DeviceUtils {
     public static boolean isRotationEnabled(ContentResolver contentResolver) {
         return Settings.System.getInt(contentResolver, Settings.System.ACCELEROMETER_ROTATION,
                 0) == 1;
+    }
+
+    /**
+     *
+     * @param windowManager
+     * @param resources
+     * @return
+     */
+    @SuppressWarnings("SuspiciousNameCombination")
+    public static int getScreenWidth(WindowManager windowManager, Resources resources) {
+        DisplayMetrics displayMetrics = resources.getDisplayMetrics();
+        boolean hasSoftKeys = hasSoftKeys(windowManager);
+        boolean isSystemBarOnSide = !isSystemBarOnBottom(windowManager, resources);
+        int navBarHeight = getNavigationBarHeight(resources);
+
+        int width = displayMetrics.widthPixels;
+        if (hasSoftKeys) {
+            if (isSystemBarOnSide) {
+                width += navBarHeight;
+            }
+        }
+
+        return width;
+    }
+
+    /**
+     *
+     * @param windowManager
+     * @param resources
+     * @return
+     */
+    public static int getScreenHeight(WindowManager windowManager, Resources resources) {
+        DisplayMetrics displayMetrics = resources.getDisplayMetrics();
+        boolean hasSoftKeys = hasSoftKeys(windowManager);
+        boolean isSystemBarOnBottom = isSystemBarOnBottom(windowManager, resources);
+        int navBarHeight = getNavigationBarHeight(resources);
+
+        int height = displayMetrics.heightPixels;
+        if (hasSoftKeys) {
+            if (isSystemBarOnBottom) {
+                height += navBarHeight;
+            }
+        }
+
+        return height;
     }
 }

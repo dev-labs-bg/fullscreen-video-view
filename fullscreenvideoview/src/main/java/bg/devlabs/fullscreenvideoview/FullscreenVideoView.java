@@ -88,13 +88,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
 
     private void initOrientationHandlers() {
         if (!isInEditMode()) {
-            orientationDelegate = new OrientationDelegate(getContext(), this) {
-                @Override
-                public void onFullscreen() {
-                    // Update the fullscreen button drawable
-                    controller.updateFullScreenDrawable();
-                }
-            };
+            orientationDelegate = new VideoOrientationDelegate();
             orientationDelegate.enable();
         }
     }
@@ -330,6 +324,18 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
                     mediaPlayer.start();
                 }
             }
+        }
+    }
+
+    private class VideoOrientationDelegate extends OrientationDelegate {
+        public VideoOrientationDelegate() {
+            super(getContext(), FullscreenVideoView.this);
+        }
+
+        @Override
+        public void onOrientationChanged() {
+            // Update the fullscreen button drawable
+            controller.updateFullScreenDrawable();
         }
     }
 }

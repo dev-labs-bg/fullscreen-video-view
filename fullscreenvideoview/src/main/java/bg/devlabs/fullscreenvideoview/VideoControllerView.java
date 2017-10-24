@@ -30,7 +30,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
@@ -73,23 +72,15 @@ class VideoControllerView extends FrameLayout {
     private static final int sDefaultTimeout = 3000;
     private static final int FADE_OUT = 1;
     private static final int SHOW_PROGRESS = 2;
-    @Nullable
     private IVideoMediaPlayer videoMediaPlayer;
     private TextView mEndTime, mCurrentTime;
-    //    boolean mShowing;
     boolean mDragging;
-    @Nullable
     Handler mHandler = new MessageHandler(this);
-    @Nullable
-    private ViewGroup mAnchor;
-    @Nullable
-//    private View rootView;
     private SeekBar mProgress;
     private ImageButton mStartPauseButton;
     private ImageButton mFfwdButton;
     private ImageButton mRewButton;
     private ImageButton mFullscreenButton;
-    @Nullable
     private OnClickListener mPauseListener = new OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -97,7 +88,6 @@ class VideoControllerView extends FrameLayout {
             show(sDefaultTimeout);
         }
     };
-    @Nullable
     private OnClickListener mFullscreenListener = new OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -211,7 +201,6 @@ class VideoControllerView extends FrameLayout {
 
     public VideoControllerView(Context context, AttributeSet attrs) {
         super(context, attrs);
-//        rootView = null;
 
         final LayoutInflater layoutInflater = LayoutInflater.from(getContext());
         layoutInflater.inflate(R.layout.video_controller, this, true);
@@ -313,41 +302,9 @@ class VideoControllerView extends FrameLayout {
     public void setMediaPlayer(IVideoMediaPlayer player) {
         videoMediaPlayer = player;
         // TODO: Check
-//        updatePausePlay();
-//        updateFullScreenDrawable();
-//        updateFastForwardDrawable();
-//        updateRewindDrawable();
+
     }
 
-    /**
-     * Set the view that acts as the anchor for the control view.
-     * This can for example be a VideoView, or your Activity's main view.
-     *
-     * @param view The view to which to anchor the controller when it is visible.
-     */
-    public void setAnchorView(ViewGroup view) {
-        mAnchor = view;
-
-//        LayoutParams frameParams = new LayoutParams(
-//                ViewGroup.LayoutParams.MATCH_PARENT,
-//                ViewGroup.LayoutParams.MATCH_PARENT
-//        );
-//
-//        removeAllViews();
-//        View v = makeControllerView();
-//        addView(v, frameParams);
-    }
-
-    /**
-     * Create the view that holds the widgets that control playback.
-     * Derived classes can override this to create their own.
-     *
-     * @return The controller view.
-     */
-//    protected View makeControllerView() {
-//        initControllerView(rootView);
-//        return rootView;
-//    }
     public void initControllerView() {
         if (!isInEditMode()) {
             setVisibility(INVISIBLE);
@@ -664,7 +621,6 @@ class VideoControllerView extends FrameLayout {
         mPauseListener = null;
         mRewListener = null;
         mSeekListener = null;
-        mAnchor = null;
         mHandler = null;
         videoMediaPlayer = null;
         Log.d(TAG, "onDestroy: ");
@@ -717,11 +673,16 @@ class VideoControllerView extends FrameLayout {
     public void init(IFullscreenVideoView fullscreenVideoView, IVideoMediaPlayer videoMediaPlayer,
                      AttributeSet attrs) {
         setupXmlAttributes(attrs);
-        if (!isInEditMode()) {
-            mAnchor = this;
-        }
-        setMediaPlayer(videoMediaPlayer);
+        this.videoMediaPlayer = videoMediaPlayer;
         this.fullscreenVideoView = fullscreenVideoView;
+        setMediaIcons();
+    }
+
+    private void setMediaIcons() {
+        updatePausePlay();
+        updateFullScreenDrawable();
+        updateFastForwardDrawable();
+        updateRewindDrawable();
     }
 
     private static class MessageHandler extends Handler {

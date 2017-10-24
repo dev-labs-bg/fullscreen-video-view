@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,14 +28,15 @@ import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAP
  */
 public abstract class OrientationDelegate extends OrientationEventListener {
     private IFullscreenVideoView videoView;
-    private int originalWidth;private int originalHeight;
+    private int originalWidth;
+    private int originalHeight;
     private boolean isLandscape;
     private ContentResolver contentResolver;
     // Orientation
     private LandscapeOrientation landscapeOrientation = LandscapeOrientation.SENSOR;
     private PortraitOrientation portraitOrientation = PortraitOrientation.PORTRAIT;
 
-    public OrientationDelegate(Context context, IFullscreenVideoView fullscreenVideoView) {
+    protected OrientationDelegate(Context context, IFullscreenVideoView fullscreenVideoView) {
         super(context);
         videoView = fullscreenVideoView;
         contentResolver = context.getContentResolver();
@@ -50,7 +49,7 @@ public abstract class OrientationDelegate extends OrientationEventListener {
         }
 
         // Fullscreen active
-        onFullscreen();
+        onOrientationChanged();
 
         // Change the screen orientation to SENSOR_LANDSCAPE
         Activity activity = ((Activity) videoView.getContext());
@@ -71,31 +70,16 @@ public abstract class OrientationDelegate extends OrientationEventListener {
         toggleSystemUiVisibility(activity.getWindow());
     }
 
-    public abstract void onFullscreen();
+    protected abstract void onOrientationChanged();
 
     @SuppressWarnings("SuspiciousNameCombination")
     private void updateLayoutParams(Activity activity) {
         ViewGroup.LayoutParams params = videoView.getLayoutParams();
         Resources resources = videoView.getResources();
-        DisplayMetrics displayMetrics = resources.getDisplayMetrics();
         WindowManager windowManager = activity.getWindowManager();
-        Display display = windowManager.getDefaultDisplay();
-        boolean hasSoftKeys = DeviceUtils.hasSoftKeys(display);
-        boolean isSystemBarOnBottom = DeviceUtils.isSystemBarOnBottom(activity);
-        int navBarHeight = DeviceUtils.getNavigationBarHeight(resources);
-        int height = displayMetrics.heightPixels;
-        int width = displayMetrics.widthPixels;
 
-        if (hasSoftKeys) {
-            if (isSystemBarOnBottom) {
-                height += navBarHeight;
-            } else {
-                width += navBarHeight;
-            }
-        }
-
-        params.width = width;
-        params.height = height;
+        params.width = DeviceUtils.getScreenWidth(windowManager, resources);
+        params.height = DeviceUtils.getScreenHeight(windowManager, resources);
 
         videoView.setLayoutParams(params);
     }
@@ -107,7 +91,7 @@ public abstract class OrientationDelegate extends OrientationEventListener {
         }
 
         // Update the fullscreen button drawable
-//        controller.updateFullScreenDrawable();
+        onOrientationChanged();
 
         // Change the screen orientation to PORTRAIT
         Activity activity = (Activity) videoView.getContext();
@@ -167,7 +151,7 @@ public abstract class OrientationDelegate extends OrientationEventListener {
         if (isLandscape) {
             // Locks the screen orientation to portrait
             setOrientation(portraitOrientation.getValue());
-//            controller.updateFullScreenDrawable();
+            onOrientationChanged();
             return true;
         }
 
