@@ -36,12 +36,11 @@ import android.widget.SeekBar;
 import java.io.File;
 import java.io.IOException;
 
+import bg.devlabs.fullscreenvideoview.orientation.LandscapeOrientation;
+import bg.devlabs.fullscreenvideoview.orientation.OrientationEventHandler;
+import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation;
 import bg.devlabs.fullscreenvideoview.util.DeviceUtils;
 import bg.devlabs.fullscreenvideoview.util.UiUtils;
-
-import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
 
 /**
  * Created by Slavi Petrov on 05.10.2017
@@ -67,6 +66,8 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
     private MediaPlayer.OnPreparedListener onPreparedListener;
     private View.OnTouchListener onTouchListener;
     private View controllerRootView;
+    private LandscapeOrientation landscapeOrientation = LandscapeOrientation.SENSOR;
+    private PortraitOrientation portraitOrientation = PortraitOrientation.PORTRAIT;
 
     public FullscreenVideoView(@NonNull Context context) {
         super(context);
@@ -412,7 +413,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
 
         // Change the screen orientation to SENSOR_LANDSCAPE
         Activity activity = ((Activity) getContext());
-        setOrientation(SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+        setOrientation(landscapeOrientation.getValue());
 
         UiUtils.hideOtherViews((ViewGroup) getParent());
 
@@ -468,7 +469,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         // Change the screen orientation to PORTRAIT
         Activity activity = (Activity) getContext();
         // TODO: Calculating the size according to if the view is on the whole screen or not
-        setOrientation(SCREEN_ORIENTATION_PORTRAIT);
+        setOrientation(portraitOrientation.getValue());
 
         UiUtils.showOtherViews((ViewGroup) getParent());
 
@@ -504,7 +505,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
     public boolean shouldHandleOnBackPressed() {
         if (isFullscreen) {
             // Locks the screen orientation to portrait
-            setOrientation(SCREEN_ORIENTATION_PORTRAIT);
+            setOrientation(portraitOrientation.getValue());
             controller.updateFullScreenDrawable();
             return true;
         }
@@ -552,6 +553,16 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         return this;
     }
 
+    public FullscreenVideoView landscapeOrientation(LandscapeOrientation landscapeOrientation) {
+        this.landscapeOrientation = landscapeOrientation;
+        return this;
+    }
+
+    public FullscreenVideoView portraitOrientation(PortraitOrientation portraitOrientation) {
+        this.portraitOrientation = portraitOrientation;
+        return this;
+    }
+
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         if (videoMediaPlayer != null) {
@@ -580,10 +591,10 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
     public void toggleFullscreen() {
         if (isFullscreen) {
             isFullscreen = false;
-            setOrientation(SCREEN_ORIENTATION_PORTRAIT);
+            setOrientation(portraitOrientation.getValue());
         } else {
             isFullscreen = true;
-            setOrientation(SCREEN_ORIENTATION_LANDSCAPE);
+            setOrientation(landscapeOrientation.getValue());
         }
     }
 }

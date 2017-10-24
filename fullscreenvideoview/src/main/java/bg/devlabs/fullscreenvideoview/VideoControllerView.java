@@ -71,7 +71,7 @@ class VideoControllerView extends FrameLayout {
     private static final int sDefaultTimeout = 3000;
     private static final int FADE_OUT = 1;
     private static final int SHOW_PROGRESS = 2;
-    VideoMediaPlayerControl videoViewControl;
+    IVideoMediaPlayer videoViewControl;
     TextView mEndTime, mCurrentTime;
     boolean mShowing;
     boolean mDragging;
@@ -215,7 +215,7 @@ class VideoControllerView extends FrameLayout {
             initControllerView(rootView);
     }
 
-    public void setMediaPlayer(VideoMediaPlayerControl player) {
+    public void setMediaPlayer(IVideoMediaPlayer player) {
         videoViewControl = player;
         updatePausePlay();
         updateFullScreenDrawable();

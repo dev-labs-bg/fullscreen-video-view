@@ -7,7 +7,7 @@ import android.media.MediaPlayer;
  * Dev Labs
  * slavi@devlabs.bg
  */
-public class VideoMediaPlayer extends MediaPlayer implements VideoMediaPlayerControl {
+public class VideoMediaPlayer extends MediaPlayer implements IVideoMediaPlayer {
     private IFullscreenVideoView fullscreenVideoView;
     // TODO: Implement
     private boolean canPause = true;

@@ -5,6 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import bg.devlabs.fullscreenvideoview.orientation.LandscapeOrientation
+import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation
 import kotlinx.android.synthetic.main.activity_action_bar.*
 
 /**
@@ -34,5 +36,7 @@ class ActionBarActivity : AppCompatActivity() {
                         ContextCompat.getDrawable(this, R.drawable.ic_pause_white_48dp))
                 .progressBarColor(R.color.colorAccent)
                 .isAutoStartEnabled(true)
+                .landscapeOrientation(LandscapeOrientation.SENSOR)
+                .portraitOrientation(PortraitOrientation.PORTRAIT)
     }
 }

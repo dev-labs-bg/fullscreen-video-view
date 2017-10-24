@@ -1,9 +1,11 @@
-package bg.devlabs.fullscreenvideoview;
+package bg.devlabs.fullscreenvideoview.orientation;
 
 import android.content.ContentResolver;
 import android.content.Context;
 import android.view.OrientationEventListener;
 
+import bg.devlabs.fullscreenvideoview.FullscreenVideoView;
+import bg.devlabs.fullscreenvideoview.IFullscreenVideoView;
 import bg.devlabs.fullscreenvideoview.util.DeviceUtils;
 
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
@@ -19,7 +21,7 @@ public class OrientationEventHandler extends OrientationEventListener {
     private ContentResolver contentResolver;
     private boolean isLandscape;
     private IFullscreenVideoView videoView;
-    OrientationEventHandler(Context context, FullscreenVideoView videoView) {
+    public OrientationEventHandler(Context context, FullscreenVideoView videoView) {
         super(context);
         this.contentResolver = context.getContentResolver();
         this.videoView = videoView;

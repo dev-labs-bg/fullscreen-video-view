@@ -5,7 +5,7 @@ package bg.devlabs.fullscreenvideoview;
  * Dev Labs
  * slavi@devlabs.bg
  */
-public interface VideoMediaPlayerControl {
+public interface IVideoMediaPlayer {
     void start();
 
     void pause();
