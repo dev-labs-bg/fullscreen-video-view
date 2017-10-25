@@ -18,12 +18,14 @@ public class Builder {
     private FullscreenVideoView fullscreenVideoView;
     private VideoControllerView controller;
     private OrientationDelegate orientationDelegate;
+    private VideoMediaPlayer videoMediaPlayer;
 
     Builder(FullscreenVideoView fullscreenVideoView, VideoControllerView controller,
-            OrientationDelegate orientationDelegate) {
+            OrientationDelegate orientationDelegate, VideoMediaPlayer videoMediaPlayer) {
         this.fullscreenVideoView = fullscreenVideoView;
         this.controller = controller;
         this.orientationDelegate = orientationDelegate;
+        this.videoMediaPlayer = videoMediaPlayer;
     }
 
     void videoFile(@NonNull final File videoFile) {
@@ -81,6 +83,21 @@ public class Builder {
 
     public Builder portraitOrientation(PortraitOrientation portraitOrientation) {
         orientationDelegate.setPortraitOrientation(portraitOrientation);
+        return this;
+    }
+
+    public Builder canPause(boolean canPause) {
+        videoMediaPlayer.setCanPause(canPause);
+        return this;
+    }
+
+    public Builder canSeekBackward(boolean canSeekBackward) {
+        videoMediaPlayer.setCanSeekBackward(canSeekBackward);
+        return this;
+    }
+
+    public Builder canSeekForward(boolean canSeekForward) {
+        videoMediaPlayer.setCanSeekForward(canSeekForward);
         return this;
     }
 }

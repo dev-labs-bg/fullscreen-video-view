@@ -102,13 +102,15 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
     }
 
     public Builder build(File videoFile) {
-        builder = new Builder(this, controller, orientationDelegate);
+        builder = new Builder(this, controller, orientationDelegate,
+                videoMediaPlayer);
         builder.videoFile(videoFile);
         return builder;
     }
 
     public Builder build(String videoPath) {
-        builder = new Builder(this, controller, orientationDelegate);
+        builder = new Builder(this, controller, orientationDelegate,
+                videoMediaPlayer);
         builder.videoPath(videoPath);
         return builder;
     }

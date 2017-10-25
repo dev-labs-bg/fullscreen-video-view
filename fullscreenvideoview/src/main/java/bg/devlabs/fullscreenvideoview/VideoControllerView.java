@@ -258,6 +258,7 @@ class VideoControllerView extends FrameLayout {
         }
 
         try {
+            // TODO: Consider hiding the disabled buttons
             if (startPauseButton != null && !videoMediaPlayer.canPause()) {
                 startPauseButton.setEnabled(false);
             }
