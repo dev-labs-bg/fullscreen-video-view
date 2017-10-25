@@ -7,44 +7,50 @@ import android.media.MediaPlayer;
  * Dev Labs
  * slavi@devlabs.bg
  */
-public class VideoMediaPlayer extends MediaPlayer implements IVideoMediaPlayer {
-    private IFullscreenVideoView fullscreenVideoView;
+public class VideoMediaPlayer extends MediaPlayer {
+    private FullscreenVideoView fullscreenVideoView;
     // TODO: Implement
     private boolean canPause = true;
     private boolean canSeekBackward = true;
     private boolean canSeekForward = true;
 
-    VideoMediaPlayer(IFullscreenVideoView fullscreenVideoView) {
+    VideoMediaPlayer(FullscreenVideoView fullscreenVideoView) {
         super();
         this.fullscreenVideoView = fullscreenVideoView;
     }
 
-    @Override
     public int getBufferPercentage() {
         return 0;
     }
 
-    @Override
     public boolean canPause() {
         return canPause;
     }
 
-    @Override
     public boolean canSeekBackward() {
         return canSeekBackward;
     }
 
-    @Override
     public boolean canSeekForward() {
         return canSeekForward;
     }
 
-    @Override
     public void toggleFullScreen() {
         fullscreenVideoView.toggleFullscreen();
     }
 
-    public void clearFullscreenVideoView() {
+    public void onPauseResume() {
+        if (isPlaying()) {
+            pause();
+        } else {
+            start();
+        }
+    }
+
+    public void onDetach() {
         fullscreenVideoView = null;
+        setOnPreparedListener(null);
+        stop();
+        release();
     }
 }

@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
-import bg.devlabs.fullscreenvideoview.IFullscreenVideoView;
+import bg.devlabs.fullscreenvideoview.FullscreenVideoView;
 import bg.devlabs.fullscreenvideoview.util.DeviceUtils;
 import bg.devlabs.fullscreenvideoview.util.UiUtils;
 
@@ -27,7 +27,7 @@ import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAP
  * Handles orientation changes. Updates the VideoView layout params. Hides/shows the toolbar.
  */
 public abstract class OrientationDelegate extends OrientationEventListener {
-    private IFullscreenVideoView videoView;
+    private FullscreenVideoView videoView;
     private int originalWidth;
     private int originalHeight;
     private boolean isLandscape;
@@ -36,7 +36,7 @@ public abstract class OrientationDelegate extends OrientationEventListener {
     private LandscapeOrientation landscapeOrientation = LandscapeOrientation.SENSOR;
     private PortraitOrientation portraitOrientation = PortraitOrientation.PORTRAIT;
 
-    protected OrientationDelegate(Context context, IFullscreenVideoView fullscreenVideoView) {
+    protected OrientationDelegate(Context context, FullscreenVideoView fullscreenVideoView) {
         super(context);
         videoView = fullscreenVideoView;
         contentResolver = context.getContentResolver();

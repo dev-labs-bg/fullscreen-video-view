@@ -31,25 +31,25 @@ import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation;
  * Dev Labs
  * slavi@devlabs.bg
  */
-public class FullscreenVideoView extends FrameLayout implements IFullscreenVideoView,
-        SurfaceHolder.Callback {
+public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Callback {
     // Views
-    private VideoSurfaceView surfaceView;
+    VideoSurfaceView surfaceView;
     private SurfaceHolder surfaceHolder;
     private ProgressBar progressBar;
     VideoControllerView controller;
     // MediaPlayer
-    private VideoMediaPlayer videoMediaPlayer;
+    VideoMediaPlayer videoMediaPlayer;
 
-    private boolean isAutoStartEnabled;
-    private boolean isMediaPlayerPrepared;
+    boolean isAutoStartEnabled;
+    boolean isMediaPlayerPrepared;
 
     private String videoPath;
-    private OrientationDelegate orientationDelegate;
 
     // Listeners
     private MediaPlayer.OnPreparedListener onPreparedListener;
     private View.OnTouchListener onTouchListener;
+    // Delegates
+    OrientationDelegate orientationDelegate;
 
     public FullscreenVideoView(@NonNull final Context context) {
         super(context);
@@ -66,6 +66,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         init(attrs);
     }
 
+    @SuppressWarnings("InstanceVariableUsedBeforeInitialized")
     private void init(final AttributeSet attrs) {
         findChildViews();
         // Skip this init rows - needed when changing FullscreenVideoView properties in XML
@@ -83,7 +84,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
 
         // Setup VideoView
         setupOnTouchListener();
-        setupOnPreparedListener();
+        onPreparedListener = new VideoOnPreparedListener();
     }
 
     private void initOrientationHandlers() {
@@ -99,18 +100,6 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         surfaceView = findViewById(R.id.surface_view);
         progressBar = findViewById(R.id.progress_bar);
         controller = findViewById(R.id.video_controller);
-    }
-
-    public FullscreenVideoView videoFile(@NonNull final File videoFile) {
-        videoPath = videoFile.getPath();
-        setupMediaPlayer();
-        return this;
-    }
-
-    public FullscreenVideoView videoPath(@NonNull final String videoPath) {
-        this.videoPath = videoPath;
-        setupMediaPlayer();
-        return this;
     }
 
     private void initOnBackPressedListener() {
@@ -142,44 +131,38 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
 
     private void handleOnDetach() {
         Log.d(FullscreenVideoView.class.getSimpleName(), "onDetachedFromWindow: ");
-        controller.onDestroy();
-        controller = null;
+        controller.onDetach();
 
-        onTouchListener = null;
         // Disable and null the OrientationEventListener
         if (orientationDelegate != null) {
             orientationDelegate.disable();
-            orientationDelegate = null;
         }
 
         if (videoMediaPlayer != null) {
-            videoMediaPlayer.clearFullscreenVideoView();
-            videoMediaPlayer.setOnPreparedListener(null);
-            videoMediaPlayer.stop();
-            videoMediaPlayer.release();
-            videoMediaPlayer = null;
+            videoMediaPlayer.onDetach();
         }
-        onPreparedListener = null;
 
         if (surfaceHolder != null) {
             surfaceHolder.removeCallback(this);
             surfaceHolder.getSurface().release();
-            surfaceHolder = null;
         }
 
         if (surfaceView != null) {
             surfaceView.invalidate();
             surfaceView.destroyDrawingCache();
-            surfaceView = null;
         }
 
+        controller = null;
+        orientationDelegate = null;
+        videoMediaPlayer = null;
+        surfaceHolder = null;
+        surfaceView = null;
+        onTouchListener = null;
+        onPreparedListener = null;
         progressBar = null;
+
         setOnKeyListener(null);
         setOnTouchListener(null);
-    }
-
-    private void setupOnPreparedListener() {
-        onPreparedListener = new VideoOnPreparedListener();
     }
 
     private void setupMediaPlayer() {
@@ -195,15 +178,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
     }
 
     private void setupOnTouchListener() {
-        onTouchListener = new OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                view.performClick();
-                controller.show();
-                return false;
-            }
-        };
-
+        onTouchListener = new VideoOnTouchListener();
         setOnTouchListener(onTouchListener);
     }
 
@@ -212,12 +187,24 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         progressBar.animate().setDuration(shortAnimTime);
     }
 
-    private void hideProgress() {
+    void hideProgress() {
         progressBar.setVisibility(View.INVISIBLE);
     }
 
     private void showProgress() {
         progressBar.setVisibility(View.VISIBLE);
+    }
+
+    public FullscreenVideoView videoFile(@NonNull final File videoFile) {
+        videoPath = videoFile.getPath();
+        setupMediaPlayer();
+        return this;
+    }
+
+    public FullscreenVideoView videoPath(@NonNull final String videoPath) {
+        this.videoPath = videoPath;
+        setupMediaPlayer();
+        return this;
     }
 
     public FullscreenVideoView isAutoStartEnabled(boolean autoStartEnabled) {
@@ -251,12 +238,12 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
     }
 
     public FullscreenVideoView fastForwardSeconds(int seconds) {
-        this.controller.setFastForwardSeconds(seconds);
+        this.controller.setFastForwardDuration(seconds);
         return this;
     }
 
     public FullscreenVideoView rewindSeconds(int seconds) {
-        this.controller.setRewindSeconds(seconds);
+        this.controller.setRewindDuration(seconds);
         return this;
     }
 
@@ -273,7 +260,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         if (videoMediaPlayer != null) {
-            videoMediaPlayer.setDisplay(surfaceView.getHolder());
+            videoMediaPlayer.setDisplay(surfaceHolder);
         }
     }
 
@@ -289,13 +276,11 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         }
     }
 
-    @Override
-    public boolean isLandscape() {
+    boolean isLandscape() {
         return orientationDelegate.isLandscape();
     }
 
-    @Override
-    public void toggleFullscreen() {
+    void toggleFullscreen() {
         orientationDelegate.toggleFullscreen();
     }
 
@@ -328,7 +313,7 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
     }
 
     private class VideoOrientationDelegate extends OrientationDelegate {
-        public VideoOrientationDelegate() {
+        VideoOrientationDelegate() {
             super(getContext(), FullscreenVideoView.this);
         }
 
@@ -336,6 +321,15 @@ public class FullscreenVideoView extends FrameLayout implements IFullscreenVideo
         public void onOrientationChanged() {
             // Update the fullscreen button drawable
             controller.updateFullScreenDrawable();
+        }
+    }
+
+    private class VideoOnTouchListener implements View.OnTouchListener {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            view.performClick();
+            controller.show();
+            return false;
         }
     }
 }

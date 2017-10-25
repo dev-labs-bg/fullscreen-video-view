@@ -15,7 +15,7 @@ import bg.devlabs.fullscreenvideoview.util.DeviceUtils;
  * Dev Labs
  * slavi@devlabs.bg
  */
-public class VideoSurfaceView extends SurfaceView {
+class VideoSurfaceView extends SurfaceView {
     public VideoSurfaceView(Context context) {
         super(context);
     }
