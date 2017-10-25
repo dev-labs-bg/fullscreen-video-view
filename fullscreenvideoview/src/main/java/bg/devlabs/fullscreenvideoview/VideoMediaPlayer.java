@@ -9,6 +9,7 @@ import android.media.MediaPlayer;
  */
 public class VideoMediaPlayer extends MediaPlayer {
     private FullscreenVideoView fullscreenVideoView;
+    private boolean isAutoStartEnabled;
     // TODO: Implement
     private boolean canPause = true;
     private boolean canSeekBackward = true;
@@ -19,27 +20,27 @@ public class VideoMediaPlayer extends MediaPlayer {
         this.fullscreenVideoView = fullscreenVideoView;
     }
 
-    public int getBufferPercentage() {
+    int getBufferPercentage() {
         return 0;
     }
 
-    public boolean canPause() {
+    boolean canPause() {
         return canPause;
     }
 
-    public boolean canSeekBackward() {
+    boolean canSeekBackward() {
         return canSeekBackward;
     }
 
-    public boolean canSeekForward() {
+    boolean canSeekForward() {
         return canSeekForward;
     }
 
-    public void toggleFullScreen() {
+    void toggleFullScreen() {
         fullscreenVideoView.toggleFullscreen();
     }
 
-    public void onPauseResume() {
+    void onPauseResume() {
         if (isPlaying()) {
             pause();
         } else {
@@ -47,10 +48,18 @@ public class VideoMediaPlayer extends MediaPlayer {
         }
     }
 
-    public void onDetach() {
+    void onDetach() {
         fullscreenVideoView = null;
         setOnPreparedListener(null);
         stop();
         release();
+    }
+
+    void setAutoStartEnabled(boolean isAutoStartEnabled) {
+        this.isAutoStartEnabled = isAutoStartEnabled;
+    }
+
+    boolean isAutoStartEnabled() {
+        return isAutoStartEnabled;
     }
 }

@@ -523,7 +523,7 @@ class VideoControllerView extends FrameLayout {
     }
 
     public void setProgressBarColor(int progressBarColor) {
-        this.progressBarColor = progressBarColor;
+        this.progressBarColor = ContextCompat.getColor(getContext(), progressBarColor);
     }
 
     public void setPlayDrawable(Drawable playDrawable) {

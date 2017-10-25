@@ -18,6 +18,6 @@ class ToolbarActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_toolbar)
         val videoPath = "http://clips.vorwaerts-gmbh.de/VfE_html5.mp4"
-        fullscreenVideoView.videoPath(videoPath)
+        fullscreenVideoView.build(videoPath)
     }
 }

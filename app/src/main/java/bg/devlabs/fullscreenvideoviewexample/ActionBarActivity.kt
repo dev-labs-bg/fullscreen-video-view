@@ -29,7 +29,8 @@ class ActionBarActivity : AppCompatActivity() {
         // Change the ActionBar title
         supportActionBar?.title = getString(R.string.action_bar_activity)
         val videoPath = "http://clips.vorwaerts-gmbh.de/VfE_html5.mp4"
-        fullscreenVideoView.videoPath(videoPath)
+
+        fullscreenVideoView.build(videoPath)
                 .exitFullscreenDrawable(
                         ContextCompat.getDrawable(this, R.drawable.ic_launcher_background))
                 .enterFullscreenDrawable(
@@ -38,5 +39,7 @@ class ActionBarActivity : AppCompatActivity() {
                 .isAutoStartEnabled(true)
                 .landscapeOrientation(LandscapeOrientation.SENSOR)
                 .portraitOrientation(PortraitOrientation.PORTRAIT)
+
+
     }
 }

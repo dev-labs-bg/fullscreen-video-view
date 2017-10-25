@@ -3,12 +3,10 @@ package bg.devlabs.fullscreenvideoview;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -22,9 +20,7 @@ import android.widget.ProgressBar;
 import java.io.File;
 import java.io.IOException;
 
-import bg.devlabs.fullscreenvideoview.orientation.LandscapeOrientation;
 import bg.devlabs.fullscreenvideoview.orientation.OrientationDelegate;
-import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation;
 
 /**
  * Created by Slavi Petrov on 05.10.2017
@@ -39,11 +35,8 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
     VideoControllerView controller;
     // MediaPlayer
     VideoMediaPlayer videoMediaPlayer;
-
-    boolean isAutoStartEnabled;
     boolean isMediaPlayerPrepared;
-
-    private String videoPath;
+    Builder builder;
 
     // Listeners
     private MediaPlayer.OnPreparedListener onPreparedListener;
@@ -95,7 +88,7 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
     }
 
     private void findChildViews() {
-        final LayoutInflater layoutInflater = getLayoutInflater();
+        final LayoutInflater layoutInflater = LayoutInflater.from(getContext());
         layoutInflater.inflate(R.layout.video_player, this, true);
         surfaceView = findViewById(R.id.surface_view);
         progressBar = findViewById(R.id.progress_bar);
@@ -108,9 +101,16 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
         setOnKeyListener(new VideoOnKeyListener());
     }
 
-    private LayoutInflater getLayoutInflater() {
-        Context context = getContext();
-        return LayoutInflater.from(context);
+    public Builder build(File videoFile) {
+        builder = new Builder(this, controller, orientationDelegate);
+        builder.videoFile(videoFile);
+        return builder;
+    }
+
+    public Builder build(String videoPath) {
+        builder = new Builder(this, controller, orientationDelegate);
+        builder.videoPath(videoPath);
+        return builder;
     }
 
     @Override
@@ -165,7 +165,7 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
         setOnTouchListener(null);
     }
 
-    private void setupMediaPlayer() {
+    void setupMediaPlayer(String videoPath) {
         try {
             showProgress();
             videoMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -195,68 +195,6 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
         progressBar.setVisibility(View.VISIBLE);
     }
 
-    public FullscreenVideoView videoFile(@NonNull final File videoFile) {
-        videoPath = videoFile.getPath();
-        setupMediaPlayer();
-        return this;
-    }
-
-    public FullscreenVideoView videoPath(@NonNull final String videoPath) {
-        this.videoPath = videoPath;
-        setupMediaPlayer();
-        return this;
-    }
-
-    public FullscreenVideoView isAutoStartEnabled(boolean autoStartEnabled) {
-        isAutoStartEnabled = autoStartEnabled;
-        return this;
-    }
-
-    public FullscreenVideoView enterFullscreenDrawable(Drawable enterFullscreenDrawable) {
-        this.controller.setEnterFullscreenDrawable(enterFullscreenDrawable);
-        return this;
-    }
-
-    public FullscreenVideoView exitFullscreenDrawable(Drawable exitFullscreenDrawable) {
-        this.controller.setExitFullscreenDrawable(exitFullscreenDrawable);
-        return this;
-    }
-
-    public FullscreenVideoView progressBarColor(int progressBarColor) {
-        this.controller.setProgressBarColor(ContextCompat.getColor(getContext(), progressBarColor));
-        return this;
-    }
-
-    public FullscreenVideoView playIcon(Drawable playDrawable) {
-        this.controller.setPlayDrawable(playDrawable);
-        return this;
-    }
-
-    public FullscreenVideoView pauseIcon(Drawable pauseDrawable) {
-        this.controller.setPauseDrawable(pauseDrawable);
-        return this;
-    }
-
-    public FullscreenVideoView fastForwardSeconds(int seconds) {
-        this.controller.setFastForwardDuration(seconds);
-        return this;
-    }
-
-    public FullscreenVideoView rewindSeconds(int seconds) {
-        this.controller.setRewindDuration(seconds);
-        return this;
-    }
-
-    public FullscreenVideoView landscapeOrientation(LandscapeOrientation landscapeOrientation) {
-        orientationDelegate.setLandscapeOrientation(landscapeOrientation);
-        return this;
-    }
-
-    public FullscreenVideoView portraitOrientation(PortraitOrientation portraitOrientation) {
-        orientationDelegate.setPortraitOrientation(portraitOrientation);
-        return this;
-    }
-
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         if (videoMediaPlayer != null) {
@@ -284,9 +222,13 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
         orientationDelegate.toggleFullscreen();
     }
 
+    void setAutoStartEnabled(boolean autoStartEnabled) {
+        videoMediaPlayer.setAutoStartEnabled(autoStartEnabled);
+    }
+
     private class VideoOnKeyListener implements View.OnKeyListener {
         @Override
-        public boolean onKey(final View v, final int keyCode, final KeyEvent event) {
+        public boolean onKey(View v, int keyCode, KeyEvent event) {
             return (event.getAction() == KeyEvent.ACTION_UP) &&
                     (keyCode == KeyEvent.KEYCODE_BACK) &&
                     orientationDelegate.shouldHandleOnBackPressed();
@@ -304,7 +246,7 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
                 int videoHeight = videoMediaPlayer.getVideoHeight();
                 surfaceView.updateLayoutParams(videoWidth, videoHeight);
                 // Start media player if auto start is enabled
-                if (mediaPlayer != null && isAutoStartEnabled) {
+                if (mediaPlayer != null && videoMediaPlayer.isAutoStartEnabled()) {
                     isMediaPlayerPrepared = true;
                     mediaPlayer.start();
                 }
