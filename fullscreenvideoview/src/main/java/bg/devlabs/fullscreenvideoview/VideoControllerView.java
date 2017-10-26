@@ -26,7 +26,6 @@ import android.os.Message;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -252,6 +251,7 @@ class VideoControllerView extends FrameLayout {
      * Disable pause or seek buttons if the stream cannot be paused or seeked.
      * This requires the control interface to be a MediaPlayerControlExt
      */
+    @SuppressWarnings("FeatureEnvy")
     private void disableUnsupportedButtons() {
         if (videoMediaPlayer == null) {
             return;
@@ -325,7 +325,7 @@ class VideoControllerView extends FrameLayout {
         }
     }
 
-    String stringForTime(int timeMs) {
+    static String stringForTime(int timeMs) {
         int totalSeconds = timeMs / Constants.ONE_SECOND_MILLISECONDS;
         int seconds = totalSeconds % Constants.ONE_MINUTE_SECONDS;
         int minutes = (totalSeconds / Constants.ONE_MINUTE_SECONDS) % Constants.ONE_MINUTE_SECONDS;
@@ -367,63 +367,6 @@ class VideoControllerView extends FrameLayout {
         performClick();
         show(DEFAULT_TIMEOUT);
         return true;
-    }
-
-    @Override
-    public boolean onTrackballEvent(MotionEvent ev) {
-        show(DEFAULT_TIMEOUT);
-        return false;
-    }
-
-    @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
-        if (videoMediaPlayer == null) {
-            return true;
-        }
-
-        int keyCode = event.getKeyCode();
-        final boolean uniqueDown = event.getRepeatCount() == 0
-                && event.getAction() == KeyEvent.ACTION_DOWN;
-        if (keyCode == KeyEvent.KEYCODE_HEADSETHOOK
-                || keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE
-                || keyCode == KeyEvent.KEYCODE_SPACE) {
-            if (uniqueDown) {
-                doPauseResume();
-                show(DEFAULT_TIMEOUT);
-                if (startPauseButton != null) {
-                    startPauseButton.requestFocus();
-                }
-            }
-            return true;
-        } else if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY) {
-            if (uniqueDown && !videoMediaPlayer.isPlaying()) {
-                videoMediaPlayer.start();
-                updatePausePlay();
-                show(DEFAULT_TIMEOUT);
-            }
-            return true;
-        } else if (keyCode == KeyEvent.KEYCODE_MEDIA_STOP
-                || keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE) {
-            if (uniqueDown && videoMediaPlayer.isPlaying()) {
-                videoMediaPlayer.pause();
-                updatePausePlay();
-                show(DEFAULT_TIMEOUT);
-            }
-            return true;
-        } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN
-                || keyCode == KeyEvent.KEYCODE_VOLUME_UP
-                || keyCode == KeyEvent.KEYCODE_VOLUME_MUTE) {
-            // don't show the controls for volume adjustment
-            return super.dispatchKeyEvent(event);
-        } else if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_MENU) {
-            if (uniqueDown) {
-                hide();
-            }
-            return true;
-        }
-
-        show(DEFAULT_TIMEOUT);
-        return super.dispatchKeyEvent(event);
     }
 
     private void updateRewindDrawable() {
