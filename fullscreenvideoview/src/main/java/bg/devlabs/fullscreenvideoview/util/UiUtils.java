@@ -51,7 +51,7 @@ public class UiUtils {
      * Search recursively through all children of the parent layout and checks their class.
      * If they are ViewGroup classes, continues the recursion,
      * if they are View classes, terminates the recursion
-     *
+     * <p>
      * Used in {@link #hideOtherViews(ViewGroup)} to get all the Views that should be hidden
      * Used in {@link #showOtherViews(ViewGroup)} to get all the Views that should be shown
      *
@@ -81,7 +81,7 @@ public class UiUtils {
 
     /**
      * Check if a view has children to iterate
-     *
+     * <p>
      * Used in {@link #getAllChildViews(View)} as a terminating case
      *
      * @param view the {@link View} that should be checked
