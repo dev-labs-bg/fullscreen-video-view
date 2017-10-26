@@ -1,11 +1,8 @@
 package bg.devlabs.fullscreenvideoview.util;
 
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Point;
-import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
@@ -17,12 +14,18 @@ import android.view.WindowManager;
  */
 public class DeviceUtils {
     /**
-     * Check if the device has software keys
+     * Private constructor which prevents accidentally instantiation of the class.
+     */
+    private DeviceUtils() {
+    }
+
+    /**
+     * Check if the device has software keys.
      *
-     * @param display the display from the Activity class
+     * @param windowManager the Activity's windowManager from the display
      * @return true or false according to whether the device has software keys or not
      */
-    public static boolean hasSoftKeys(WindowManager windowManager) {
+    private static boolean hasSoftKeys(WindowManager windowManager) {
         Display display = windowManager.getDefaultDisplay();
 
         DisplayMetrics realDisplayMetrics = new DisplayMetrics();
@@ -43,10 +46,10 @@ public class DeviceUtils {
     /**
      * Get the navigation bar height
      *
-     * @param resources the resources from the context
+     * @param resources the resources from the corresponding context
      * @return the navigation bar height in pixels
      */
-    public static int getNavigationBarHeight(Resources resources) {
+    private static int getNavigationBarHeight(Resources resources) {
         int resourceId = resources.getIdentifier("navigation_bar_height", "dimen",
                 "android");
         if (resourceId > 0) {
@@ -56,61 +59,42 @@ public class DeviceUtils {
     }
 
     /**
-     * Get the device display metrics
-     *
-     * @param context the app's context
-     * @return the device display metrics
-     */
-    public static DisplayMetrics getDisplayMetrics(Context context) {
-        return context.getResources().getDisplayMetrics();
-    }
-
-    /**
      * Check the position of the system bar
      *
-     * @param
+     * @param windowManager the Activity's windowManager from the display
+     * @param resources     the resources from the corresponding context
      * @return true or false according to whether the system bar is on bottom or on top
      */
-    public static boolean isSystemBarOnBottom(WindowManager windowManager,
-                                              Resources resources) {
+    private static boolean isNavigationBarOnBottom(WindowManager windowManager,
+                                                   Resources resources) {
         Point realPoint = new Point();
-        Display display;
         if (windowManager != null) {
-            display = windowManager.getDefaultDisplay();
+            Display display = windowManager.getDefaultDisplay();
             display.getRealSize(realPoint);
             DisplayMetrics metrics = new DisplayMetrics();
             windowManager.getDefaultDisplay().getMetrics(metrics);
-            Configuration cfg = resources.getConfiguration();
-            boolean canMove = (metrics.widthPixels != metrics.heightPixels &&
-                    cfg.smallestScreenWidthDp < 600);
+            Configuration config = resources.getConfiguration();
+            // TODO: Rename
+            boolean canMove = !(metrics.widthPixels != metrics.heightPixels &&
+                    config.smallestScreenWidthDp < 600);
 
-            return (!canMove || metrics.widthPixels < metrics.heightPixels);
+            return (canMove || metrics.widthPixels < metrics.heightPixels);
         }
         return true;
     }
 
     /**
-     * Check if the device's rotation is enabled
+     * Get the device's screen width
      *
-     * @param contentResolver from the app's context
-     * @return true or false according to whether the rotation is enabled or disabled
-     */
-    public static boolean isRotationEnabled(ContentResolver contentResolver) {
-        return Settings.System.getInt(contentResolver, Settings.System.ACCELEROMETER_ROTATION,
-                0) == 1;
-    }
-
-    /**
-     *
-     * @param windowManager
-     * @param resources
-     * @return
+     * @param windowManager the Activity's windowManager from the display
+     * @param resources     the resources from the corresponding context
+     * @return the device's screen width in pixels
      */
     @SuppressWarnings("SuspiciousNameCombination")
     public static int getScreenWidth(WindowManager windowManager, Resources resources) {
         DisplayMetrics displayMetrics = resources.getDisplayMetrics();
         boolean hasSoftKeys = hasSoftKeys(windowManager);
-        boolean isSystemBarOnSide = !isSystemBarOnBottom(windowManager, resources);
+        boolean isSystemBarOnSide = !isNavigationBarOnBottom(windowManager, resources);
         int navBarHeight = getNavigationBarHeight(resources);
 
         int width = displayMetrics.widthPixels;
@@ -124,15 +108,16 @@ public class DeviceUtils {
     }
 
     /**
+     * Get the device's screen height
      *
-     * @param windowManager
-     * @param resources
-     * @return
+     * @param windowManager the Activity's windowManager from the display
+     * @param resources     the resources from the corresponding context
+     * @return the device's screen height in pixels
      */
     public static int getScreenHeight(WindowManager windowManager, Resources resources) {
         DisplayMetrics displayMetrics = resources.getDisplayMetrics();
         boolean hasSoftKeys = hasSoftKeys(windowManager);
-        boolean isSystemBarOnBottom = isSystemBarOnBottom(windowManager, resources);
+        boolean isSystemBarOnBottom = isNavigationBarOnBottom(windowManager, resources);
         int navBarHeight = getNavigationBarHeight(resources);
 
         int height = displayMetrics.heightPixels;

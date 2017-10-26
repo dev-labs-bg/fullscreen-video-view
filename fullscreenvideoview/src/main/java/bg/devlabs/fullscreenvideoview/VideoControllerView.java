@@ -309,7 +309,7 @@ class VideoControllerView extends FrameLayout {
         }
     }
 
-    private boolean isShowing() {
+    boolean isShowing() {
         return getVisibility() == VISIBLE;
     }
 

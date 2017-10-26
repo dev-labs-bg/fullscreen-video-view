@@ -7,10 +7,9 @@ import android.media.MediaPlayer;
  * Dev Labs
  * slavi@devlabs.bg
  */
-public class VideoMediaPlayer extends MediaPlayer {
+class VideoMediaPlayer extends MediaPlayer {
     private FullscreenVideoView fullscreenVideoView;
     private boolean isAutoStartEnabled;
-    // TODO: Implement
     private boolean canPause = true;
     private boolean canSeekBackward = true;
     private boolean canSeekForward = true;
@@ -55,12 +54,12 @@ public class VideoMediaPlayer extends MediaPlayer {
         release();
     }
 
-    void setAutoStartEnabled(boolean isAutoStartEnabled) {
-        this.isAutoStartEnabled = isAutoStartEnabled;
+    public boolean isAutoStartEnabled() {
+        return isAutoStartEnabled;
     }
 
-    boolean isAutoStartEnabled() {
-        return isAutoStartEnabled;
+    public void setAutoStartEnabled(boolean autoStartEnabled) {
+        isAutoStartEnabled = autoStartEnabled;
     }
 
     public void setCanPause(boolean canPause) {

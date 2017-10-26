@@ -36,7 +36,7 @@ class ActionBarActivity : AppCompatActivity() {
                 .enterFullscreenDrawable(
                         ContextCompat.getDrawable(this, R.drawable.ic_pause_white_48dp))
                 .progressBarColor(R.color.colorAccent)
-                .isAutoStartEnabled(true)
+                .autoStartEnabled(true)
                 .landscapeOrientation(LandscapeOrientation.SENSOR)
                 .portraitOrientation(PortraitOrientation.PORTRAIT)
                 .canSeekBackward(false)

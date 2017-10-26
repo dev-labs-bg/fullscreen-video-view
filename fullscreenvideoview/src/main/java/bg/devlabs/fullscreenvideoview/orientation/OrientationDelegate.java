@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Resources;
+import android.provider.Settings;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.OrientationEventListener;
@@ -189,7 +190,7 @@ public abstract class OrientationDelegate extends OrientationEventListener {
     @Override
     public void onOrientationChanged(int orientation) {
         // If the device's rotation is not enabled do not proceed further with the logic
-        if (!DeviceUtils.isRotationEnabled(contentResolver)) {
+        if (!isRotationEnabled(contentResolver)) {
             return;
         }
         int epsilon = 10;
@@ -207,6 +208,17 @@ public abstract class OrientationDelegate extends OrientationEventListener {
             isLandscape = false;
             setOrientation(SCREEN_ORIENTATION_PORTRAIT);
         }
+    }
+
+    /**
+     * Check if the device's rotation is enabled
+     *
+     * @param contentResolver from the app's context
+     * @return true or false according to whether the rotation is enabled or disabled
+     */
+    private boolean isRotationEnabled(ContentResolver contentResolver) {
+        return Settings.System.getInt(contentResolver, Settings.System.ACCELEROMETER_ROTATION,
+                0) == 1;
     }
 
     public boolean isLandscape() {

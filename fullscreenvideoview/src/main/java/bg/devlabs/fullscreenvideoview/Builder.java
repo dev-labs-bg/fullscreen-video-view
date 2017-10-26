@@ -36,7 +36,7 @@ public class Builder {
         fullscreenVideoView.setupMediaPlayer(videoPath);
     }
 
-    public Builder isAutoStartEnabled(boolean isAutoStartEnabled) {
+    public Builder autoStartEnabled(boolean isAutoStartEnabled) {
         fullscreenVideoView.setAutoStartEnabled(isAutoStartEnabled);
         return this;
     }
