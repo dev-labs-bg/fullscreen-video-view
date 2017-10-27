@@ -6,15 +6,16 @@ import android.content.Context;
 import android.provider.Settings;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.FrameLayout;
+import android.view.WindowManager;
 
 import bg.devlabs.fullscreenvideoview.FullscreenVideoView;
-import bg.devlabs.fullscreenvideoview.R;
+import bg.devlabs.fullscreenvideoview.util.UiUtils;
 
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
@@ -35,8 +36,6 @@ public abstract class OrientationDelegate extends OrientationEventListener {
     // Orientation
     private LandscapeOrientation landscapeOrientation = LandscapeOrientation.SENSOR;
     private PortraitOrientation portraitOrientation = PortraitOrientation.PORTRAIT;
-    private boolean isInTransition;
-    private ViewGroup.LayoutParams previousLayoutParams;
 
     protected OrientationDelegate(Context context, FullscreenVideoView fullscreenVideoView) {
         super(context);
@@ -50,8 +49,6 @@ public abstract class OrientationDelegate extends OrientationEventListener {
             isLandscape = true;
         }
 
-        isInTransition = true;
-
         // Fullscreen active
         onOrientationChanged();
 
@@ -59,36 +56,38 @@ public abstract class OrientationDelegate extends OrientationEventListener {
         Activity activity = ((Activity) videoView.getContext());
         setOrientation(landscapeOrientation.getValue());
 
-        FrameLayout container = new FrameLayout(activity);
-
-        Window window = activity.getWindow();
-        ViewGroup decorView = (ViewGroup) window.getDecorView();
-        ViewGroup content = decorView.findViewById(android.R.id.content);
-        content.addView(container, ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT);
-
-        View child = LayoutInflater.from(activity).inflate(R.layout.fullscreen_view, container,
-                false);
-        container.addView(child, ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT);
-
-        ((ViewGroup) videoView.getParent()).removeView(videoView);
-        container.addView(videoView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        UiUtils.hideOtherViews(getParent());
 
         // Save the video player original width and height
         originalWidth = videoView.getWidth();
         originalHeight = videoView.getHeight();
-        previousLayoutParams = videoView.getLayoutParams();
+        // TODO: Add check if the video should be landscape or portrait in isLandscape
+        updateLayoutParams();
+
         // Hiding the supportToolbar
         hideActionBar();
 
         // Hide status bar
         toggleSystemUiVisibility(activity.getWindow());
-
-        isInTransition = false;
     }
 
     protected abstract void onOrientationChanged();
+
+    @SuppressWarnings("SuspiciousNameCombination")
+    private void updateLayoutParams() {
+        ViewGroup.LayoutParams params = videoView.getLayoutParams();
+        Context context = videoView.getContext();
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        if (windowManager == null) {
+            return;
+        }
+        Display display = windowManager.getDefaultDisplay();
+        DisplayMetrics realMetrics = new DisplayMetrics();
+        display.getRealMetrics(realMetrics);
+        params.width = realMetrics.widthPixels;
+        params.height = realMetrics.heightPixels;
+        videoView.setLayoutParams(params);
+    }
 
     public void exitFullscreen() {
         // Update isLandscape flag
@@ -104,15 +103,22 @@ public abstract class OrientationDelegate extends OrientationEventListener {
         // TODO: Calculating the size according to if the view is on the whole screen or not
         setOrientation(portraitOrientation.getValue());
 
-//        UiUtils.showOtherViews((ViewGroup) ((ViewGroup) activity.findViewById(android.R.id.content)).getChildAt(0));
 
-        ViewGroup.LayoutParams params = previousLayoutParams;
+        UiUtils.showOtherViews(getParent());
+
+        ViewGroup.LayoutParams params = videoView.getLayoutParams();
         params.width = originalWidth;
         params.height = originalHeight;
         videoView.setLayoutParams(params);
 
         showActionBar();
         toggleSystemUiVisibility(activity.getWindow());
+    }
+
+    private ViewGroup getParent() {
+        Window window = ((Activity) videoView.getContext()).getWindow();
+        ViewGroup decorView = (ViewGroup) window.getDecorView();
+        return decorView.findViewById(android.R.id.content);
     }
 
     private void toggleSystemUiVisibility(Window activityWindow) {
@@ -124,28 +130,35 @@ public abstract class OrientationDelegate extends OrientationEventListener {
     }
 
     private void showActionBar() {
-        ActionBar supportActionBar = ((AppCompatActivity) videoView.getContext())
-                .getSupportActionBar();
-        if (supportActionBar != null) {
-            supportActionBar.show();
+        if (videoView.getContext() instanceof AppCompatActivity) {
+            ActionBar supportActionBar = ((AppCompatActivity) videoView.getContext())
+                    .getSupportActionBar();
+            if (supportActionBar != null) {
+                supportActionBar.show();
+            }
         }
-
-        android.app.ActionBar actionBar = ((Activity) videoView.getContext()).getActionBar();
-        if (actionBar != null) {
-            actionBar.show();
+        if (videoView.getContext() instanceof Activity) {
+            android.app.ActionBar actionBar = ((Activity) videoView.getContext()).getActionBar();
+            if (actionBar != null) {
+                actionBar.show();
+            }
         }
     }
 
     private void hideActionBar() {
-        ActionBar supportActionBar = ((AppCompatActivity) videoView.getContext())
-                .getSupportActionBar();
-        if (supportActionBar != null) {
-            supportActionBar.hide();
+        if (videoView.getContext() instanceof AppCompatActivity) {
+            ActionBar supportActionBar = ((AppCompatActivity) videoView.getContext())
+                    .getSupportActionBar();
+            if (supportActionBar != null) {
+                supportActionBar.hide();
+            }
         }
 
-        android.app.ActionBar actionBar = ((Activity) videoView.getContext()).getActionBar();
-        if (actionBar != null) {
-            actionBar.hide();
+        if (videoView.getContext() instanceof Activity) {
+            android.app.ActionBar actionBar = ((Activity) videoView.getContext()).getActionBar();
+            if (actionBar != null) {
+                actionBar.hide();
+            }
         }
     }
 
@@ -227,9 +240,5 @@ public abstract class OrientationDelegate extends OrientationEventListener {
 
     public boolean isLandscape() {
         return isLandscape;
-    }
-
-    public boolean isInTransition() {
-        return isInTransition;
     }
 }

@@ -127,10 +127,6 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
 
     @Override
     protected void onDetachedFromWindow() {
-        if (orientationDelegate.isInTransition()) {
-            return;
-        }
-
         handleOnDetach();
         super.onDetachedFromWindow();
     }
@@ -215,10 +211,6 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        if (orientationDelegate.isInTransition()) {
-            return;
-        }
-
         if (videoMediaPlayer != null && isMediaPlayerPrepared) {
             videoMediaPlayer.pause();
         }

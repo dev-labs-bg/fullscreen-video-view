@@ -5,17 +5,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <LinearLayout
+    <bg.devlabs.fullscreenvideoview.FullscreenVideoView
+        android:id="@+id/fullscreenVideoView"
         android:layout_width="match_parent"
-        android:layout_height="250dp">
-
-        <bg.devlabs.fullscreenvideoview.FullscreenVideoView
-            android:id="@+id/fullscreenVideoView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:pause_drawable="@drawable/ic_pause_white_48dp"
-            app:play_drawable="@drawable/ic_play_arrow_white_48dp" />
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        app:pause_drawable="@drawable/ic_pause_white_48dp"
+        app:play_drawable="@drawable/ic_play_arrow_white_48dp" />
 
     <ImageView
         android:layout_width="200dp"
