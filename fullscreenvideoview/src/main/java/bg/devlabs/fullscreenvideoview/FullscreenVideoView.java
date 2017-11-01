@@ -265,6 +265,7 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
         public void onOrientationChanged() {
             // Update the fullscreen button drawable
             controller.updateFullScreenDrawable();
+            surfaceView.resetLayoutParams();
         }
     }
 

@@ -14,6 +14,9 @@ import android.widget.FrameLayout;
  * slavi@devlabs.bg
  */
 class VideoSurfaceView extends SurfaceView {
+    private int previousHeight;
+    private int previousWidth;
+
     public VideoSurfaceView(Context context) {
         super(context);
     }
@@ -27,6 +30,8 @@ class VideoSurfaceView extends SurfaceView {
     }
 
     public void updateLayoutParams(int videoWidth, int videoHeight) {
+        previousHeight = getLayoutParams().height;
+        previousWidth = getLayoutParams().width;
         // Get the Display Metrics
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
         // Get the width of the screen
@@ -50,5 +55,12 @@ class VideoSurfaceView extends SurfaceView {
         lp.gravity = Gravity.CENTER;
         // Commit the layout parameters
         setLayoutParams(lp);
+    }
+
+    public void resetLayoutParams() {
+        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) getLayoutParams();
+        layoutParams.height = previousHeight;
+        layoutParams.width = previousWidth;
+        setLayoutParams(layoutParams);
     }
 }

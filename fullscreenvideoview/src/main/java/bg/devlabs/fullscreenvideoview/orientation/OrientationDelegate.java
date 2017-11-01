@@ -82,7 +82,8 @@ public abstract class OrientationDelegate extends OrientationEventListener {
     private void updateLayoutParams() {
         ViewGroup.LayoutParams params = videoView.getLayoutParams();
         Context context = videoView.getContext();
-        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        WindowManager windowManager = (WindowManager) context.getSystemService(
+                Context.WINDOW_SERVICE);
         if (windowManager == null) {
             return;
         }
