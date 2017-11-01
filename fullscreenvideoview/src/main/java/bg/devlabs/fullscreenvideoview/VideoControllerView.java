@@ -146,7 +146,6 @@ class VideoControllerView extends FrameLayout {
     }
 
     void setupProgressBar(TypedArray a) {
-        // TODO: Add different setters for the background and the thumb of the progress bar
         int color = a.getColor(R.styleable.VideoControllerView_progress_color, 0);
         if (color != 0) {
             // Set the default color
@@ -258,15 +257,16 @@ class VideoControllerView extends FrameLayout {
         }
 
         try {
-            // TODO: Consider hiding the disabled buttons
             if (startPauseButton != null && !videoMediaPlayer.canPause()) {
                 startPauseButton.setEnabled(false);
             }
             if (rewButton != null && !videoMediaPlayer.canSeekBackward()) {
                 rewButton.setEnabled(false);
+                rewButton.setVisibility(INVISIBLE);
             }
             if (ffwdButton != null && !videoMediaPlayer.canSeekForward()) {
                 ffwdButton.setEnabled(false);
+                ffwdButton.setVisibility(INVISIBLE);
             }
         } catch (IncompatibleClassChangeError ex) {
             // We were given an old version of the interface, that doesn't have

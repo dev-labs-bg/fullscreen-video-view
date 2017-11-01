@@ -28,6 +28,11 @@ import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAP
  * Handles orientation changes. Updates the VideoView layout params. Hides/shows the toolbar.
  */
 public abstract class OrientationDelegate extends OrientationEventListener {
+    private static final int LEFT_LANDSCAPE = 90;
+    private static final int RIGHT_LANDSCAPE = 270;
+    private static final int PORTRAIT = 0;
+    private static final int ROTATE_THRESHOLD = 10;
+
     private FullscreenVideoView videoView;
     private int originalWidth;
     private int originalHeight;
@@ -36,6 +41,7 @@ public abstract class OrientationDelegate extends OrientationEventListener {
     // Orientation
     private LandscapeOrientation landscapeOrientation = LandscapeOrientation.SENSOR;
     private PortraitOrientation portraitOrientation = PortraitOrientation.PORTRAIT;
+    private boolean shouldEnterPortrait;
 
     protected OrientationDelegate(Context context, FullscreenVideoView fullscreenVideoView) {
         super(context);
@@ -61,7 +67,6 @@ public abstract class OrientationDelegate extends OrientationEventListener {
         // Save the video player original width and height
         originalWidth = videoView.getWidth();
         originalHeight = videoView.getHeight();
-        // TODO: Add check if the video should be landscape or portrait in isLandscape
         updateLayoutParams();
 
         // Hiding the supportToolbar
@@ -100,7 +105,6 @@ public abstract class OrientationDelegate extends OrientationEventListener {
 
         // Change the screen orientation to PORTRAIT
         Activity activity = (Activity) videoView.getContext();
-        // TODO: Calculating the size according to if the view is on the whole screen or not
         setOrientation(portraitOrientation.getValue());
 
 
@@ -121,7 +125,7 @@ public abstract class OrientationDelegate extends OrientationEventListener {
         return decorView.findViewById(android.R.id.content);
     }
 
-    private void toggleSystemUiVisibility(Window activityWindow) {
+    private static void toggleSystemUiVisibility(Window activityWindow) {
         int newUiOptions = activityWindow.getDecorView().getSystemUiVisibility();
         newUiOptions ^= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
         newUiOptions ^= View.SYSTEM_UI_FLAG_FULLSCREEN;
@@ -194,14 +198,8 @@ public abstract class OrientationDelegate extends OrientationEventListener {
         this.portraitOrientation = portraitOrientation;
     }
 
-    /**
-     * @param a
-     * @param b
-     * @param epsilon
-     * @return
-     */
-    private boolean epsilonCheck(int a, int b, int epsilon) {
-        return a > b - epsilon && a < b + epsilon;
+    private static boolean shouldChangeOrientation(int a, int b, int rotateThreshold) {
+        return a > b - rotateThreshold && a < b + rotateThreshold;
     }
 
     @Override
@@ -210,19 +208,17 @@ public abstract class OrientationDelegate extends OrientationEventListener {
         if (!isRotationEnabled(contentResolver)) {
             return;
         }
-        int epsilon = 10;
-        int leftLandscape = 90;
-        int rightLandscape = 270;
-        int portrait = 0;
 
-        if ((epsilonCheck(orientation, leftLandscape, epsilon) ||
-                epsilonCheck(orientation, rightLandscape, epsilon)) && !isLandscape) {
-            isLandscape = true;
+        if ((shouldChangeOrientation(orientation, LEFT_LANDSCAPE, ROTATE_THRESHOLD)
+                || shouldChangeOrientation(orientation, RIGHT_LANDSCAPE, ROTATE_THRESHOLD))
+                && !shouldEnterPortrait) {
+            shouldEnterPortrait = true;
             setOrientation(SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         }
 
-        if (epsilonCheck(orientation, portrait, epsilon) && isLandscape) {
-            isLandscape = false;
+        if (shouldChangeOrientation(orientation, PORTRAIT, ROTATE_THRESHOLD)
+                && shouldEnterPortrait) {
+            shouldEnterPortrait = false;
             setOrientation(SCREEN_ORIENTATION_PORTRAIT);
         }
     }
@@ -233,7 +229,7 @@ public abstract class OrientationDelegate extends OrientationEventListener {
      * @param contentResolver from the app's context
      * @return true or false according to whether the rotation is enabled or disabled
      */
-    private boolean isRotationEnabled(ContentResolver contentResolver) {
+    private static boolean isRotationEnabled(ContentResolver contentResolver) {
         return Settings.System.getInt(contentResolver, Settings.System.ACCELEROMETER_ROTATION,
                 0) == 1;
     }
