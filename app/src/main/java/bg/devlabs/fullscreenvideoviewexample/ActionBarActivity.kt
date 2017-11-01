@@ -3,7 +3,6 @@ package bg.devlabs.fullscreenvideoviewexample
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import bg.devlabs.fullscreenvideoview.orientation.LandscapeOrientation
 import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation
@@ -31,14 +30,11 @@ class ActionBarActivity : AppCompatActivity() {
         val videoPath = "http://clips.vorwaerts-gmbh.de/VfE_html5.mp4"
 
         fullscreenVideoView.build(videoPath)
-                .exitFullscreenDrawable(
-                        ContextCompat.getDrawable(this, R.drawable.ic_launcher_background))
-                .enterFullscreenDrawable(
-                        ContextCompat.getDrawable(this, R.drawable.ic_pause_white_48dp))
                 .progressBarColor(R.color.colorAccent)
                 .autoStartEnabled(true)
                 .landscapeOrientation(LandscapeOrientation.SENSOR)
                 .portraitOrientation(PortraitOrientation.PORTRAIT)
                 .canSeekBackward(false)
+                .canSeekForward(false)
     }
 }

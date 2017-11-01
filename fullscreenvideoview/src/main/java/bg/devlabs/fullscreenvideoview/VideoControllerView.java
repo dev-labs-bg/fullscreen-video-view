@@ -325,7 +325,7 @@ class VideoControllerView extends FrameLayout {
         }
     }
 
-    static String stringForTime(int timeMs) {
+    static CharSequence stringForTime(int timeMs) {
         int totalSeconds = timeMs / Constants.ONE_SECOND_MILLISECONDS;
         int seconds = totalSeconds % Constants.ONE_MINUTE_SECONDS;
         int minutes = (totalSeconds / Constants.ONE_MINUTE_SECONDS) % Constants.ONE_MINUTE_SECONDS;
@@ -343,7 +343,7 @@ class VideoControllerView extends FrameLayout {
         if (progress != null) {
             if (duration > 0) {
                 // Use long to avoid overflow
-                long pos = 1000L * position / duration;
+                long pos = Constants.ONE_MILLISECOND * position / duration;
                 progress.setProgress((int) pos);
             }
             int percent = videoMediaPlayer.getBufferPercentage();
@@ -587,7 +587,7 @@ class VideoControllerView extends FrameLayout {
             }
 
             long duration = videoMediaPlayer.getDuration();
-            long newPosition = (duration * progress) / 1000L;
+            long newPosition = (duration * progress) / Constants.ONE_MILLISECOND;
             videoMediaPlayer.seekTo((int) newPosition);
             if (currentTime != null) {
                 currentTime.setText(stringForTime((int) newPosition));

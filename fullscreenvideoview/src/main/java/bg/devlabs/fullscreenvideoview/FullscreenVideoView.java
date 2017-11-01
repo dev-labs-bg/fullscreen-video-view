@@ -37,7 +37,6 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
     VideoMediaPlayer videoMediaPlayer;
     boolean isMediaPlayerPrepared;
     Builder builder;
-
     // Listeners
     private MediaPlayer.OnPreparedListener onPreparedListener;
     private View.OnTouchListener onTouchListener;
@@ -89,7 +88,7 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
 
     private void findChildViews() {
         final LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        layoutInflater.inflate(R.layout.video_player, this, true);
+        layoutInflater.inflate(R.layout.fullscreen_video_view, this, true);
         surfaceView = findViewById(R.id.surface_view);
         progressBar = findViewById(R.id.progress_bar);
         controller = findViewById(R.id.video_controller);
@@ -265,7 +264,12 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
         public void onOrientationChanged() {
             // Update the fullscreen button drawable
             controller.updateFullScreenDrawable();
-            surfaceView.resetLayoutParams();
+            if (orientationDelegate.isLandscape()) {
+                surfaceView.resetLayoutParams();
+            } else {
+                surfaceView.updateLayoutParams(videoMediaPlayer.getVideoWidth(),
+                        videoMediaPlayer.getVideoHeight());
+            }
         }
     }
 
