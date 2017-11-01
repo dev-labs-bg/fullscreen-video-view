@@ -9,6 +9,7 @@ import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE;
  * Dev Labs
  * slavi@devlabs.bg
  */
+@SuppressWarnings("unused")
 public enum LandscapeOrientation {
     SENSOR(SCREEN_ORIENTATION_SENSOR_LANDSCAPE),
     LANDSCAPE(SCREEN_ORIENTATION_LANDSCAPE),

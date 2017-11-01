@@ -7,7 +7,7 @@ import android.support.test.runner.AndroidJUnit4;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("bg.devlabs.fullscreenvideoview.test", appContext.getPackageName());
+        assertEquals(bg.devlabs.fullscreenvideoview.test.BuildConfig.APPLICATION_ID, appContext.getPackageName());
     }
 }

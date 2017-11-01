@@ -10,6 +10,7 @@ import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT;
  * Dev Labs
  * slavi@devlabs.bg
  */
+@SuppressWarnings("unused")
 public enum PortraitOrientation {
     SENSOR(SCREEN_ORIENTATION_SENSOR_PORTRAIT),
     PORTRAIT(SCREEN_ORIENTATION_PORTRAIT),

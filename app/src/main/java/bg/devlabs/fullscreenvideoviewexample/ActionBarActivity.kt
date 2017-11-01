@@ -34,7 +34,7 @@ class ActionBarActivity : AppCompatActivity() {
                 .autoStartEnabled(true)
                 .landscapeOrientation(LandscapeOrientation.SENSOR)
                 .portraitOrientation(PortraitOrientation.PORTRAIT)
-                .canSeekBackward(false)
-                .canSeekForward(false)
+                .setCanSeekBackward(false)
+                .setCanSeekForward(false)
     }
 }

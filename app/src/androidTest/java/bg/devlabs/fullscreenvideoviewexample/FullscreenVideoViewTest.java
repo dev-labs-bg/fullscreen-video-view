@@ -36,7 +36,7 @@ import static org.hamcrest.Matchers.not;
 public class FullscreenVideoViewTest {
 
     @Rule
-    public ActivityTestRule<NoActionBarActivity> activityTestRule = new ActivityTestRule<>(
+    public final ActivityTestRule<NoActionBarActivity> activityTestRule = new ActivityTestRule<>(
             NoActionBarActivity.class);
 
     @Test
@@ -106,7 +106,7 @@ public class FullscreenVideoViewTest {
         }
     }
 
-    private void clickToShowController() {
+    private static void clickToShowController() {
         onView(withId(R.id.video_player))
                 .check(matches(isDisplayed()))
                 .perform(click());

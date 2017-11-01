@@ -27,21 +27,22 @@ import bg.devlabs.fullscreenvideoview.orientation.OrientationDelegate;
  * Dev Labs
  * slavi@devlabs.bg
  */
+@SuppressWarnings("unused")
 public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Callback {
     // Views
-    VideoSurfaceView surfaceView;
+    private VideoSurfaceView surfaceView;
     private SurfaceHolder surfaceHolder;
     private ProgressBar progressBar;
-    VideoControllerView controller;
+    private VideoControllerView controller;
     // MediaPlayer
-    VideoMediaPlayer videoMediaPlayer;
-    boolean isMediaPlayerPrepared;
-    Builder builder;
+    private VideoMediaPlayer videoMediaPlayer;
+    private boolean isMediaPlayerPrepared;
+    private Builder builder;
     // Listeners
     private MediaPlayer.OnPreparedListener onPreparedListener;
     private View.OnTouchListener onTouchListener;
     // Delegates
-    OrientationDelegate orientationDelegate;
+    private OrientationDelegate orientationDelegate;
 
     public FullscreenVideoView(@NonNull final Context context) {
         super(context);
@@ -188,7 +189,7 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
         progressBar.animate().setDuration(shortAnimTime);
     }
 
-    void hideProgress() {
+    private void hideProgress() {
         progressBar.setVisibility(View.INVISIBLE);
     }
 

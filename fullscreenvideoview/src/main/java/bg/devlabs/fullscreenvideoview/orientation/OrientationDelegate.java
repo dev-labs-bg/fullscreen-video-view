@@ -15,7 +15,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import bg.devlabs.fullscreenvideoview.FullscreenVideoView;
-import bg.devlabs.fullscreenvideoview.util.UiUtils;
+import bg.devlabs.fullscreenvideoview.UiUtils;
 
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
@@ -33,11 +33,11 @@ public abstract class OrientationDelegate extends OrientationEventListener {
     private static final int PORTRAIT = 0;
     private static final int ROTATE_THRESHOLD = 10;
 
-    private FullscreenVideoView videoView;
+    private final FullscreenVideoView videoView;
     private int originalWidth;
     private int originalHeight;
     private boolean isLandscape;
-    private ContentResolver contentResolver;
+    private final ContentResolver contentResolver;
     // Orientation
     private LandscapeOrientation landscapeOrientation = LandscapeOrientation.SENSOR;
     private PortraitOrientation portraitOrientation = PortraitOrientation.PORTRAIT;
@@ -167,7 +167,7 @@ public abstract class OrientationDelegate extends OrientationEventListener {
         }
     }
 
-    public void setOrientation(int orientation) {
+    private void setOrientation(int orientation) {
         ((Activity) videoView.getContext()).setRequestedOrientation(orientation);
     }
 
@@ -199,8 +199,9 @@ public abstract class OrientationDelegate extends OrientationEventListener {
         this.portraitOrientation = portraitOrientation;
     }
 
-    private static boolean shouldChangeOrientation(int a, int b, int rotateThreshold) {
-        return a > b - rotateThreshold && a < b + rotateThreshold;
+    @SuppressWarnings("StandardVariableNames")
+    private static boolean shouldChangeOrientation(int a, int b) {
+        return a > b - ROTATE_THRESHOLD && a < b + ROTATE_THRESHOLD;
     }
 
     @Override
@@ -210,14 +211,14 @@ public abstract class OrientationDelegate extends OrientationEventListener {
             return;
         }
 
-        if ((shouldChangeOrientation(orientation, LEFT_LANDSCAPE, ROTATE_THRESHOLD)
-                || shouldChangeOrientation(orientation, RIGHT_LANDSCAPE, ROTATE_THRESHOLD))
+        if ((shouldChangeOrientation(orientation, LEFT_LANDSCAPE)
+                || shouldChangeOrientation(orientation, RIGHT_LANDSCAPE))
                 && !shouldEnterPortrait) {
             shouldEnterPortrait = true;
             setOrientation(SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         }
 
-        if (shouldChangeOrientation(orientation, PORTRAIT, ROTATE_THRESHOLD)
+        if (shouldChangeOrientation(orientation, PORTRAIT)
                 && shouldEnterPortrait) {
             shouldEnterPortrait = false;
             setOrientation(SCREEN_ORIENTATION_PORTRAIT);

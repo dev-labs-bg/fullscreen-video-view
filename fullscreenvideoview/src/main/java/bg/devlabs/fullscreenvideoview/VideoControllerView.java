@@ -65,6 +65,7 @@ import java.util.Locale;
  * with the boolean set to false
  * </ul>
  */
+@SuppressWarnings("unused")
 class VideoControllerView extends FrameLayout {
     private static final String TAG = "VideoControllerView";
     private static final int DEFAULT_TIMEOUT = 3000;
@@ -73,9 +74,9 @@ class VideoControllerView extends FrameLayout {
 
     VideoMediaPlayer videoMediaPlayer;
     private TextView endTime;
-    TextView currentTime;
+    private TextView currentTime;
     boolean isDragging;
-    Handler handler = new VideoControllerView.MessageHandler(this);
+    private Handler handler = new VideoControllerView.MessageHandler(this);
     private SeekBar progress;
     private ImageButton startPauseButton;
     private ImageButton ffwdButton;
@@ -112,8 +113,8 @@ class VideoControllerView extends FrameLayout {
             R.drawable.ic_fast_rewind_white_48dp);
     private int progressBarColor = Color.WHITE;
 
-    int fastForwardDuration = Constants.FAST_FORWARD_DURATION;
-    int rewindDuration = Constants.REWIND_DURATION;
+    private int fastForwardDuration = Constants.FAST_FORWARD_DURATION;
+    private int rewindDuration = Constants.REWIND_DURATION;
     // VideoView interface which is used to communicate with the VideoView
     private FullscreenVideoView fullscreenVideoView;
 
@@ -133,7 +134,7 @@ class VideoControllerView extends FrameLayout {
         initControllerView();
     }
 
-    public void setupXmlAttributes(AttributeSet attrs) {
+    private void setupXmlAttributes(AttributeSet attrs) {
         TypedArray typedArr = getContext().obtainStyledAttributes(attrs,
                 R.styleable.VideoControllerView, 0, 0);
         setupPlayPauseButton(typedArr);
@@ -145,7 +146,7 @@ class VideoControllerView extends FrameLayout {
         typedArr.recycle();
     }
 
-    void setupProgressBar(TypedArray a) {
+    private void setupProgressBar(TypedArray a) {
         int color = a.getColor(R.styleable.VideoControllerView_progress_color, 0);
         if (color != 0) {
             // Set the default color
@@ -155,7 +156,7 @@ class VideoControllerView extends FrameLayout {
         progress.getThumb().setColorFilter(progressBarColor, PorterDuff.Mode.SRC_IN);
     }
 
-    void setupRewindButton(TypedArray a) {
+    private void setupRewindButton(TypedArray a) {
         Drawable drawable = a.getDrawable(R.styleable.VideoControllerView_rew_drawable);
         if (drawable != null) {
             rewindDrawable = drawable;
@@ -163,7 +164,7 @@ class VideoControllerView extends FrameLayout {
         rewButton.setImageDrawable(rewindDrawable);
     }
 
-    void setupFastForwardButton(TypedArray a) {
+    private void setupFastForwardButton(TypedArray a) {
         Drawable drawable = a.getDrawable(R.styleable.VideoControllerView_ffwd_drawable);
         if (drawable != null) {
             fastForwardDrawable = drawable;
@@ -171,7 +172,7 @@ class VideoControllerView extends FrameLayout {
         ffwdButton.setImageDrawable(fastForwardDrawable);
     }
 
-    void setupFullscreenButton(TypedArray a) {
+    private void setupFullscreenButton(TypedArray a) {
         Drawable enterDrawable = a.getDrawable(
                 R.styleable.VideoControllerView_enter_fullscreen_drawable);
         if (enterDrawable != null) {
@@ -186,7 +187,7 @@ class VideoControllerView extends FrameLayout {
         }
     }
 
-    void setupPlayPauseButton(TypedArray a) {
+    private void setupPlayPauseButton(TypedArray a) {
         Drawable drawable = a.getDrawable(R.styleable.VideoControllerView_play_drawable);
         if (drawable != null) {
             playDrawable = drawable;
@@ -199,7 +200,7 @@ class VideoControllerView extends FrameLayout {
         }
     }
 
-    public void initControllerView() {
+    private void initControllerView() {
         if (!isInEditMode()) {
             setVisibility(INVISIBLE);
         }
@@ -270,7 +271,7 @@ class VideoControllerView extends FrameLayout {
             }
         } catch (IncompatibleClassChangeError ex) {
             // We were given an old version of the interface, that doesn't have
-            // the canPause/canSeekXYZ methods. This is OK, it just means we
+            // the setCanPause/canSeekXYZ methods. This is OK, it just means we
             // assume the media can be paused and seeked, and so we don't disable
             // the buttons.
             ex.printStackTrace();
@@ -284,7 +285,7 @@ class VideoControllerView extends FrameLayout {
      * @param timeout The timeout in milliseconds. Use 0 to show
      *                the controller until hide() is called.
      */
-    public void show(int timeout) {
+    private void show(int timeout) {
         if (!isShowing()) {
             setProgress();
             if (startPauseButton != null) {
@@ -309,14 +310,14 @@ class VideoControllerView extends FrameLayout {
         }
     }
 
-    boolean isShowing() {
+    private boolean isShowing() {
         return getVisibility() == VISIBLE;
     }
 
     /**
      * Remove the controller from the screen.
      */
-    public void hide() {
+    private void hide() {
         try {
             setVisibility(INVISIBLE);
             handler.removeMessages(SHOW_PROGRESS);
@@ -325,7 +326,7 @@ class VideoControllerView extends FrameLayout {
         }
     }
 
-    static CharSequence stringForTime(int timeMs) {
+    private static CharSequence stringForTime(int timeMs) {
         int totalSeconds = timeMs / Constants.ONE_SECOND_MILLISECONDS;
         int seconds = totalSeconds % Constants.ONE_MINUTE_SECONDS;
         int minutes = (totalSeconds / Constants.ONE_MINUTE_SECONDS) % Constants.ONE_MINUTE_SECONDS;
@@ -333,7 +334,7 @@ class VideoControllerView extends FrameLayout {
         return String.format(Locale.getDefault(), "%d:%02d:%02d", hours, minutes, seconds);
     }
 
-    int setProgress() {
+    private int setProgress() {
         if (videoMediaPlayer == null || isDragging) {
             return 0;
         }
@@ -346,7 +347,7 @@ class VideoControllerView extends FrameLayout {
                 long pos = Constants.ONE_MILLISECOND * position / duration;
                 progress.setProgress((int) pos);
             }
-            int percent = videoMediaPlayer.getBufferPercentage();
+            int percent = VideoMediaPlayer.getBufferPercentage();
             progress.setSecondaryProgress(percent * 10);
         }
 
@@ -385,7 +386,7 @@ class VideoControllerView extends FrameLayout {
         ffwdButton.setImageDrawable(fastForwardDrawable);
     }
 
-    public void updatePausePlay() {
+    private void updatePausePlay() {
         if (startPauseButton == null || videoMediaPlayer == null) {
             return;
         }
@@ -409,7 +410,7 @@ class VideoControllerView extends FrameLayout {
         }
     }
 
-    void doPauseResume() {
+    private void doPauseResume() {
         if (videoMediaPlayer == null) {
             return;
         }
@@ -417,7 +418,7 @@ class VideoControllerView extends FrameLayout {
         updatePausePlay();
     }
 
-    void doToggleFullscreen() {
+    private void doToggleFullscreen() {
         if (videoMediaPlayer == null) {
             return;
         }

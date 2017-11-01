@@ -14,11 +14,12 @@ import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation;
  * Dev Labs
  * slavi@devlabs.bg
  */
+@SuppressWarnings("unused")
 public class Builder {
-    private FullscreenVideoView fullscreenVideoView;
-    private VideoControllerView controller;
-    private OrientationDelegate orientationDelegate;
-    private VideoMediaPlayer videoMediaPlayer;
+    private final FullscreenVideoView fullscreenVideoView;
+    private final VideoControllerView controller;
+    private final OrientationDelegate orientationDelegate;
+    private final VideoMediaPlayer videoMediaPlayer;
 
     Builder(FullscreenVideoView fullscreenVideoView, VideoControllerView controller,
             OrientationDelegate orientationDelegate, VideoMediaPlayer videoMediaPlayer) {
@@ -86,18 +87,18 @@ public class Builder {
         return this;
     }
 
-    public Builder canPause(boolean canPause) {
-        videoMediaPlayer.setCanPause(canPause);
+    public Builder setCanPause(boolean isPauseEnabled) {
+        videoMediaPlayer.setCanPause(isPauseEnabled);
         return this;
     }
 
-    public Builder canSeekBackward(boolean canSeekBackward) {
-        videoMediaPlayer.setCanSeekBackward(canSeekBackward);
+    public Builder setCanSeekBackward(boolean isSeekBackwardEnabled) {
+        videoMediaPlayer.setCanSeekBackward(isSeekBackwardEnabled);
         return this;
     }
 
-    public Builder canSeekForward(boolean canSeekForward) {
-        videoMediaPlayer.setCanSeekForward(canSeekForward);
+    public Builder setCanSeekForward(boolean isSeekForwardEnabled) {
+        videoMediaPlayer.setCanSeekForward(isSeekForwardEnabled);
         return this;
     }
 }

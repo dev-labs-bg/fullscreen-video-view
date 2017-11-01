@@ -1,4 +1,4 @@
-package bg.devlabs.fullscreenvideoview.util;
+package bg.devlabs.fullscreenvideoview;
 
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -7,8 +7,6 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import bg.devlabs.fullscreenvideoview.FullscreenVideoView;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
