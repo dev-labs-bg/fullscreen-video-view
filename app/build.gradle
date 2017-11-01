@@ -32,6 +32,7 @@ dependencies {
     implementation project(':fullscreenvideoview')
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.4'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.1'
 }
 repositories {
     mavenCentral()
