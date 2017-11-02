@@ -1,4 +1,4 @@
-package bg.devlabs.fullscreenvideoviewexample;
+package bg.devlabs.fullscreenvideoviewsample;
 
 import org.junit.Test;
 

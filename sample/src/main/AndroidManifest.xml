@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="bg.devlabs.fullscreenvideoviewexample">
+    package="bg.devlabs.fullscreenvideoviewsample">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
-        android:name=".FullscreenVideoViewApp"
+        android:name="bg.devlabs.fullscreenvideoviewsample.FullscreenVideoViewApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name="bg.devlabs.fullscreenvideoviewsample.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,17 +23,17 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ActionBarActivity"
+            android:name="bg.devlabs.fullscreenvideoviewsample.ActionBarActivity"
             android:configChanges="orientation|screenSize" />
         <activity
-            android:name=".ToolbarActivity"
+            android:name="bg.devlabs.fullscreenvideoviewsample.ToolbarActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/NoActionBarAppTheme" />
         <activity
-            android:name=".NoActionBarActivity"
+            android:name="bg.devlabs.fullscreenvideoviewsample.NoActionBarActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/NoActionBarAppTheme" />
-        <activity android:name=".RegularActivity"
+        <activity android:name="bg.devlabs.fullscreenvideoviewsample.RegularActivity"
             android:configChanges="orientation|screenSize"/>
     </application>
 

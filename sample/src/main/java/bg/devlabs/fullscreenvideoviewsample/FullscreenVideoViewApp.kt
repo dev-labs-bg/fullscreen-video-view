@@ -1,4 +1,4 @@
-package bg.devlabs.fullscreenvideoviewexample
+package bg.devlabs.fullscreenvideoviewsample
 
 import android.app.Application
 import com.squareup.leakcanary.LeakCanary

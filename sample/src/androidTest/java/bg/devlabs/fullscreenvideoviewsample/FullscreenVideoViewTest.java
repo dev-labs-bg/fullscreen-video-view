@@ -1,4 +1,4 @@
-package bg.devlabs.fullscreenvideoviewexample;
+package bg.devlabs.fullscreenvideoviewsample;
 
 import android.content.ContentResolver;
 import android.content.pm.ActivityInfo;
@@ -19,10 +19,10 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static bg.devlabs.fullscreenvideoviewexample.CustomChecks.clickNoConstraints;
-import static bg.devlabs.fullscreenvideoviewexample.CustomChecks.isOrientationLandscape;
-import static bg.devlabs.fullscreenvideoviewexample.CustomChecks.isOrientationPortrait;
-import static bg.devlabs.fullscreenvideoviewexample.CustomChecks.setOrientation;
+import static bg.devlabs.fullscreenvideoviewsample.CustomChecks.clickNoConstraints;
+import static bg.devlabs.fullscreenvideoviewsample.CustomChecks.isOrientationLandscape;
+import static bg.devlabs.fullscreenvideoviewsample.CustomChecks.isOrientationPortrait;
+import static bg.devlabs.fullscreenvideoviewsample.CustomChecks.setOrientation;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;

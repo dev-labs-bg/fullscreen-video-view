@@ -1,4 +1,4 @@
-package bg.devlabs.fullscreenvideoviewexample
+package bg.devlabs.fullscreenvideoviewsample
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity

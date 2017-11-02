@@ -1,22 +1,22 @@
-package bg.devlabs.fullscreenvideoviewexample
+package bg.devlabs.fullscreenvideoviewsample
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import kotlinx.android.synthetic.main.activity_regular.*
+import android.support.v7.app.AppCompatActivity
+import kotlinx.android.synthetic.main.activity_toolbar.*
 
-class RegularActivity : Activity() {
+class ToolbarActivity : AppCompatActivity() {
     companion object {
         fun start(context: Context) {
-            val starter = Intent(context, RegularActivity::class.java)
+            val starter = Intent(context, ToolbarActivity::class.java)
             context.startActivity(starter)
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_regular)
+        setContentView(R.layout.activity_toolbar)
         val videoPath = "http://clips.vorwaerts-gmbh.de/VfE_html5.mp4"
         fullscreenVideoView.build(videoPath)
     }

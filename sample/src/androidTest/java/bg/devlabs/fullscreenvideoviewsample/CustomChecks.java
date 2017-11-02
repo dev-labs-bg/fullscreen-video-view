@@ -1,4 +1,4 @@
-package bg.devlabs.fullscreenvideoviewexample;
+package bg.devlabs.fullscreenvideoviewsample;
 
 import android.app.Activity;
 import android.content.Context;
@@ -15,8 +15,8 @@ import org.hamcrest.Matcher;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
-import static bg.devlabs.fullscreenvideoviewexample.CustomChecks.OrientationViewAction.OrientationType.LANDSCAPE;
-import static bg.devlabs.fullscreenvideoviewexample.CustomChecks.OrientationViewAction.OrientationType.PORTRAIT;
+import static bg.devlabs.fullscreenvideoviewsample.CustomChecks.OrientationViewAction.OrientationType.LANDSCAPE;
+import static bg.devlabs.fullscreenvideoviewsample.CustomChecks.OrientationViewAction.OrientationType.PORTRAIT;
 
 /**
  * Created by Slavi Petrov on 27.10.2017
