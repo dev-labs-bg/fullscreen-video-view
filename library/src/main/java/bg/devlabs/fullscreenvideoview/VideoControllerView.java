@@ -1,4 +1,5 @@
-package bg.devlabs.fullscreenvideoview;/*
+package bg.devlabs.fullscreenvideoview;
+/*
  * Copyright (C) 2006 The Android Open Source Project
  * Modifications Copyright (C) 2017 Dev Labs
  *
