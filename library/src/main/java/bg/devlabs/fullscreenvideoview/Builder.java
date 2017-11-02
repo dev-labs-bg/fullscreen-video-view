@@ -110,16 +110,6 @@ public class Builder {
         return this;
     }
 
-    public Builder playIcon(Drawable playDrawable) {
-        controller.setPlayDrawable(playDrawable);
-        return this;
-    }
-
-    public Builder pauseIcon(Drawable pauseDrawable) {
-        controller.setPauseDrawable(pauseDrawable);
-        return this;
-    }
-
     public Builder fastForwardSeconds(int fastForwardSeconds) {
         controller.setFastForwardDuration(fastForwardSeconds);
         return this;
