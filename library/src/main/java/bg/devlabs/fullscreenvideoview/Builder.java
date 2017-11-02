@@ -52,6 +52,26 @@ public class Builder {
         return this;
     }
 
+    public Builder playDrawable(Drawable playDrawable) {
+        controller.setPlayDrawable(playDrawable);
+        return this;
+    }
+
+    public Builder pauseDrawable(Drawable pauseDrawable) {
+        controller.setPauseDrawable(pauseDrawable);
+        return this;
+    }
+
+    public Builder fastForwardDrawable(Drawable fastForwardDrawable) {
+        controller.setFastForwardDrawable(fastForwardDrawable);
+        return this;
+    }
+
+    public Builder rewindDrawable(Drawable rewindDrawable) {
+        controller.setRewindDrawable(rewindDrawable);
+        return this;
+    }
+
     public Builder progressBarColor(int progressBarColor) {
         controller.setProgressBarColor(progressBarColor);
         return this;
