@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="VideoControllerView">
+    <declare-styleable name="FullscreenVideoView">
         <attr name="play_drawable" format="reference"/>
         <attr name="pause_drawable" format="reference"/>
         <attr name="enter_fullscreen_drawable" format="reference"/>

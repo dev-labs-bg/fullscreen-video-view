@@ -137,7 +137,7 @@ class VideoControllerView extends FrameLayout {
 
     private void setupXmlAttributes(AttributeSet attrs) {
         TypedArray typedArr = getContext().obtainStyledAttributes(attrs,
-                R.styleable.VideoControllerView, 0, 0);
+                R.styleable.FullscreenVideoView, 0, 0);
         setupPlayPauseButton(typedArr);
         setupFullscreenButton(typedArr);
         setupFastForwardButton(typedArr);
@@ -148,7 +148,7 @@ class VideoControllerView extends FrameLayout {
     }
 
     private void setupProgressBar(TypedArray a) {
-        int color = a.getColor(R.styleable.VideoControllerView_progress_color, 0);
+        int color = a.getColor(R.styleable.FullscreenVideoView_progress_color, 0);
         if (color != 0) {
             // Set the default color
             progressBarColor = color;
@@ -158,7 +158,7 @@ class VideoControllerView extends FrameLayout {
     }
 
     private void setupRewindButton(TypedArray a) {
-        Drawable drawable = a.getDrawable(R.styleable.VideoControllerView_rew_drawable);
+        Drawable drawable = a.getDrawable(R.styleable.FullscreenVideoView_rew_drawable);
         if (drawable != null) {
             rewindDrawable = drawable;
         }
@@ -166,7 +166,7 @@ class VideoControllerView extends FrameLayout {
     }
 
     private void setupFastForwardButton(TypedArray a) {
-        Drawable drawable = a.getDrawable(R.styleable.VideoControllerView_ffwd_drawable);
+        Drawable drawable = a.getDrawable(R.styleable.FullscreenVideoView_ffwd_drawable);
         if (drawable != null) {
             fastForwardDrawable = drawable;
         }
@@ -175,27 +175,27 @@ class VideoControllerView extends FrameLayout {
 
     private void setupFullscreenButton(TypedArray a) {
         Drawable enterDrawable = a.getDrawable(
-                R.styleable.VideoControllerView_enter_fullscreen_drawable);
+                R.styleable.FullscreenVideoView_enter_fullscreen_drawable);
         if (enterDrawable != null) {
             enterFullscreenDrawable = enterDrawable;
         }
         fullscreenButton.setImageDrawable(enterFullscreenDrawable);
 
         Drawable exitDrawable = a.getDrawable(
-                R.styleable.VideoControllerView_exit_fullscreen_drawable);
+                R.styleable.FullscreenVideoView_exit_fullscreen_drawable);
         if (exitDrawable != null) {
             exitFullscreenDrawable = exitDrawable;
         }
     }
 
     private void setupPlayPauseButton(TypedArray a) {
-        Drawable drawable = a.getDrawable(R.styleable.VideoControllerView_play_drawable);
+        Drawable drawable = a.getDrawable(R.styleable.FullscreenVideoView_play_drawable);
         if (drawable != null) {
             playDrawable = drawable;
         }
         startPauseButton.setImageDrawable(playDrawable);
 
-        Drawable drawable1 = a.getDrawable(R.styleable.VideoControllerView_pause_drawable);
+        Drawable drawable1 = a.getDrawable(R.styleable.FullscreenVideoView_pause_drawable);
         if (drawable1 != null) {
             pauseDrawable = drawable1;
         }
