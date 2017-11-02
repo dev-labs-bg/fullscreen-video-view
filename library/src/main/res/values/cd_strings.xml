@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cd_previous_media_button">Previous media button</string>
+    <string name="cd_rewind_media_button">Rewind media button</string>
+    <string name="cd_pause_media_button">Pause media button</string>
+    <string name="cd_forward_media_button">Forward media button</string>
+    <string name="cd_next_media_button">Next media button</string>
+    <string name="cd_fullscreen_media_button">Fullscreen media button</string>
+</resources>

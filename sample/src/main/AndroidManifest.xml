@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="bg.devlabs.fullscreenvideoviewsample">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <application
+        android:name="bg.devlabs.fullscreenvideoviewsample.FullscreenVideoViewApp"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name="bg.devlabs.fullscreenvideoviewsample.MainActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="bg.devlabs.fullscreenvideoviewsample.ActionBarActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity
+            android:name="bg.devlabs.fullscreenvideoviewsample.ToolbarActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/NoActionBarAppTheme" />
+        <activity
+            android:name="bg.devlabs.fullscreenvideoviewsample.NoActionBarActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/NoActionBarAppTheme" />
+        <activity android:name="bg.devlabs.fullscreenvideoviewsample.RegularActivity"
+            android:configChanges="orientation|screenSize"/>
+    </application>
+
+</manifest>

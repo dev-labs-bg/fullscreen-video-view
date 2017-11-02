@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">FullscreenVideoView Example</string>
+    <string name="action_bar">Action Bar</string>
+    <string name="toolbar">Toolbar</string>
+    <string name="no_action_bar">No Action Bar</string>
+    <string name="action_bar_activity">Action Bar Activity</string>
+    <string name="toolbar_activity">Toolbar Activity</string>
+    <string name="regular_activity">Regular Activity</string>
+</resources>
