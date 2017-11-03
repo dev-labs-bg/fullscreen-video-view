@@ -1,5 +1,4 @@
-
-# Created by https://www.gitignore.io/api/androidstudio
+# Created by https://www.gitignore.io
 
 ### AndroidStudio ###
 # Covers files to be ignored for android development using Android Studio.
@@ -20,7 +19,6 @@ gen/
 out/
 
 # Gradle files
-.gradle
 .gradle/
 build/
 
@@ -104,9 +102,3 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
-
-### AndroidStudio Patch ###
-
-!/gradle/wrapper/gradle-wrapper.jar
-
-# End of https://www.gitignore.io/api/androidstudio
