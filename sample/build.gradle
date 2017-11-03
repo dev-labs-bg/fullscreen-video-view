@@ -1,39 +1,44 @@
+apply from: '../dependencies.gradle'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.2"
+    compileSdkVersion versions.compileSdk
+    buildToolsVersion versions.buildTools
     defaultConfig {
         applicationId "bg.devlabs.fullscreenvideoviewsample"
-        minSdkVersion 19
-        targetSdkVersion 26
-        versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.compileSdk
+        versionCode versions.publishVersionCode
+        versionName versions.publishVersion
+    }
+    lintOptions {
+        abortOnError false
     }
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            shrinkResources false
         }
     }
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.1', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
     implementation project(':library')
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.4'
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.1'
+
+    implementation "com.android.support:appcompat-v7:$versions.supportLib"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin"
+    debugCompile "com.squareup.leakcanary:leakcanary-android:$versions.leakCanary"
+
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:$versions.espresso"
 }
-repositories {
-    mavenCentral()
-}
+
+
