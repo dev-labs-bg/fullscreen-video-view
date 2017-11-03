@@ -125,4 +125,4 @@ in the LeakCanary repository issues.
 
 License
 ==========
-Apache 2.0. See the LICENSE file for details.
+Apache 2.0. See the [LICENSE](https://github.com/dev-labs-bg/fullscreen-video-view/blob/master/LICENSE.txt) file for details.
