@@ -11,9 +11,9 @@ compile 'bg.devlabs.fullscreenvideoview:library:0.0.1'
 or Maven:
 ```maven
 <dependency>
-  <groupId>bg.devlabs.fullscreenvideoview</groupId>
-  <artifactId>library</artifactId>
-  <version><latest version></version>
+  <groupId>bg.devlabs</groupId>
+  <artifactId>fullscreen-video-view</artifactId>
+  <version>0.0.1</version>
   <type>pom</type>
 </dependency>
 ```
@@ -125,4 +125,4 @@ in the LeakCanary repository issues.
 
 License
 ==========
-MIT and Apache 2.0. See the LICENSE file for details.
+Apache 2.0. See the LICENSE file for details.
