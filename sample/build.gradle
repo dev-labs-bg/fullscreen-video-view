@@ -1,7 +1,9 @@
 apply from: '../dependencies.gradle'
 
-repositories {
-    mavenCentral()
+buildscript {
+    repositories {
+        mavenCentral()
+    }
 }
 
 apply plugin: 'com.android.application'
@@ -17,7 +19,9 @@ android {
         targetSdkVersion versions.compileSdk
         versionCode versions.publishVersionCode
         versionName versions.publishVersion
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    lintOptions {
+        abortOnError false
     }
     buildTypes {
         release {
