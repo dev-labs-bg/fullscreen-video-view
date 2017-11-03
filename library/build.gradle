@@ -1,5 +1,31 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
 apply from: '../dependencies.gradle'
+
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'fullscreen-video-view'
+
+    publishedGroupId = 'bg.devlabs'
+    libraryName = 'fullscreen-video-view'
+    artifact = 'fullscreen-video-view'
+
+    libraryDescription = 'A custom VideoView which makes loading, setting up and going fullscreen of videos easy.'
+
+    siteUrl = 'https://github.com/dev-labs-bg/fullscreen-video-view'
+    gitUrl = 'https://github.com/dev-labs-bg/fullscreen-video-view.git'
+
+    libraryVersion = '0.0.1'
+
+    developerId = 'developerId'
+    developerName = 'Developer Name'
+    developerEmail = 'developer@email.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'https://raw.githubusercontent.com/dev-labs-bg/fullscreen-video-view/master/LICENSE.txt'
+    allLicenses = ["Apache-2.0"]
+}
 
 android {
     compileSdkVersion versions.compileSdk
@@ -21,3 +47,6 @@ android {
 dependencies {
     implementation "com.android.support:appcompat-v7:$versions.supportLib"
 }
+
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
