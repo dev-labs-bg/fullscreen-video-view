@@ -13,7 +13,7 @@ or Maven:
 <dependency>
   <groupId>bg.devlabs.fullscreenvideoview</groupId>
   <artifactId>library</artifactId>
-  <version><latest version></version>
+  <version>0.0.1</version>
   <type>pom</type>
 </dependency>
 ```
@@ -125,4 +125,4 @@ in the LeakCanary repository issues.
 
 License
 ==========
-MIT and Apache 2.0. See the LICENSE file for details.
+Apache 2.0. See the [LICENSE](https://github.com/dev-labs-bg/fullscreen-video-view/blob/master/LICENSE.txt) file for details.

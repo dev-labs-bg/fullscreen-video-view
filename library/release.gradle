@@ -1,0 +1,67 @@
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+apply from: 'keystore.gradle'
+
+ext {
+    publishedGroupId = 'bg.devlabs.fullscreenvideoview'
+    artifactId = 'library'
+    libraryVersion = '0.0.1'
+}
+
+version = libraryVersion
+group = publishedGroupId
+
+bintray {
+    user = 'slavipetrov'
+    key = bintray_key
+    configurations = ['archives']
+    publish = true
+    override = true
+    pkg {
+        repo = "maven"
+        name = "fullscreen-video-view"
+        version {
+            name = libraryVersion
+        }
+    }
+}
+
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            packaging 'aar'
+            groupId publishedGroupId
+            artifactId artifactId
+            version libraryVersion
+            name artifactId
+        }
+    }
+}
+
+if (project.hasProperty("android")) {
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from android.sourceSets.main.java.srcDirs
+    }
+
+    task javadoc(type: Javadoc) {
+        source = android.sourceSets.main.java.srcDirs
+        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    }
+} else { // Java libraries
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+    // options.encoding = 'UTF-8'
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}

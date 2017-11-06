@@ -1,4 +1,6 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
 apply from: '../dependencies.gradle'
 
 android {
@@ -21,3 +23,5 @@ android {
 dependencies {
     implementation "com.android.support:appcompat-v7:$versions.supportLib"
 }
+
+apply from: 'release.gradle'
