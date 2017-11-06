@@ -11,8 +11,8 @@ compile 'bg.devlabs.fullscreenvideoview:library:0.0.1'
 or Maven:
 ```maven
 <dependency>
-  <groupId>bg.devlabs</groupId>
-  <artifactId>fullscreen-video-view</artifactId>
+  <groupId>bg.devlabs.fullscreenvideoview</groupId>
+  <artifactId>library</artifactId>
   <version>0.0.1</version>
   <type>pom</type>
 </dependency>
