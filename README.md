@@ -116,7 +116,7 @@ fullscreenVideoView.build(videoPath)
 Compatibility
 ==========
 - Minimum Android SDK: API level 19
-- Compile Android SDK: Api level 26
+- Compile Android SDK: API level 26
 
 Known issues
 ==========
