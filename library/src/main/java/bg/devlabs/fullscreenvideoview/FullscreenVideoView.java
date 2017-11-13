@@ -101,14 +101,14 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
         setOnKeyListener(new VideoOnKeyListener());
     }
 
-    public Builder build(File videoFile) {
+    public Builder videoFile(File videoFile) {
         builder = new Builder(this, controller, orientationDelegate,
                 videoMediaPlayer);
         builder.videoFile(videoFile);
         return builder;
     }
 
-    public Builder build(String videoUrl) {
+    public Builder videoUrl(String videoUrl) {
         builder = new Builder(this, controller, orientationDelegate,
                 videoMediaPlayer);
         builder.videoUrl(videoUrl);
