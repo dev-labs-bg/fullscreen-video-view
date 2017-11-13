@@ -272,7 +272,7 @@ class VideoControllerView extends FrameLayout {
             }
         } catch (IncompatibleClassChangeError ex) {
             // We were given an old version of the interface, that doesn't have
-            // the setCanPause/canSeekXYZ methods. This is OK, it just means we
+            // the canPause/canSeekXYZ methods. This is OK, it just means we
             // assume the media can be paused and seeked, and so we don't disable
             // the buttons.
             ex.printStackTrace();

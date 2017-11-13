@@ -5,7 +5,7 @@ apply from: 'keystore.gradle'
 ext {
     publishedGroupId = 'bg.devlabs.fullscreenvideoview'
     artifactId = 'library'
-    libraryVersion = '0.0.1'
+    libraryVersion = '0.0.2'
 }
 
 version = libraryVersion
@@ -58,7 +58,6 @@ if (project.hasProperty("android")) {
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from javadoc.destinationDir
-    // options.encoding = 'UTF-8'
 }
 
 artifacts {

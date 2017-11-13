@@ -36,12 +36,12 @@ public class Builder {
         fullscreenVideoView.setupMediaPlayer(videoFile.getPath());
     }
 
-    void videoPath(@NonNull final String videoPath) {
-        fullscreenVideoView.setupMediaPlayer(videoPath);
+    void videoUrl(@NonNull final String videoUrl) {
+        fullscreenVideoView.setupMediaPlayer(videoUrl);
     }
 
-    public Builder autoStartEnabled(boolean isAutoStartEnabled) {
-        fullscreenVideoView.setAutoStartEnabled(isAutoStartEnabled);
+    public Builder enableAutoStart() {
+        fullscreenVideoView.enableAutoStart();
         return this;
     }
 
@@ -130,18 +130,18 @@ public class Builder {
         return this;
     }
 
-    public Builder setCanPause(boolean isPauseEnabled) {
-        videoMediaPlayer.setCanPause(isPauseEnabled);
+    public Builder canPause(boolean canPause) {
+        videoMediaPlayer.setPauseEnabled(canPause);
         return this;
     }
 
-    public Builder setCanSeekBackward(boolean isSeekBackwardEnabled) {
-        videoMediaPlayer.setCanSeekBackward(isSeekBackwardEnabled);
+    public Builder canSeekBackward(boolean canSeekBackward) {
+        videoMediaPlayer.setCanSeekBackward(canSeekBackward);
         return this;
     }
 
-    public Builder setCanSeekForward(boolean isSeekForwardEnabled) {
-        videoMediaPlayer.setCanSeekForward(isSeekForwardEnabled);
+    public Builder canSeekForward(boolean canSeekForward) {
+        videoMediaPlayer.setCanSeekForward(canSeekForward);
         return this;
     }
 
