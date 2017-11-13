@@ -29,12 +29,12 @@ class ActionBarActivity : AppCompatActivity() {
         supportActionBar?.title = getString(R.string.action_bar_activity)
         val videoPath = "http://clips.vorwaerts-gmbh.de/VfE_html5.mp4"
 
-        fullscreenVideoView.build(videoPath)
+        fullscreenVideoView.videoUrl(videoPath)
                 .progressBarColor(R.color.colorAccent)
-                .autoStartEnabled(true)
+                .enableAutoStart()
                 .landscapeOrientation(LandscapeOrientation.SENSOR)
-                .portraitOrientation(PortraitOrientation.PORTRAIT)
-                .setCanSeekBackward(false)
-                .setCanSeekForward(false)
+                .portraitOrientation(PortraitOrientation.DEFAULT)
+                .canSeekForward(false)
+                .canSeekBackward(false)
     }
 }

@@ -54,23 +54,23 @@ class VideoMediaPlayer extends MediaPlayer {
         release();
     }
 
-    public boolean isAutoStartEnabled() {
+    boolean isAutoStartEnabled() {
         return isAutoStartEnabled;
     }
 
-    public void setAutoStartEnabled(boolean autoStartEnabled) {
-        isAutoStartEnabled = autoStartEnabled;
+    void enableAutoStart() {
+        isAutoStartEnabled = true;
     }
 
-    public void setCanPause(boolean canPause) {
+    void setPauseEnabled(boolean canPause) {
         this.canPause = canPause;
     }
 
-    public void setCanSeekBackward(boolean canSeekBackward) {
+    void setCanSeekBackward(boolean canSeekBackward) {
         this.canSeekBackward = canSeekBackward;
     }
 
-    public void setCanSeekForward(boolean canSeekForward) {
+    void setCanSeekForward(boolean canSeekForward) {
         this.canSeekForward = canSeekForward;
     }
 }

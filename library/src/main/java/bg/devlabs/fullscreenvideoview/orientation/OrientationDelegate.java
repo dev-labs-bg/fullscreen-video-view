@@ -40,7 +40,7 @@ public abstract class OrientationDelegate extends OrientationEventListener {
     private final ContentResolver contentResolver;
     // Orientation
     private LandscapeOrientation landscapeOrientation = LandscapeOrientation.SENSOR;
-    private PortraitOrientation portraitOrientation = PortraitOrientation.PORTRAIT;
+    private PortraitOrientation portraitOrientation = PortraitOrientation.DEFAULT;
     private boolean shouldEnterPortrait;
 
     protected OrientationDelegate(Context context, FullscreenVideoView fullscreenVideoView) {

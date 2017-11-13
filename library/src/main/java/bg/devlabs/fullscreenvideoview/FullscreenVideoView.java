@@ -108,10 +108,10 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
         return builder;
     }
 
-    public Builder build(String videoPath) {
+    public Builder build(String videoUrl) {
         builder = new Builder(this, controller, orientationDelegate,
                 videoMediaPlayer);
-        builder.videoPath(videoPath);
+        builder.videoUrl(videoUrl);
         return builder;
     }
 
@@ -224,8 +224,8 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
         orientationDelegate.toggleFullscreen();
     }
 
-    void setAutoStartEnabled(boolean autoStartEnabled) {
-        videoMediaPlayer.setAutoStartEnabled(autoStartEnabled);
+    void enableAutoStart() {
+        videoMediaPlayer.enableAutoStart();
     }
 
     private class VideoOnKeyListener implements View.OnKeyListener {
