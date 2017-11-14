@@ -8,14 +8,14 @@ Download
 ==========
 You can use Gradle:
 ```gradle
-compile 'bg.devlabs.fullscreenvideoview:library:0.0.4'
+compile 'bg.devlabs.fullscreenvideoview:library:0.0.5'
 ```
 or Maven:
 ```maven
 <dependency>
   <groupId>bg.devlabs.fullscreenvideoview</groupId>
   <artifactId>library</artifactId>
-  <version>0.0.4</version>
+  <version>0.0.5</version>
   <type>pom</type>
 </dependency>
 ```
@@ -100,7 +100,7 @@ fullscreenVideoView.videoUrl(videoUrl)
         .canSeekForward(false)
 ```
 
-Enable/disable video autostart
+Enable video auto-start
 ----------
 ```java
 fullscreenVideoView.videoUrl(videoUrl)
