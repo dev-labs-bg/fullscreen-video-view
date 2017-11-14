@@ -100,7 +100,7 @@ fullscreenVideoView.videoUrl(videoUrl)
         .canSeekForward(false)
 ```
 
-Enable/disable video autostart
+Enable video auto-start
 ----------
 ```java
 fullscreenVideoView.videoUrl(videoUrl)
