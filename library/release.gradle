@@ -5,7 +5,7 @@ apply from: 'keystore.gradle'
 ext {
     publishedGroupId = 'bg.devlabs.fullscreenvideoview'
     artifactId = 'library'
-    libraryVersion = '0.0.4'
+    libraryVersion = '0.0.5'
 }
 
 version = libraryVersion
