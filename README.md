@@ -1,19 +1,21 @@
 FullscreenVideoView
 ==========
+[ ![Download](https://api.bintray.com/packages/slavipetrov/maven/fullscreen-video-view/images/download.svg) ](https://bintray.com/slavipetrov/maven/fullscreen-video-view/_latestVersion)
+
 FullscreenVideoView is a custom VideoView Android library which makes loading, setting up and going fullscreen for video views easy.
 
 Download
 ==========
 You can use Gradle:
 ```gradle
-compile 'bg.devlabs.fullscreenvideoview:library:0.0.1'
+compile 'bg.devlabs.fullscreenvideoview:library:0.0.3'
 ```
 or Maven:
 ```maven
 <dependency>
   <groupId>bg.devlabs.fullscreenvideoview</groupId>
   <artifactId>library</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.3</version>
   <type>pom</type>
 </dependency>
 ```
@@ -50,7 +52,7 @@ Basic video loading (from URL or from a file)
 	...
 	FullscreenVideoView fullscreenVideoView = findViewById(R.id.fullscreenVideoView);
 	String videoUrl = "http://clips.vorwaerts-gmbh.de/VfE_html5.mp4";
-	fullscreenVideoView.build(videoUrl);
+	fullscreenVideoView.videoUrl(videoUrl);
 }
 
 // Loading from file
@@ -58,7 +60,7 @@ Basic video loading (from URL or from a file)
 	...
 	FullscreenVideoView fullscreenVideoView = findViewById(R.id.fullscreenVideoView);
 	File videoFile = new File("file_path");
-	fullscreenVideoView.build(videoFile);
+	fullscreenVideoView.videoFile(videoFile);
 }
 ```
 
@@ -66,7 +68,7 @@ Change controls drawable resources
 ----------
 Java
 ```java
-fullscreenVideoView.build(videoUrl)
+fullscreenVideoView.videoUrl(videoUrl)
         .playDrawable(R.drawable.ic_play)
         .pauseDrawable(R.drawable.ic_pause)
         .fastForwardDrawable(R.drawable.ic_fast_forward)
@@ -92,23 +94,23 @@ XML
 Enable/disable controls
 ----------
 ```java
-fullscreenVideoView.build(videoPath)
-        .setCanPause(true)
-        .setCanSeekBackward(false)
-        .setCanSeekForward(false)
+fullscreenVideoView.videoUrl(videoUrl)
+        .canPause(true)
+        .canSeekBackward(false)
+        .canSeekForward(false)
 ```
 
 Enable/disable video autostart
 ----------
 ```java
-fullscreenVideoView.build(videoPath)
-        .autoStartEnabled(true)
+fullscreenVideoView.videoUrl(videoUrl)
+        .enableAutoStart()
 ```
 
 Customize fast-forward and/or rewind seconds
 ----------
 ```java
-fullscreenVideoView.build(videoPath)
+fullscreenVideoView.videoUrl(videoUrl)
         .fastForwardSeconds(5)
         .rewindSeconds(5)
 ```
