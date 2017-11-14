@@ -28,10 +28,11 @@ import bg.devlabs.fullscreenvideoview.orientation.OrientationDelegate;
  * slavi@devlabs.bg
  */
 @SuppressWarnings("unused")
-public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Callback {
+public class FullscreenVideoView extends FrameLayout {
     // Views
     private VideoSurfaceView surfaceView;
     private SurfaceHolder surfaceHolder;
+    private SurfaceHolder.Callback surfaceHolderCallback;
     private ProgressBar progressBar;
     private VideoControllerView controller;
     // MediaPlayer
@@ -68,8 +69,9 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
             initOrientationHandlers();
         }
 
+        surfaceHolderCallback = new SurfaceHolderCallback();
         surfaceHolder = surfaceView.getHolder();
-        surfaceHolder.addCallback(this);
+        surfaceHolder.addCallback(surfaceHolderCallback);
 
         controller.init(this, videoMediaPlayer, attrs);
         setupProgressBarColor();
@@ -145,7 +147,7 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
         }
 
         if (surfaceHolder != null) {
-            surfaceHolder.removeCallback(this);
+            surfaceHolder.removeCallback(surfaceHolderCallback);
             surfaceHolder.getSurface().release();
         }
 
@@ -195,25 +197,6 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
 
     private void showProgress() {
         progressBar.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        if (videoMediaPlayer != null) {
-            videoMediaPlayer.setDisplay(surfaceHolder);
-        }
-    }
-
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        // Not used
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        if (videoMediaPlayer != null && isMediaPlayerPrepared) {
-            videoMediaPlayer.pause();
-        }
     }
 
     boolean isLandscape() {
@@ -280,6 +263,27 @@ public class FullscreenVideoView extends FrameLayout implements SurfaceHolder.Ca
             view.performClick();
             controller.show();
             return false;
+        }
+    }
+
+    private class SurfaceHolderCallback implements SurfaceHolder.Callback {
+        @Override
+        public void surfaceCreated(SurfaceHolder holder) {
+            if (videoMediaPlayer != null) {
+                videoMediaPlayer.setDisplay(surfaceHolder);
+            }
+        }
+
+        @Override
+        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+        }
+
+        @Override
+        public void surfaceDestroyed(SurfaceHolder holder) {
+            if (videoMediaPlayer != null && isMediaPlayerPrepared) {
+                videoMediaPlayer.pause();
+            }
         }
     }
 }
