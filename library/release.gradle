@@ -5,7 +5,7 @@ apply from: 'keystore.gradle'
 ext {
     publishedGroupId = 'bg.devlabs.fullscreenvideoview'
     artifactId = 'library'
-    libraryVersion = '0.0.3'
+    libraryVersion = '0.0.4'
 }
 
 version = libraryVersion
@@ -47,6 +47,14 @@ if (project.hasProperty("android")) {
     task javadoc(type: Javadoc) {
         source = android.sourceSets.main.java.srcDirs
         classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+
+        android.libraryVariants.all { variant ->
+            if (variant.name == 'release') {
+                owner.classpath += variant.getJavaCompiler().classpath
+            }
+        }
+        source = android.sourceSets.main.java.srcDirs
+        exclude '**/R.html', '**/R.*.html', '**/index.html'
     }
 } else { // Java libraries
     task sourcesJar(type: Jar, dependsOn: classes) {
