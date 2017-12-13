@@ -1,8 +1,10 @@
-FullscreenVideoView
+![logo](https://raw.githubusercontent.com/dev-labs-bg/fullscreen-video-view/master/logo.png)
 ==========
 [ ![Download](https://api.bintray.com/packages/slavipetrov/maven/fullscreen-video-view/images/download.svg) ](https://bintray.com/slavipetrov/maven/fullscreen-video-view/_latestVersion)
 
 FullscreenVideoView is a custom VideoView Android library which makes loading, setting up and going fullscreen for video views easy.
+
+<img src="https://github.com/dev-labs-bg/fullscreen-video-view/blob/master/preview.gif" width="250" height="445">
 
 Download
 ==========
