@@ -70,7 +70,7 @@ public class OrientationHelper extends OrientationEventListener {
         updateLayoutParams();
 
         // Hiding the supportToolbar
-        hideActionBar();
+        toggleActionBarVisibility(false);
 
         // Hide status bar
         toggleSystemUiVisibility(activity.getWindow());
@@ -105,7 +105,6 @@ public class OrientationHelper extends OrientationEventListener {
         Activity activity = (Activity) videoView.getContext();
         setOrientation(portraitOrientation.getValue());
 
-
         UiUtils.showOtherViews(getParent());
 
         ViewGroup.LayoutParams params = videoView.getLayoutParams();
@@ -113,7 +112,7 @@ public class OrientationHelper extends OrientationEventListener {
         params.height = originalHeight;
         videoView.setLayoutParams(params);
 
-        showActionBar();
+        toggleActionBarVisibility(true);
         toggleSystemUiVisibility(activity.getWindow());
     }
 
@@ -131,33 +130,23 @@ public class OrientationHelper extends OrientationEventListener {
         activityWindow.getDecorView().setSystemUiVisibility(newUiOptions);
     }
 
-    private void showActionBar() {
-        if (videoView.getContext() instanceof AppCompatActivity) {
-            ActionBar supportActionBar = ((AppCompatActivity) videoView.getContext())
-                    .getSupportActionBar();
+    private void toggleActionBarVisibility(boolean visible) {
+        // AppCompatActivity support action bar
+        ActionBar supportActionBar = ((AppCompatActivity) videoView.getContext())
+                .getSupportActionBar();
+        // Activity action bar
+        android.app.ActionBar actionBar = ((Activity) videoView.getContext()).getActionBar();
+        if (visible) {
             if (supportActionBar != null) {
                 supportActionBar.show();
             }
-        }
-        if (videoView.getContext() instanceof Activity) {
-            android.app.ActionBar actionBar = ((Activity) videoView.getContext()).getActionBar();
             if (actionBar != null) {
                 actionBar.show();
             }
-        }
-    }
-
-    private void hideActionBar() {
-        if (videoView.getContext() instanceof AppCompatActivity) {
-            ActionBar supportActionBar = ((AppCompatActivity) videoView.getContext())
-                    .getSupportActionBar();
+        } else {
             if (supportActionBar != null) {
                 supportActionBar.hide();
             }
-        }
-
-        if (videoView.getContext() instanceof Activity) {
-            android.app.ActionBar actionBar = ((Activity) videoView.getContext()).getActionBar();
             if (actionBar != null) {
                 actionBar.hide();
             }
@@ -228,7 +217,8 @@ public class OrientationHelper extends OrientationEventListener {
      * @return true or false according to whether the rotation is enabled or disabled
      */
     private static boolean isRotationEnabled(ContentResolver contentResolver) {
-        return Settings.System.getInt(contentResolver, Settings.System.ACCELEROMETER_ROTATION, 0) == 1;
+        return Settings.System.getInt(contentResolver, Settings.System.ACCELEROMETER_ROTATION,
+                0) == 1;
     }
 
     public boolean isLandscape() {
