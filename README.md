@@ -10,14 +10,14 @@ Download
 ==========
 You can use Gradle:
 ```gradle
-compile 'bg.devlabs.fullscreenvideoview:library:0.0.5'
+compile 'bg.devlabs.fullscreenvideoview:library:0.0.6'
 ```
 or Maven:
 ```maven
 <dependency>
   <groupId>bg.devlabs.fullscreenvideoview</groupId>
   <artifactId>library</artifactId>
-  <version>0.0.5</version>
+  <version>0.0.6</version>
   <type>pom</type>
 </dependency>
 ```
@@ -120,7 +120,7 @@ fullscreenVideoView.videoUrl(videoUrl)
 Compatibility
 ==========
 - Minimum Android SDK: API level 19
-- Compile Android SDK: API level 26
+- Compile Android SDK: API level 27
 
 Known issues
 ==========
