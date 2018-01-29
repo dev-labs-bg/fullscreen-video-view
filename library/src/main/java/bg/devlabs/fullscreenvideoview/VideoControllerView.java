@@ -24,6 +24,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -73,17 +74,21 @@ class VideoControllerView extends FrameLayout {
     private static final int FADE_OUT = 1;
     private static final int SHOW_PROGRESS = 2;
 
+    @Nullable
     VideoMediaPlayer videoMediaPlayer;
     private TextView endTime;
     private TextView currentTime;
     boolean isDragging;
+    @Nullable
     private Handler handler = new VideoControllerView.MessageHandler(this);
     private SeekBar progress;
     private ImageButton startPauseButton;
     private ImageButton ffwdButton;
     private ImageButton rewButton;
     private ImageButton fullscreenButton;
+    @Nullable
     private View.OnClickListener pauseListener = new PauseOnClickListener();
+    @Nullable
     private View.OnClickListener fullscreenListener = new FullscreenOnClickListener();
     // There are two scenarios that can trigger the seekbar listener to trigger:
     //
@@ -96,8 +101,11 @@ class VideoControllerView extends FrameLayout {
     // The second scenario involves the user operating the scroll ball, in this
     // case there WON'T BE onStartTrackingTouch/onStopTrackingTouch notifications,
     // we will simply apply the updated position without suspending regular updates.
+    @Nullable
     private SeekBar.OnSeekBarChangeListener seekListener = new OnSeekChangeListener();
+    @Nullable
     private View.OnClickListener rewListener = new RewindOnClickListener();
+    @Nullable
     private View.OnClickListener ffwdListener = new FfwdOnClickListener();
     // Drawables for the buttons of the controller
     private Drawable exitFullscreenDrawable = ContextCompat.getDrawable(getContext(),
@@ -119,7 +127,7 @@ class VideoControllerView extends FrameLayout {
     // VideoView interface which is used to communicate with the VideoView
     private FullscreenVideoView fullscreenVideoView;
 
-    public VideoControllerView(Context context, AttributeSet attrs) {
+    VideoControllerView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
@@ -128,7 +136,7 @@ class VideoControllerView extends FrameLayout {
         setupXmlAttributes(attrs);
     }
 
-    public VideoControllerView(Context context) {
+    VideoControllerView(Context context) {
         super(context);
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
         layoutInflater.inflate(R.layout.video_controller, this, true);

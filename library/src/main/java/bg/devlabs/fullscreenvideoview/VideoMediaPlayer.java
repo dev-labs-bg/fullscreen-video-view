@@ -1,6 +1,7 @@
 package bg.devlabs.fullscreenvideoview;
 
 import android.media.MediaPlayer;
+import android.support.annotation.Nullable;
 
 /**
  * Created by Slavi Petrov on 20.10.2017
@@ -8,14 +9,14 @@ import android.media.MediaPlayer;
  * slavi@devlabs.bg
  */
 class VideoMediaPlayer extends MediaPlayer {
+    @Nullable
     private FullscreenVideoView fullscreenVideoView;
     private boolean isAutoStartEnabled;
     private boolean canPause = true;
     private boolean canSeekBackward = true;
     private boolean canSeekForward = true;
 
-    VideoMediaPlayer(FullscreenVideoView fullscreenVideoView) {
-        super();
+    VideoMediaPlayer(@Nullable FullscreenVideoView fullscreenVideoView) {
         this.fullscreenVideoView = fullscreenVideoView;
     }
 
@@ -36,7 +37,9 @@ class VideoMediaPlayer extends MediaPlayer {
     }
 
     void toggleFullScreen() {
-        fullscreenVideoView.toggleFullscreen();
+        if (fullscreenVideoView != null) {
+            fullscreenVideoView.toggleFullscreen();
+        }
     }
 
     void onPauseResume() {

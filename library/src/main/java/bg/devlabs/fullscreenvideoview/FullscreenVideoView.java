@@ -20,7 +20,7 @@ import android.widget.ProgressBar;
 import java.io.File;
 import java.io.IOException;
 
-import bg.devlabs.fullscreenvideoview.orientation.OrientationDelegate;
+import bg.devlabs.fullscreenvideoview.orientation.OrientationHelper;
 
 /**
  * Created by Slavi Petrov on 05.10.2017
@@ -29,68 +29,110 @@ import bg.devlabs.fullscreenvideoview.orientation.OrientationDelegate;
  */
 @SuppressWarnings("unused")
 public class FullscreenVideoView extends FrameLayout {
-    // Views
-    private VideoSurfaceView surfaceView;
-    private SurfaceHolder surfaceHolder;
+    @Nullable
+    VideoSurfaceView surfaceView;
+    @Nullable
+    SurfaceHolder surfaceHolder;
     private SurfaceHolder.Callback surfaceHolderCallback;
+    @Nullable
     private ProgressBar progressBar;
-    private VideoControllerView controller;
-    // MediaPlayer
-    private VideoMediaPlayer videoMediaPlayer;
-    private boolean isMediaPlayerPrepared;
+    @Nullable
+    VideoControllerView controller;
+    @Nullable
+    VideoMediaPlayer videoMediaPlayer;
+    boolean isMediaPlayerPrepared;
     private Builder builder;
-    // Listeners
+    @Nullable
     private MediaPlayer.OnPreparedListener onPreparedListener;
+    @Nullable
     private View.OnTouchListener onTouchListener;
-    // Delegates
-    private OrientationDelegate orientationDelegate;
+    @Nullable
+    OrientationHelper orientationHelper;
 
-    public FullscreenVideoView(@NonNull final Context context) {
+    public FullscreenVideoView(@NonNull Context context) {
         super(context);
     }
 
-    public FullscreenVideoView(@NonNull final Context context, @Nullable final AttributeSet attrs) {
+    public FullscreenVideoView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init(attrs);
     }
 
-    public FullscreenVideoView(@NonNull final Context context, @Nullable final AttributeSet attrs,
-                               final int defStyleAttr) {
+    public FullscreenVideoView(@NonNull Context context, @Nullable AttributeSet attrs,
+                               int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(attrs);
     }
 
-    @SuppressWarnings("InstanceVariableUsedBeforeInitialized")
-    private void init(final AttributeSet attrs) {
+    private void init(AttributeSet attrs) {
         findChildViews();
         // Skip this init rows - needed when changing FullscreenVideoView properties in XML
         if (!isInEditMode()) {
             videoMediaPlayer = new VideoMediaPlayer(this);
             initOrientationHandlers();
         }
+        surfaceHolderCallback = new SurfaceHolder.Callback() {
+            @Override
+            public void surfaceCreated(SurfaceHolder holder) {
+                if (videoMediaPlayer != null) {
+                    videoMediaPlayer.setDisplay(surfaceHolder);
+                }
+            }
 
-        surfaceHolderCallback = new SurfaceHolderCallback();
-        surfaceHolder = surfaceView.getHolder();
-        surfaceHolder.addCallback(surfaceHolderCallback);
+            @Override
+            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 
-        controller.init(this, videoMediaPlayer, attrs);
+            }
+
+            @Override
+            public void surfaceDestroyed(SurfaceHolder holder) {
+                if (videoMediaPlayer != null && isMediaPlayerPrepared) {
+                    videoMediaPlayer.pause();
+                }
+            }
+        };
+        if (surfaceView != null) {
+            surfaceHolder = surfaceView.getHolder();
+            surfaceHolder.addCallback(surfaceHolderCallback);
+        }
+        if (controller != null) {
+            controller.init(this, videoMediaPlayer, attrs);
+        }
         setupProgressBarColor();
         initOnBackPressedListener();
 
         // Setup VideoView
         setupOnTouchListener();
-        onPreparedListener = new VideoOnPreparedListener();
+        onPreparedListener = new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mediaPlayer) {
+                Log.d(FullscreenVideoView.class.getSimpleName(), "onPrepared: ");
+                if (!((Activity) getContext()).isDestroyed()) {
+                    hideProgress();
+                    // Get the dimensions of the video
+                    int videoWidth = videoMediaPlayer.getVideoWidth();
+                    int videoHeight = videoMediaPlayer.getVideoHeight();
+                    surfaceView.updateLayoutParams(videoWidth, videoHeight);
+                    // Start media player if auto start is enabled
+                    if (mediaPlayer != null && videoMediaPlayer.isAutoStartEnabled()) {
+                        isMediaPlayerPrepared = true;
+                        mediaPlayer.start();
+                    }
+                }
+            }
+        };
     }
 
     private void initOrientationHandlers() {
         if (!isInEditMode()) {
-            orientationDelegate = new VideoOrientationDelegate();
-            orientationDelegate.enable();
+            if (orientationHelper != null) {
+                orientationHelper.enable();
+            }
         }
     }
 
     private void findChildViews() {
-        final LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
         layoutInflater.inflate(R.layout.fullscreen_video_view, this, true);
         surfaceView = findViewById(R.id.surface_view);
         progressBar = findViewById(R.id.progress_bar);
@@ -100,18 +142,25 @@ public class FullscreenVideoView extends FrameLayout {
     private void initOnBackPressedListener() {
         setFocusableInTouchMode(true);
         requestFocus();
-        setOnKeyListener(new VideoOnKeyListener());
+        setOnKeyListener(new OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                return (event.getAction() == KeyEvent.ACTION_UP)
+                        && (keyCode == KeyEvent.KEYCODE_BACK)
+                        && orientationHelper.shouldHandleOnBackPressed();
+            }
+        });
     }
 
     public Builder videoFile(File videoFile) {
-        builder = new Builder(this, controller, orientationDelegate,
+        builder = new Builder(this, controller, orientationHelper,
                 videoMediaPlayer);
         builder.videoFile(videoFile);
         return builder;
     }
 
     public Builder videoUrl(String videoUrl) {
-        builder = new Builder(this, controller, orientationDelegate,
+        builder = new Builder(this, controller, orientationHelper,
                 videoMediaPlayer);
         builder.videoUrl(videoUrl);
         return builder;
@@ -121,9 +170,13 @@ public class FullscreenVideoView extends FrameLayout {
     protected void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            orientationDelegate.activateFullscreen();
+            if (orientationHelper != null) {
+                orientationHelper.activateFullscreen();
+            }
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            orientationDelegate.exitFullscreen();
+            if (orientationHelper != null) {
+                orientationHelper.exitFullscreen();
+            }
         }
     }
 
@@ -135,11 +188,13 @@ public class FullscreenVideoView extends FrameLayout {
 
     private void handleOnDetach() {
         Log.d(FullscreenVideoView.class.getSimpleName(), "onDetachedFromWindow: ");
-        controller.onDetach();
+        if (controller != null) {
+            controller.onDetach();
+        }
 
         // Disable and null the OrientationEventListener
-        if (orientationDelegate != null) {
-            orientationDelegate.disable();
+        if (orientationHelper != null) {
+            orientationHelper.disable();
         }
 
         if (videoMediaPlayer != null) {
@@ -157,7 +212,7 @@ public class FullscreenVideoView extends FrameLayout {
         }
 
         controller = null;
-        orientationDelegate = null;
+        orientationHelper = null;
         videoMediaPlayer = null;
         surfaceHolder = null;
         surfaceView = null;
@@ -172,117 +227,77 @@ public class FullscreenVideoView extends FrameLayout {
     void setupMediaPlayer(String videoPath) {
         try {
             showProgress();
-            videoMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            videoMediaPlayer.setDataSource(videoPath);
-            videoMediaPlayer.setOnPreparedListener(onPreparedListener);
-            videoMediaPlayer.prepareAsync();
+            if (videoMediaPlayer != null) {
+                videoMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                videoMediaPlayer.setDataSource(videoPath);
+                videoMediaPlayer.setOnPreparedListener(onPreparedListener);
+                videoMediaPlayer.prepareAsync();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     private void setupOnTouchListener() {
-        onTouchListener = new VideoOnTouchListener();
+        onTouchListener = new OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                view.performClick();
+                if (controller != null) {
+                    controller.show();
+                }
+                return false;
+            }
+        };
         setOnTouchListener(onTouchListener);
     }
 
     private void setupProgressBarColor() {
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-        progressBar.animate().setDuration(shortAnimTime);
+        if (progressBar != null) {
+            progressBar.animate().setDuration(shortAnimTime);
+        }
     }
 
-    private void hideProgress() {
-        progressBar.setVisibility(View.INVISIBLE);
+    void hideProgress() {
+        if (progressBar != null) {
+            progressBar.setVisibility(View.INVISIBLE);
+        }
     }
 
     private void showProgress() {
-        progressBar.setVisibility(View.VISIBLE);
+        if (progressBar != null) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
     }
 
     boolean isLandscape() {
-        return orientationDelegate.isLandscape();
+        return orientationHelper.isLandscape();
     }
 
     void toggleFullscreen() {
-        orientationDelegate.toggleFullscreen();
+        if (orientationHelper != null) {
+            orientationHelper.toggleFullscreen();
+        }
     }
 
     void enableAutoStart() {
-        videoMediaPlayer.enableAutoStart();
-    }
-
-    private class VideoOnKeyListener implements View.OnKeyListener {
-        @Override
-        public boolean onKey(View v, int keyCode, KeyEvent event) {
-            return (event.getAction() == KeyEvent.ACTION_UP) &&
-                    (keyCode == KeyEvent.KEYCODE_BACK) &&
-                    orientationDelegate.shouldHandleOnBackPressed();
+        if (videoMediaPlayer != null) {
+            videoMediaPlayer.enableAutoStart();
         }
     }
 
-    private class VideoOnPreparedListener implements MediaPlayer.OnPreparedListener {
-        @Override
-        public void onPrepared(MediaPlayer mediaPlayer) {
-            Log.d(FullscreenVideoView.class.getSimpleName(), "onPrepared: ");
-            if (!((Activity) getContext()).isDestroyed()) {
-                hideProgress();
-                // Get the dimensions of the video
-                int videoWidth = videoMediaPlayer.getVideoWidth();
-                int videoHeight = videoMediaPlayer.getVideoHeight();
-                surfaceView.updateLayoutParams(videoWidth, videoHeight);
-                // Start media player if auto start is enabled
-                if (mediaPlayer != null && videoMediaPlayer.isAutoStartEnabled()) {
-                    isMediaPlayerPrepared = true;
-                    mediaPlayer.start();
-                }
-            }
-        }
-    }
-
-    private class VideoOrientationDelegate extends OrientationDelegate {
-        VideoOrientationDelegate() {
-            super(getContext(), FullscreenVideoView.this);
-        }
-
-        @Override
-        public void onOrientationChanged() {
-            // Update the fullscreen button drawable
+    public void onOrientationChanged() {
+        // Update the fullscreen button drawable
+        if (controller != null) {
             controller.updateFullScreenDrawable();
-            if (orientationDelegate.isLandscape()) {
+        }
+        if (surfaceView != null) {
+            if (orientationHelper.isLandscape()) {
                 surfaceView.resetLayoutParams();
             } else {
                 surfaceView.updateLayoutParams(videoMediaPlayer.getVideoWidth(),
                         videoMediaPlayer.getVideoHeight());
-            }
-        }
-    }
-
-    private class VideoOnTouchListener implements View.OnTouchListener {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            view.performClick();
-            controller.show();
-            return false;
-        }
-    }
-
-    private class SurfaceHolderCallback implements SurfaceHolder.Callback {
-        @Override
-        public void surfaceCreated(SurfaceHolder holder) {
-            if (videoMediaPlayer != null) {
-                videoMediaPlayer.setDisplay(surfaceHolder);
-            }
-        }
-
-        @Override
-        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
-        }
-
-        @Override
-        public void surfaceDestroyed(SurfaceHolder holder) {
-            if (videoMediaPlayer != null && isMediaPlayerPrepared) {
-                videoMediaPlayer.pause();
             }
         }
     }

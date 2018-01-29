@@ -27,7 +27,7 @@ import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAP
  * <p>
  * Handles orientation changes. Updates the VideoView layout params. Hides/shows the toolbar.
  */
-public abstract class OrientationDelegate extends OrientationEventListener {
+public class OrientationHelper extends OrientationEventListener {
     private static final int LEFT_LANDSCAPE = 90;
     private static final int RIGHT_LANDSCAPE = 270;
     private static final int PORTRAIT = 0;
@@ -43,7 +43,7 @@ public abstract class OrientationDelegate extends OrientationEventListener {
     private PortraitOrientation portraitOrientation = PortraitOrientation.DEFAULT;
     private boolean shouldEnterPortrait;
 
-    protected OrientationDelegate(Context context, FullscreenVideoView fullscreenVideoView) {
+    protected OrientationHelper(Context context, FullscreenVideoView fullscreenVideoView) {
         super(context);
         videoView = fullscreenVideoView;
         contentResolver = context.getContentResolver();
@@ -56,7 +56,7 @@ public abstract class OrientationDelegate extends OrientationEventListener {
         }
 
         // Fullscreen active
-        onOrientationChanged();
+        videoView.onOrientationChanged();
 
         // Change the screen orientation to SENSOR_LANDSCAPE
         Activity activity = ((Activity) videoView.getContext());
@@ -76,9 +76,6 @@ public abstract class OrientationDelegate extends OrientationEventListener {
         toggleSystemUiVisibility(activity.getWindow());
     }
 
-    protected abstract void onOrientationChanged();
-
-    @SuppressWarnings("SuspiciousNameCombination")
     private void updateLayoutParams() {
         ViewGroup.LayoutParams params = videoView.getLayoutParams();
         Context context = videoView.getContext();
@@ -102,7 +99,7 @@ public abstract class OrientationDelegate extends OrientationEventListener {
         }
 
         // Update the fullscreen button drawable
-        onOrientationChanged();
+        videoView.onOrientationChanged();
 
         // Change the screen orientation to PORTRAIT
         Activity activity = (Activity) videoView.getContext();
@@ -175,7 +172,7 @@ public abstract class OrientationDelegate extends OrientationEventListener {
         if (isLandscape) {
             // Locks the screen orientation to portrait
             setOrientation(portraitOrientation.getValue());
-            onOrientationChanged();
+            videoView.onOrientationChanged();
             return true;
         }
 
@@ -199,7 +196,6 @@ public abstract class OrientationDelegate extends OrientationEventListener {
         this.portraitOrientation = portraitOrientation;
     }
 
-    @SuppressWarnings("StandardVariableNames")
     private static boolean shouldChangeOrientation(int a, int b) {
         return a > b - ROTATE_THRESHOLD && a < b + ROTATE_THRESHOLD;
     }
@@ -232,8 +228,7 @@ public abstract class OrientationDelegate extends OrientationEventListener {
      * @return true or false according to whether the rotation is enabled or disabled
      */
     private static boolean isRotationEnabled(ContentResolver contentResolver) {
-        return Settings.System.getInt(contentResolver, Settings.System.ACCELEROMETER_ROTATION,
-                0) == 1;
+        return Settings.System.getInt(contentResolver, Settings.System.ACCELEROMETER_ROTATION, 0) == 1;
     }
 
     public boolean isLandscape() {
