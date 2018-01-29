@@ -43,7 +43,7 @@ public class OrientationHelper extends OrientationEventListener {
     private PortraitOrientation portraitOrientation = PortraitOrientation.DEFAULT;
     private boolean shouldEnterPortrait;
 
-    protected OrientationHelper(Context context, FullscreenVideoView fullscreenVideoView) {
+    public OrientationHelper(Context context, FullscreenVideoView fullscreenVideoView) {
         super(context);
         videoView = fullscreenVideoView;
         contentResolver = context.getContentResolver();

@@ -32,12 +32,14 @@ public class Builder {
         this.videoMediaPlayer = videoMediaPlayer;
     }
 
-    void videoFile(@NonNull File videoFile) {
+    Builder videoFile(@NonNull File videoFile) {
         fullscreenVideoView.setupMediaPlayer(videoFile.getPath());
+        return this;
     }
 
-    void videoUrl(@NonNull String videoUrl) {
+    Builder videoUrl(@NonNull String videoUrl) {
         fullscreenVideoView.setupMediaPlayer(videoUrl);
+        return this;
     }
 
     public Builder enableAutoStart() {

@@ -39,6 +39,8 @@ import android.widget.TextView;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 
+import bg.devlabs.fullscreenvideoview.orientation.OrientationHelper;
+
 /**
  * A view containing controls for a MediaPlayer. Typically contains the
  * buttons like "Play/Pause", "Rewind", "Fast Forward" and a progress
@@ -124,10 +126,9 @@ class VideoControllerView extends FrameLayout {
 
     private int fastForwardDuration = Constants.FAST_FORWARD_DURATION;
     private int rewindDuration = Constants.REWIND_DURATION;
-    // VideoView interface which is used to communicate with the VideoView
-    private FullscreenVideoView fullscreenVideoView;
+    private OrientationHelper orientationHelper;
 
-    VideoControllerView(Context context, AttributeSet attrs) {
+    public VideoControllerView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
@@ -136,7 +137,7 @@ class VideoControllerView extends FrameLayout {
         setupXmlAttributes(attrs);
     }
 
-    VideoControllerView(Context context) {
+    public VideoControllerView(Context context) {
         super(context);
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
         layoutInflater.inflate(R.layout.video_controller, this, true);
@@ -412,7 +413,7 @@ class VideoControllerView extends FrameLayout {
             return;
         }
 
-        if (fullscreenVideoView.isLandscape()) {
+        if (orientationHelper.isLandscape()) {
             fullscreenButton.setImageDrawable(exitFullscreenDrawable);
         } else {
             fullscreenButton.setImageDrawable(enterFullscreenDrawable);
@@ -508,11 +509,11 @@ class VideoControllerView extends FrameLayout {
         this.rewindDrawable = rewindDrawable;
     }
 
-    public void init(FullscreenVideoView fullscreenVideoView, VideoMediaPlayer videoMediaPlayer,
+    public void init(OrientationHelper orientationHelper, VideoMediaPlayer videoMediaPlayer,
                      AttributeSet attrs) {
         setupXmlAttributes(attrs);
+        this.orientationHelper = orientationHelper;
         this.videoMediaPlayer = videoMediaPlayer;
-        this.fullscreenVideoView = fullscreenVideoView;
         setMediaIcons();
     }
 
