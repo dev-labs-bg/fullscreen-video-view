@@ -83,7 +83,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
-            android:layout_marginTop="-7dp"
             android:background="@android:color/transparent"
             android:contentDescription="@string/cd_fullscreen_media_button"
             android:paddingBottom="4dp"

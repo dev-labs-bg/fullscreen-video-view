@@ -27,7 +27,7 @@ import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAP
  * <p>
  * Handles orientation changes. Updates the VideoView layout params. Hides/shows the toolbar.
  */
-public abstract class OrientationDelegate extends OrientationEventListener {
+public class OrientationHelper extends OrientationEventListener {
     private static final int LEFT_LANDSCAPE = 90;
     private static final int RIGHT_LANDSCAPE = 270;
     private static final int PORTRAIT = 0;
@@ -43,7 +43,7 @@ public abstract class OrientationDelegate extends OrientationEventListener {
     private PortraitOrientation portraitOrientation = PortraitOrientation.DEFAULT;
     private boolean shouldEnterPortrait;
 
-    protected OrientationDelegate(Context context, FullscreenVideoView fullscreenVideoView) {
+    public OrientationHelper(Context context, FullscreenVideoView fullscreenVideoView) {
         super(context);
         videoView = fullscreenVideoView;
         contentResolver = context.getContentResolver();
@@ -56,7 +56,7 @@ public abstract class OrientationDelegate extends OrientationEventListener {
         }
 
         // Fullscreen active
-        onOrientationChanged();
+        videoView.onOrientationChanged();
 
         // Change the screen orientation to SENSOR_LANDSCAPE
         Activity activity = ((Activity) videoView.getContext());
@@ -70,15 +70,12 @@ public abstract class OrientationDelegate extends OrientationEventListener {
         updateLayoutParams();
 
         // Hiding the supportToolbar
-        hideActionBar();
+        toggleActionBarVisibility(false);
 
         // Hide status bar
         toggleSystemUiVisibility(activity.getWindow());
     }
 
-    protected abstract void onOrientationChanged();
-
-    @SuppressWarnings("SuspiciousNameCombination")
     private void updateLayoutParams() {
         ViewGroup.LayoutParams params = videoView.getLayoutParams();
         Context context = videoView.getContext();
@@ -102,12 +99,11 @@ public abstract class OrientationDelegate extends OrientationEventListener {
         }
 
         // Update the fullscreen button drawable
-        onOrientationChanged();
+        videoView.onOrientationChanged();
 
         // Change the screen orientation to PORTRAIT
         Activity activity = (Activity) videoView.getContext();
         setOrientation(portraitOrientation.getValue());
-
 
         UiUtils.showOtherViews(getParent());
 
@@ -116,7 +112,7 @@ public abstract class OrientationDelegate extends OrientationEventListener {
         params.height = originalHeight;
         videoView.setLayoutParams(params);
 
-        showActionBar();
+        toggleActionBarVisibility(true);
         toggleSystemUiVisibility(activity.getWindow());
     }
 
@@ -134,33 +130,23 @@ public abstract class OrientationDelegate extends OrientationEventListener {
         activityWindow.getDecorView().setSystemUiVisibility(newUiOptions);
     }
 
-    private void showActionBar() {
-        if (videoView.getContext() instanceof AppCompatActivity) {
-            ActionBar supportActionBar = ((AppCompatActivity) videoView.getContext())
-                    .getSupportActionBar();
+    private void toggleActionBarVisibility(boolean visible) {
+        // AppCompatActivity support action bar
+        ActionBar supportActionBar = ((AppCompatActivity) videoView.getContext())
+                .getSupportActionBar();
+        // Activity action bar
+        android.app.ActionBar actionBar = ((Activity) videoView.getContext()).getActionBar();
+        if (visible) {
             if (supportActionBar != null) {
                 supportActionBar.show();
             }
-        }
-        if (videoView.getContext() instanceof Activity) {
-            android.app.ActionBar actionBar = ((Activity) videoView.getContext()).getActionBar();
             if (actionBar != null) {
                 actionBar.show();
             }
-        }
-    }
-
-    private void hideActionBar() {
-        if (videoView.getContext() instanceof AppCompatActivity) {
-            ActionBar supportActionBar = ((AppCompatActivity) videoView.getContext())
-                    .getSupportActionBar();
+        } else {
             if (supportActionBar != null) {
                 supportActionBar.hide();
             }
-        }
-
-        if (videoView.getContext() instanceof Activity) {
-            android.app.ActionBar actionBar = ((Activity) videoView.getContext()).getActionBar();
             if (actionBar != null) {
                 actionBar.hide();
             }
@@ -175,7 +161,7 @@ public abstract class OrientationDelegate extends OrientationEventListener {
         if (isLandscape) {
             // Locks the screen orientation to portrait
             setOrientation(portraitOrientation.getValue());
-            onOrientationChanged();
+            videoView.onOrientationChanged();
             return true;
         }
 
@@ -199,7 +185,6 @@ public abstract class OrientationDelegate extends OrientationEventListener {
         this.portraitOrientation = portraitOrientation;
     }
 
-    @SuppressWarnings("StandardVariableNames")
     private static boolean shouldChangeOrientation(int a, int b) {
         return a > b - ROTATE_THRESHOLD && a < b + ROTATE_THRESHOLD;
     }

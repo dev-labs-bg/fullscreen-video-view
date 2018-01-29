@@ -24,6 +24,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -37,6 +38,8 @@ import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
 import java.util.Locale;
+
+import bg.devlabs.fullscreenvideoview.orientation.OrientationHelper;
 
 /**
  * A view containing controls for a MediaPlayer. Typically contains the
@@ -73,17 +76,21 @@ class VideoControllerView extends FrameLayout {
     private static final int FADE_OUT = 1;
     private static final int SHOW_PROGRESS = 2;
 
+    @Nullable
     VideoMediaPlayer videoMediaPlayer;
     private TextView endTime;
     private TextView currentTime;
     boolean isDragging;
+    @Nullable
     private Handler handler = new VideoControllerView.MessageHandler(this);
     private SeekBar progress;
     private ImageButton startPauseButton;
     private ImageButton ffwdButton;
     private ImageButton rewButton;
     private ImageButton fullscreenButton;
+    @Nullable
     private View.OnClickListener pauseListener = new PauseOnClickListener();
+    @Nullable
     private View.OnClickListener fullscreenListener = new FullscreenOnClickListener();
     // There are two scenarios that can trigger the seekbar listener to trigger:
     //
@@ -96,8 +103,11 @@ class VideoControllerView extends FrameLayout {
     // The second scenario involves the user operating the scroll ball, in this
     // case there WON'T BE onStartTrackingTouch/onStopTrackingTouch notifications,
     // we will simply apply the updated position without suspending regular updates.
+    @Nullable
     private SeekBar.OnSeekBarChangeListener seekListener = new OnSeekChangeListener();
+    @Nullable
     private View.OnClickListener rewListener = new RewindOnClickListener();
+    @Nullable
     private View.OnClickListener ffwdListener = new FfwdOnClickListener();
     // Drawables for the buttons of the controller
     private Drawable exitFullscreenDrawable = ContextCompat.getDrawable(getContext(),
@@ -116,8 +126,7 @@ class VideoControllerView extends FrameLayout {
 
     private int fastForwardDuration = Constants.FAST_FORWARD_DURATION;
     private int rewindDuration = Constants.REWIND_DURATION;
-    // VideoView interface which is used to communicate with the VideoView
-    private FullscreenVideoView fullscreenVideoView;
+    private OrientationHelper orientationHelper;
 
     public VideoControllerView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -404,7 +413,7 @@ class VideoControllerView extends FrameLayout {
             return;
         }
 
-        if (fullscreenVideoView.isLandscape()) {
+        if (orientationHelper.isLandscape()) {
             fullscreenButton.setImageDrawable(exitFullscreenDrawable);
         } else {
             fullscreenButton.setImageDrawable(enterFullscreenDrawable);
@@ -500,11 +509,11 @@ class VideoControllerView extends FrameLayout {
         this.rewindDrawable = rewindDrawable;
     }
 
-    public void init(FullscreenVideoView fullscreenVideoView, VideoMediaPlayer videoMediaPlayer,
+    public void init(OrientationHelper orientationHelper, VideoMediaPlayer videoMediaPlayer,
                      AttributeSet attrs) {
         setupXmlAttributes(attrs);
+        this.orientationHelper = orientationHelper;
         this.videoMediaPlayer = videoMediaPlayer;
-        this.fullscreenVideoView = fullscreenVideoView;
         setMediaIcons();
     }
 

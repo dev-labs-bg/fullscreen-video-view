@@ -9,7 +9,7 @@ import android.support.v4.content.ContextCompat;
 import java.io.File;
 
 import bg.devlabs.fullscreenvideoview.orientation.LandscapeOrientation;
-import bg.devlabs.fullscreenvideoview.orientation.OrientationDelegate;
+import bg.devlabs.fullscreenvideoview.orientation.OrientationHelper;
 import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation;
 
 /**
@@ -17,27 +17,29 @@ import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation;
  * Dev Labs
  * slavi@devlabs.bg
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "ClassWithTooManyMethods", "ClassNamingConvention"})
 public class Builder {
     private final FullscreenVideoView fullscreenVideoView;
     private final VideoControllerView controller;
-    private final OrientationDelegate orientationDelegate;
+    private final OrientationHelper orientationHelper;
     private final VideoMediaPlayer videoMediaPlayer;
 
     Builder(FullscreenVideoView fullscreenVideoView, VideoControllerView controller,
-            OrientationDelegate orientationDelegate, VideoMediaPlayer videoMediaPlayer) {
+            OrientationHelper orientationHelper, VideoMediaPlayer videoMediaPlayer) {
         this.fullscreenVideoView = fullscreenVideoView;
         this.controller = controller;
-        this.orientationDelegate = orientationDelegate;
+        this.orientationHelper = orientationHelper;
         this.videoMediaPlayer = videoMediaPlayer;
     }
 
-    void videoFile(@NonNull final File videoFile) {
+    Builder videoFile(@NonNull File videoFile) {
         fullscreenVideoView.setupMediaPlayer(videoFile.getPath());
+        return this;
     }
 
-    void videoUrl(@NonNull final String videoUrl) {
+    Builder videoUrl(@NonNull String videoUrl) {
         fullscreenVideoView.setupMediaPlayer(videoUrl);
+        return this;
     }
 
     public Builder enableAutoStart() {
@@ -121,12 +123,12 @@ public class Builder {
     }
 
     public Builder landscapeOrientation(LandscapeOrientation landscapeOrientation) {
-        orientationDelegate.setLandscapeOrientation(landscapeOrientation);
+        orientationHelper.setLandscapeOrientation(landscapeOrientation);
         return this;
     }
 
     public Builder portraitOrientation(PortraitOrientation portraitOrientation) {
-        orientationDelegate.setPortraitOrientation(portraitOrientation);
+        orientationHelper.setPortraitOrientation(portraitOrientation);
         return this;
     }
 
