@@ -1,5 +1,6 @@
 package bg.devlabs.fullscreenvideoview;
 
+import android.os.Build;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
@@ -89,9 +90,15 @@ public class UiUtils {
      * @return true if the View is a ViewGroup, but not FullscreenVideoView or Toolbar
      */
     private static boolean shouldCheckChildren(View view) {
-        return view instanceof ViewGroup &&
-                !(view instanceof Toolbar) &&
-                !(view instanceof android.widget.Toolbar) &&
-                !(view instanceof FullscreenVideoView);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            return view instanceof ViewGroup &&
+                    !(view instanceof Toolbar) &&
+                    !(view instanceof android.widget.Toolbar) &&
+                    !(view instanceof FullscreenVideoView);
+        } else {
+            return view instanceof ViewGroup &&
+                    !(view instanceof Toolbar) &&
+                    !(view instanceof FullscreenVideoView);
+        }
     }
 }

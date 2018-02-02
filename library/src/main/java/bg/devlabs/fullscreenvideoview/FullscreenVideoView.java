@@ -2,8 +2,10 @@ package bg.devlabs.fullscreenvideoview;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -208,7 +210,18 @@ public class FullscreenVideoView extends FrameLayout {
         showProgress();
         try {
             if (videoMediaPlayer != null) {
-                videoMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                            .setUsage(AudioAttributes.USAGE_MEDIA)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                            .setLegacyStreamType(AudioManager.STREAM_MUSIC)
+                            .build();
+                    videoMediaPlayer.setAudioAttributes(audioAttributes);
+                } else {
+                    videoMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                }
+
                 videoMediaPlayer.setDataSource(videoPath);
                 videoMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     @Override
