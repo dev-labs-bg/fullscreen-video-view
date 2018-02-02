@@ -70,7 +70,7 @@ public class OrientationHelper extends OrientationEventListener {
         updateLayoutParams();
 
         // Hiding the supportToolbar
-        toggleActionBarVisibility(false);
+        toggleToolbarVisibility(false);
 
         // Hide status bar
         toggleSystemUiVisibility(activity.getWindow());
@@ -112,7 +112,7 @@ public class OrientationHelper extends OrientationEventListener {
         params.height = originalHeight;
         videoView.setLayoutParams(params);
 
-        toggleActionBarVisibility(true);
+        toggleToolbarVisibility(true);
         toggleSystemUiVisibility(activity.getWindow());
     }
 
@@ -130,25 +130,36 @@ public class OrientationHelper extends OrientationEventListener {
         activityWindow.getDecorView().setSystemUiVisibility(newUiOptions);
     }
 
+    private void toggleToolbarVisibility(boolean visible) {
+        if (videoView.getContext() instanceof AppCompatActivity) {
+            toggleSupportActionBarVisibility(visible);
+        }
+        if (videoView.getContext() instanceof Activity) {
+            toggleActionBarVisibility(visible);
+        }
+    }
+
     private void toggleActionBarVisibility(boolean visible) {
+        // Activity action bar
+        android.app.ActionBar actionBar = ((Activity) videoView.getContext()).getActionBar();
+        if (actionBar != null) {
+            if (visible) {
+                actionBar.show();
+            } else {
+                actionBar.hide();
+            }
+        }
+    }
+
+    private void toggleSupportActionBarVisibility(boolean visible) {
         // AppCompatActivity support action bar
         ActionBar supportActionBar = ((AppCompatActivity) videoView.getContext())
                 .getSupportActionBar();
-        // Activity action bar
-        android.app.ActionBar actionBar = ((Activity) videoView.getContext()).getActionBar();
-        if (visible) {
-            if (supportActionBar != null) {
+        if (supportActionBar != null) {
+            if (visible) {
                 supportActionBar.show();
-            }
-            if (actionBar != null) {
-                actionBar.show();
-            }
-        } else {
-            if (supportActionBar != null) {
+            } else {
                 supportActionBar.hide();
-            }
-            if (actionBar != null) {
-                actionBar.hide();
             }
         }
     }
