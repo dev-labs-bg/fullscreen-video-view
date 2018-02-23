@@ -3,16 +3,6 @@
 ### AndroidStudio ###
 # Covers files to be ignored for android development using Android Studio.
 
-# Built application files
-*.apk
-*.ap_
-
-# Files for the ART/Dalvik VM
-*.dex
-
-# Java class files
-*.class
-
 # Generated files
 bin/
 gen/
@@ -35,7 +25,6 @@ proguard/
 *.log
 
 # Android Studio
-/*/build/
 /*/local.properties
 /*/out
 /*/*/build
@@ -51,9 +40,6 @@ gen-external-apklibs
 
 # External native build folder generated in Android Studio 2.2 and later
 .externalNativeBuild
-
-# NDK
-obj/
 
 # IntelliJ IDEA
 *.iml

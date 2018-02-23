@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
             NoActionBarActivity.start(this)
         }
 
-        regularActivityButton.setOnClickListener{
+        regularActivityButton.setOnClickListener {
             RegularActivity.start(this)
         }
     }

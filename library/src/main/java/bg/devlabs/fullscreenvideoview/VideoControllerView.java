@@ -89,13 +89,25 @@ class VideoControllerView extends FrameLayout {
     private ImageButton rewButton;
     private ImageButton fullscreenButton;
     @Nullable
-    private View.OnClickListener pauseListener = new PauseOnClickListener();
+    private View.OnClickListener pauseListener = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            doPauseResume();
+            show(DEFAULT_TIMEOUT);
+        }
+    };
     @Nullable
-    private View.OnClickListener fullscreenListener = new FullscreenOnClickListener();
-    // There are two scenarios that can trigger the seekbar listener to trigger:
+    private View.OnClickListener fullscreenListener = new OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            doToggleFullscreen();
+            show(DEFAULT_TIMEOUT);
+        }
+    };
+    // There are two scenarios that can trigger the SeekBar listener to trigger:
     //
-    // The first is the user using the touchpad to adjust the position of the
-    // seekbar's thumb. In this case onStartTrackingTouch is called followed by
+    // The first is the user using the TouchPad to adjust the position of the
+    // SeekBar's thumb. In this case onStartTrackingTouch is called followed by
     // a number of onProgressChanged notifications, concluded by onStopTrackingTouch.
     // We're setting the field "isDragging" to true for the duration of the dragging
     // session to avoid jumps in the position in case of ongoing playback.
@@ -106,9 +118,37 @@ class VideoControllerView extends FrameLayout {
     @Nullable
     private SeekBar.OnSeekBarChangeListener seekListener = new OnSeekChangeListener();
     @Nullable
-    private View.OnClickListener rewListener = new RewindOnClickListener();
+    private View.OnClickListener rewListener = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (videoMediaPlayer == null) {
+                return;
+            }
+
+            int pos = videoMediaPlayer.getCurrentPosition();
+            pos -= rewindDuration; // milliseconds
+            videoMediaPlayer.seekTo(pos);
+            setProgress();
+
+            show(DEFAULT_TIMEOUT);
+        }
+    };
     @Nullable
-    private View.OnClickListener ffwdListener = new FfwdOnClickListener();
+    private View.OnClickListener ffwdListener = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (videoMediaPlayer == null) {
+                return;
+            }
+
+            int pos = videoMediaPlayer.getCurrentPosition();
+            pos += fastForwardDuration; // milliseconds
+            videoMediaPlayer.seekTo(pos);
+            setProgress();
+
+            show(DEFAULT_TIMEOUT);
+        }
+    };
     // Drawables for the buttons of the controller
     private Drawable exitFullscreenDrawable = ContextCompat.getDrawable(getContext(),
             R.drawable.ic_fullscreen_exit_white_48dp);
@@ -128,6 +168,13 @@ class VideoControllerView extends FrameLayout {
     private int rewindDuration = Constants.REWIND_DURATION;
     private OrientationHelper orientationHelper;
 
+    public VideoControllerView(Context context) {
+        super(context);
+        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+        layoutInflater.inflate(R.layout.video_controller, this, true);
+        initControllerView();
+    }
+
     public VideoControllerView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -137,16 +184,9 @@ class VideoControllerView extends FrameLayout {
         setupXmlAttributes(attrs);
     }
 
-    public VideoControllerView(Context context) {
-        super(context);
-        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        layoutInflater.inflate(R.layout.video_controller, this, true);
-        initControllerView();
-    }
-
     private void setupXmlAttributes(AttributeSet attrs) {
         TypedArray typedArr = getContext().obtainStyledAttributes(attrs,
-                R.styleable.FullscreenVideoView, 0, 0);
+                R.styleable.VideoControllerView, 0, 0);
         setupPlayPauseButton(typedArr);
         setupFullscreenButton(typedArr);
         setupFastForwardButton(typedArr);
@@ -157,7 +197,7 @@ class VideoControllerView extends FrameLayout {
     }
 
     private void setupProgressBar(TypedArray a) {
-        int color = a.getColor(R.styleable.FullscreenVideoView_progress_color, 0);
+        int color = a.getColor(R.styleable.VideoControllerView_progress_color, 0);
         if (color != 0) {
             // Set the default color
             progressBarColor = color;
@@ -167,7 +207,7 @@ class VideoControllerView extends FrameLayout {
     }
 
     private void setupRewindButton(TypedArray a) {
-        Drawable drawable = a.getDrawable(R.styleable.FullscreenVideoView_rew_drawable);
+        Drawable drawable = a.getDrawable(R.styleable.VideoControllerView_rew_drawable);
         if (drawable != null) {
             rewindDrawable = drawable;
         }
@@ -175,7 +215,7 @@ class VideoControllerView extends FrameLayout {
     }
 
     private void setupFastForwardButton(TypedArray a) {
-        Drawable drawable = a.getDrawable(R.styleable.FullscreenVideoView_ffwd_drawable);
+        Drawable drawable = a.getDrawable(R.styleable.VideoControllerView_ffwd_drawable);
         if (drawable != null) {
             fastForwardDrawable = drawable;
         }
@@ -184,27 +224,27 @@ class VideoControllerView extends FrameLayout {
 
     private void setupFullscreenButton(TypedArray a) {
         Drawable enterDrawable = a.getDrawable(
-                R.styleable.FullscreenVideoView_enter_fullscreen_drawable);
+                R.styleable.VideoControllerView_enter_fullscreen_drawable);
         if (enterDrawable != null) {
             enterFullscreenDrawable = enterDrawable;
         }
         fullscreenButton.setImageDrawable(enterFullscreenDrawable);
 
         Drawable exitDrawable = a.getDrawable(
-                R.styleable.FullscreenVideoView_exit_fullscreen_drawable);
+                R.styleable.VideoControllerView_exit_fullscreen_drawable);
         if (exitDrawable != null) {
             exitFullscreenDrawable = exitDrawable;
         }
     }
 
     private void setupPlayPauseButton(TypedArray a) {
-        Drawable drawable = a.getDrawable(R.styleable.FullscreenVideoView_play_drawable);
+        Drawable drawable = a.getDrawable(R.styleable.VideoControllerView_play_drawable);
         if (drawable != null) {
             playDrawable = drawable;
         }
         startPauseButton.setImageDrawable(playDrawable);
 
-        Drawable drawable1 = a.getDrawable(R.styleable.FullscreenVideoView_pause_drawable);
+        Drawable drawable1 = a.getDrawable(R.styleable.VideoControllerView_pause_drawable);
         if (drawable1 != null) {
             pauseDrawable = drawable1;
         }
@@ -308,9 +348,13 @@ class VideoControllerView extends FrameLayout {
         updatePausePlay();
         updateFullScreenDrawable();
 
-        // cause the progress bar to be updated even if mShowing
-        // was already true.  This happens, for example, if we're
+        // Cause the progress bar to be updated even if it's showing.
+        // This happens, for example, if we're
         // paused with the progress bar showing the user hits play.
+        if (handler == null) {
+            return;
+        }
+
         handler.sendEmptyMessage(SHOW_PROGRESS);
 
         Message msg = handler.obtainMessage(FADE_OUT);
@@ -330,7 +374,9 @@ class VideoControllerView extends FrameLayout {
     private void hide() {
         try {
             setVisibility(INVISIBLE);
-            handler.removeMessages(SHOW_PROGRESS);
+            if (handler != null) {
+                handler.removeMessages(SHOW_PROGRESS);
+            }
         } catch (IllegalArgumentException ignored) {
             Log.w("MediaController", "already removed");
         }
@@ -554,22 +600,6 @@ class VideoControllerView extends FrameLayout {
         }
     }
 
-    private class PauseOnClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View view) {
-            doPauseResume();
-            show(DEFAULT_TIMEOUT);
-        }
-    }
-
-    private class FullscreenOnClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View view) {
-            doToggleFullscreen();
-            show(DEFAULT_TIMEOUT);
-        }
-    }
-
     private class OnSeekChangeListener implements SeekBar.OnSeekBarChangeListener {
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
@@ -582,7 +612,9 @@ class VideoControllerView extends FrameLayout {
             // the seekbar and b) once the user is done dragging the thumb
             // we will post one of these messages to the queue again and
             // this ensures that there will be exactly one message queued up.
-            handler.removeMessages(SHOW_PROGRESS);
+            if (handler != null) {
+                handler.removeMessages(SHOW_PROGRESS);
+            }
         }
 
         @Override
@@ -615,37 +647,9 @@ class VideoControllerView extends FrameLayout {
             // Ensure that progress is properly updated in the future,
             // the call to show() does not guarantee this because it is a
             // no-op if we are already showing.
-            handler.sendEmptyMessage(SHOW_PROGRESS);
-        }
-    }
-
-    private class RewindOnClickListener implements View.OnClickListener {
-        public void onClick(View v) {
-            if (videoMediaPlayer == null) {
-                return;
+            if (handler != null) {
+                handler.sendEmptyMessage(SHOW_PROGRESS);
             }
-
-            int pos = videoMediaPlayer.getCurrentPosition();
-            pos -= rewindDuration; // milliseconds
-            videoMediaPlayer.seekTo(pos);
-            setProgress();
-
-            show(DEFAULT_TIMEOUT);
-        }
-    }
-
-    private class FfwdOnClickListener implements View.OnClickListener {
-        public void onClick(View v) {
-            if (videoMediaPlayer == null) {
-                return;
-            }
-
-            int pos = videoMediaPlayer.getCurrentPosition();
-            pos += fastForwardDuration; // milliseconds
-            videoMediaPlayer.seekTo(pos);
-            setProgress();
-
-            show(DEFAULT_TIMEOUT);
         }
     }
 }
