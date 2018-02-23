@@ -8,7 +8,7 @@ ext.versions = [
         bintrayPlugin     : '1.7.3',
         mavenPlugin       : '1.4.1',
 
-        supportLib        : '27.0.3',
+        supportLib        : '27.0.2',
         espresso          : '3.0.1',
         kotlin            : '1.2.21',
         leakCanary        : '1.5.4'
