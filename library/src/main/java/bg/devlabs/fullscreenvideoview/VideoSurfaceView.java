@@ -58,7 +58,7 @@ class VideoSurfaceView extends SurfaceView {
         setLayoutParams(lp);
     }
 
-    public void resetLayoutParams() {
+    private void resetLayoutParams() {
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) getLayoutParams();
         layoutParams.height = previousHeight;
         layoutParams.width = previousWidth;

@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
-        android:name="bg.devlabs.fullscreenvideoviewsample.FullscreenVideoViewApp"
+        android:name=".FullscreenVideoViewApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="bg.devlabs.fullscreenvideoviewsample.MainActivity"
+            android:name=".MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,17 +23,17 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="bg.devlabs.fullscreenvideoviewsample.ActionBarActivity"
+            android:name=".ActionBarActivity"
             android:configChanges="orientation|screenSize" />
         <activity
-            android:name="bg.devlabs.fullscreenvideoviewsample.ToolbarActivity"
+            android:name=".ToolbarActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/NoActionBarAppTheme" />
         <activity
-            android:name="bg.devlabs.fullscreenvideoviewsample.NoActionBarActivity"
+            android:name=".NoActionBarActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/NoActionBarAppTheme" />
-        <activity android:name="bg.devlabs.fullscreenvideoviewsample.RegularActivity"
+        <activity android:name=".RegularActivity"
             android:configChanges="orientation|screenSize"/>
     </application>
 

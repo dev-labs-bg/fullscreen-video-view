@@ -1,15 +1,15 @@
 ext.versions = [
         minSdk            : 19,
         compileSdk        : 27,
-        buildTools        : '26.0.2',
-        publishVersion    : '0.0.7',
+        buildTools        : '27.0.3',
+        publishVersion    : '0.0.8',
         publishVersionCode: 1,
         gradlePlugin      : '3.0.1',
         bintrayPlugin     : '1.7.3',
         mavenPlugin       : '1.4.1',
 
-        supportLib        : '27.0.2',
+        supportLib        : '27.0.3',
         espresso          : '3.0.1',
-        kotlin            : '1.2.0',
+        kotlin            : '1.2.21',
         leakCanary        : '1.5.4'
 ]
