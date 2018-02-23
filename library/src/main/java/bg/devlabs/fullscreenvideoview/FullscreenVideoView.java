@@ -285,13 +285,9 @@ public class FullscreenVideoView extends FrameLayout {
         if (controller != null) {
             controller.updateFullScreenDrawable();
         }
-        if (surfaceView != null) {
-            if (orientationHelper.isLandscape()) {
-                surfaceView.resetLayoutParams();
-            } else {
-                surfaceView.updateLayoutParams(videoMediaPlayer.getVideoWidth(),
-                        videoMediaPlayer.getVideoHeight());
-            }
+        if (surfaceView != null && videoMediaPlayer != null) {
+            surfaceView.updateLayoutParams(videoMediaPlayer.getVideoWidth(),
+                    videoMediaPlayer.getVideoHeight());
         }
     }
 }

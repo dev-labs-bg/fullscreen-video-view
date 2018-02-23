@@ -30,6 +30,7 @@ class VideoSurfaceView extends SurfaceView {
     }
 
     public void updateLayoutParams(int videoWidth, int videoHeight) {
+        resetLayoutParams();
         previousHeight = getLayoutParams().height;
         previousWidth = getLayoutParams().width;
         // Get the Display Metrics
@@ -39,7 +40,7 @@ class VideoSurfaceView extends SurfaceView {
         int screenHeight = displayMetrics.heightPixels;
         // Get the SurfaceView layout parameters
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) getLayoutParams();
-        if (videoHeight / screenHeight > videoWidth / screenWidth) {
+        if ((float) videoHeight / screenHeight > (float) videoWidth / screenWidth) {
             lp.height = screenHeight;
             // Set the width of the SurfaceView to match the aspect ratio of the video
             // be sure to cast these as floats otherwise the calculation will likely be 0
