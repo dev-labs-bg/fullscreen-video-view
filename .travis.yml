@@ -1,31 +1,24 @@
 language: android
 jdk: oraclejdk8
+sudo: false
 
 android:
   components:
-    - tools
     - platform-tools
     - tools
-    - android-21
-    - android-27
     - build-tools-27.0.3
+    - android-22
+    - android-24
+    - android-26
     - android-27
-    - addon-google_apis-google-27
-    - extra-google-google_play_services
     - extra-android-support
-    - extra-google-m2repository
     - extra-android-m2repository
-    - sys-img-armeabi-v7a-android-27
-    - sys-img-armeabi-v7a-android-21
-  licenses:
-    - 'android-sdk-preview-license-52d11cd2'
-    - 'android-sdk-license-.+'
-    - 'google-gdk-license-.+'
-
+    - sys-img-armeabi-v7a-android-22
+licenses:
+  - '.+'
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
-
 cache:
   directories:
     - $HOME/.gradle/caches/
@@ -33,16 +26,17 @@ cache:
     - $HOME/.android/build-cache
 
 before_install:
-  - echo "$ANDROID_HOME"
-  - mkdir "$ANDROID_HOME/licenses" || true
-  - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
-  - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
-  - echo y | android update sdk --no-ui --all --filter sys-img-armeabi-v7a-android-27,sys-img-x86_64-android-27,build-tools-27.0.3
   - yes | sdkmanager "platforms;android-27"
 
 before_script:
-  - android list targets
-  - echo no | android create avd --force -n test -t android-21 --abi armeabi-v7a
+  - chmod +x gradlew
+  # Create and start emulator
+  - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
   - emulator -avd test -no-skin -no-audio -no-window &
   - android-wait-for-emulator
   - adb shell input keyevent 82 &
+
+script: ./gradlew connectedAndroidTest
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
