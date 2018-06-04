@@ -87,7 +87,6 @@ class VideoControllerView extends FrameLayout {
     private ImageButton startPauseButton;
     private ImageButton ffwdButton;
     private ImageButton rewButton;
-    private ImageButton fullscreenButton;
     @Nullable
     private View.OnClickListener pauseListener = new OnClickListener() {
         @Override
@@ -202,7 +201,7 @@ class VideoControllerView extends FrameLayout {
             startPauseButton.setOnClickListener(pauseListener);
         }
 
-        fullscreenButton = findViewById(R.id.fullscreen_media_button);
+        ImageButton fullscreenButton = findViewById(R.id.fullscreen_media_button);
         if (fullscreenButton != null) {
             fullscreenButton.requestFocus();
             fullscreenButton.setOnClickListener(fullscreenListener);
@@ -416,7 +415,6 @@ class VideoControllerView extends FrameLayout {
         seekListener = null;
         handler = null;
         videoMediaPlayer = null;
-        Log.d(TAG, "onDetach: ");
     }
 
     public void setEnterFullscreenDrawable(Drawable enterFullscreenDrawable) {
