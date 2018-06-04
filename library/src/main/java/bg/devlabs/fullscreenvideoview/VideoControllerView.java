@@ -149,24 +149,12 @@ class VideoControllerView extends FrameLayout {
             show(DEFAULT_TIMEOUT);
         }
     };
-    // Drawables for the buttons of the controller
-    private Drawable exitFullscreenDrawable = ContextCompat.getDrawable(getContext(),
-            R.drawable.ic_fullscreen_exit_white_48dp);
-    private Drawable enterFullscreenDrawable = ContextCompat.getDrawable(getContext(),
-            R.drawable.ic_fullscreen_white_48dp);
-    private Drawable playDrawable = ContextCompat.getDrawable(getContext(),
-            R.drawable.ic_play_arrow_white_48dp);
-    private Drawable pauseDrawable = ContextCompat.getDrawable(getContext(),
-            R.drawable.ic_pause_white_48dp);
-    private Drawable fastForwardDrawable = ContextCompat.getDrawable(getContext(),
-            R.drawable.ic_fast_forward_white_48dp);
-    private Drawable rewindDrawable = ContextCompat.getDrawable(getContext(),
-            R.drawable.ic_fast_rewind_white_48dp);
+
+    private DrawableHelper drawableHelper;
     private int progressBarColor = Color.WHITE;
 
     private int fastForwardDuration = Constants.FAST_FORWARD_DURATION;
     private int rewindDuration = Constants.REWIND_DURATION;
-    private OrientationHelper orientationHelper;
 
     public VideoControllerView(Context context) {
         super(context);
@@ -185,15 +173,12 @@ class VideoControllerView extends FrameLayout {
     }
 
     private void setupXmlAttributes(AttributeSet attrs) {
-        TypedArray typedArr = getContext().obtainStyledAttributes(attrs,
+        TypedArray typedArray = getContext().obtainStyledAttributes(attrs,
                 R.styleable.VideoControllerView, 0, 0);
-        setupPlayPauseButton(typedArr);
-        setupFullscreenButton(typedArr);
-        setupFastForwardButton(typedArr);
-        setupRewindButton(typedArr);
-        setupProgressBar(typedArr);
+        drawableHelper.setupDrawables(typedArray);
+        setupProgressBar(typedArray);
         // Recycle the TypedArray
-        typedArr.recycle();
+        typedArray.recycle();
     }
 
     private void setupProgressBar(TypedArray a) {
@@ -204,50 +189,6 @@ class VideoControllerView extends FrameLayout {
         }
         progress.getProgressDrawable().setColorFilter(progressBarColor, PorterDuff.Mode.SRC_IN);
         progress.getThumb().setColorFilter(progressBarColor, PorterDuff.Mode.SRC_IN);
-    }
-
-    private void setupRewindButton(TypedArray a) {
-        Drawable drawable = a.getDrawable(R.styleable.VideoControllerView_rew_drawable);
-        if (drawable != null) {
-            rewindDrawable = drawable;
-        }
-        rewButton.setImageDrawable(rewindDrawable);
-    }
-
-    private void setupFastForwardButton(TypedArray a) {
-        Drawable drawable = a.getDrawable(R.styleable.VideoControllerView_ffwd_drawable);
-        if (drawable != null) {
-            fastForwardDrawable = drawable;
-        }
-        ffwdButton.setImageDrawable(fastForwardDrawable);
-    }
-
-    private void setupFullscreenButton(TypedArray a) {
-        Drawable enterDrawable = a.getDrawable(
-                R.styleable.VideoControllerView_enter_fullscreen_drawable);
-        if (enterDrawable != null) {
-            enterFullscreenDrawable = enterDrawable;
-        }
-        fullscreenButton.setImageDrawable(enterFullscreenDrawable);
-
-        Drawable exitDrawable = a.getDrawable(
-                R.styleable.VideoControllerView_exit_fullscreen_drawable);
-        if (exitDrawable != null) {
-            exitFullscreenDrawable = exitDrawable;
-        }
-    }
-
-    private void setupPlayPauseButton(TypedArray a) {
-        Drawable drawable = a.getDrawable(R.styleable.VideoControllerView_play_drawable);
-        if (drawable != null) {
-            playDrawable = drawable;
-        }
-        startPauseButton.setImageDrawable(playDrawable);
-
-        Drawable drawable1 = a.getDrawable(R.styleable.VideoControllerView_pause_drawable);
-        if (drawable1 != null) {
-            pauseDrawable = drawable1;
-        }
     }
 
     private void initControllerView() {
@@ -276,6 +217,9 @@ class VideoControllerView extends FrameLayout {
         if (rewButton != null) {
             rewButton.setOnClickListener(rewListener);
         }
+
+        drawableHelper = new DrawableHelper(getContext(), startPauseButton, ffwdButton, rewButton,
+                fullscreenButton);
 
         progress = findViewById(R.id.progress_seek_bar);
         if (progress != null) {
@@ -345,8 +289,8 @@ class VideoControllerView extends FrameLayout {
             setVisibility(VISIBLE);
         }
 
-        updatePausePlay();
-        updateFullScreenDrawable();
+        drawableHelper.updatePausePlay();
+        drawableHelper.updateFullScreenDrawable();
 
         // Cause the progress bar to be updated even if it's showing.
         // This happens, for example, if we're
@@ -362,6 +306,10 @@ class VideoControllerView extends FrameLayout {
             handler.removeMessages(FADE_OUT);
             handler.sendMessageDelayed(msg, timeout);
         }
+    }
+
+    public void updateFullScreenDrawable() {
+        drawableHelper.updateFullScreenDrawable();
     }
 
     private boolean isShowing() {
@@ -426,52 +374,12 @@ class VideoControllerView extends FrameLayout {
         return true;
     }
 
-    private void updateRewindDrawable() {
-        if (rewButton == null || videoMediaPlayer == null) {
-            return;
-        }
-
-        rewButton.setImageDrawable(rewindDrawable);
-    }
-
-    private void updateFastForwardDrawable() {
-        if (ffwdButton == null || videoMediaPlayer == null) {
-            return;
-        }
-
-        ffwdButton.setImageDrawable(fastForwardDrawable);
-    }
-
-    private void updatePausePlay() {
-        if (startPauseButton == null || videoMediaPlayer == null) {
-            return;
-        }
-
-        if (videoMediaPlayer.isPlaying()) {
-            startPauseButton.setImageDrawable(pauseDrawable);
-        } else {
-            startPauseButton.setImageDrawable(playDrawable);
-        }
-    }
-
-    public void updateFullScreenDrawable() {
-        if (fullscreenButton == null || videoMediaPlayer == null) {
-            return;
-        }
-
-        if (orientationHelper.isLandscape()) {
-            fullscreenButton.setImageDrawable(exitFullscreenDrawable);
-        } else {
-            fullscreenButton.setImageDrawable(enterFullscreenDrawable);
-        }
-    }
-
     private void doPauseResume() {
         if (videoMediaPlayer == null) {
             return;
         }
         videoMediaPlayer.onPauseResume();
-        updatePausePlay();
+        drawableHelper.updatePausePlay();
     }
 
     private void doToggleFullscreen() {
@@ -512,15 +420,11 @@ class VideoControllerView extends FrameLayout {
     }
 
     public void setEnterFullscreenDrawable(Drawable enterFullscreenDrawable) {
-        if (enterFullscreenDrawable != null) {
-            this.enterFullscreenDrawable = enterFullscreenDrawable;
-        }
+        drawableHelper.setEnterFullscreenDrawable(enterFullscreenDrawable);
     }
 
     public void setExitFullscreenDrawable(Drawable exitFullscreenDrawable) {
-        if (exitFullscreenDrawable != null) {
-            this.exitFullscreenDrawable = exitFullscreenDrawable;
-        }
+        drawableHelper.setExitFullscreenDrawable(exitFullscreenDrawable);
     }
 
     public void setProgressBarColor(int progressBarColor) {
@@ -528,15 +432,11 @@ class VideoControllerView extends FrameLayout {
     }
 
     public void setPlayDrawable(Drawable playDrawable) {
-        if (playDrawable != null) {
-            this.playDrawable = playDrawable;
-        }
+        drawableHelper.setPlayDrawable(playDrawable);
     }
 
     public void setPauseDrawable(Drawable pauseDrawable) {
-        if (pauseDrawable != null) {
-            this.pauseDrawable = pauseDrawable;
-        }
+        drawableHelper.setPauseDrawable(pauseDrawable);
     }
 
     public void setFastForwardDuration(int fastForwardDuration) {
@@ -548,26 +448,24 @@ class VideoControllerView extends FrameLayout {
     }
 
     public void setFastForwardDrawable(Drawable fastForwardDrawable) {
-        this.fastForwardDrawable = fastForwardDrawable;
+        drawableHelper.setFastForwardDrawable(fastForwardDrawable);
     }
 
     public void setRewindDrawable(Drawable rewindDrawable) {
-        this.rewindDrawable = rewindDrawable;
+        drawableHelper.setRewindDrawable(rewindDrawable);
     }
 
     public void init(OrientationHelper orientationHelper, VideoMediaPlayer videoMediaPlayer,
                      AttributeSet attrs) {
         setupXmlAttributes(attrs);
-        this.orientationHelper = orientationHelper;
         this.videoMediaPlayer = videoMediaPlayer;
-        setMediaIcons();
-    }
 
-    private void setMediaIcons() {
-        updatePausePlay();
-        updateFullScreenDrawable();
-        updateFastForwardDrawable();
-        updateRewindDrawable();
+        drawableHelper.setOrientationHelper(orientationHelper);
+        drawableHelper.setVideoMediaPlayer(videoMediaPlayer);
+        drawableHelper.updatePausePlay();
+        drawableHelper.updateFullScreenDrawable();
+        drawableHelper.updateFastForwardDrawable();
+        drawableHelper.updateRewindDrawable();
     }
 
     private static class MessageHandler extends Handler {
@@ -637,7 +535,7 @@ class VideoControllerView extends FrameLayout {
         public void onStopTrackingTouch(SeekBar seekBar) {
             isDragging = false;
             setProgress();
-            updatePausePlay();
+            drawableHelper.updatePausePlay();
             show(DEFAULT_TIMEOUT);
 
             // Ensure that progress is properly updated in the future,

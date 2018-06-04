@@ -268,7 +268,7 @@ public class FullscreenVideoView extends FrameLayout {
         }
     }
 
-    private void toggleFullscreen() {
+    public void toggleFullscreen() {
         if (orientationHelper != null) {
             orientationHelper.toggleFullscreen();
         }

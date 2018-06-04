@@ -17,7 +17,7 @@ import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation;
  * Dev Labs
  * slavi@devlabs.bg
  */
-@SuppressWarnings({"unused"})
+@SuppressWarnings({"unused", "ClassWithTooManyMethods", "ClassNamingConvention"})
 public class Builder {
     private final FullscreenVideoView fullscreenVideoView;
     private final VideoControllerView controller;
@@ -32,12 +32,12 @@ public class Builder {
         this.videoMediaPlayer = videoMediaPlayer;
     }
 
-    public Builder videoFile(@NonNull File videoFile) {
+    Builder videoFile(@NonNull File videoFile) {
         fullscreenVideoView.setupMediaPlayer(videoFile.getPath());
         return this;
     }
 
-    public Builder videoUrl(@NonNull String videoUrl) {
+    Builder videoUrl(@NonNull String videoUrl) {
         fullscreenVideoView.setupMediaPlayer(videoUrl);
         return this;
     }
