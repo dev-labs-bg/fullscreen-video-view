@@ -1,5 +1,7 @@
 language: android
-jdk: oraclejdk8
+jdk: 
+  - oraclejdk8
+sudo: false
 android:
   components:
     - tools
@@ -13,6 +15,7 @@ android:
     - extra-google-m2repository
     - extra-android-m2repository
 script:
-  - ./gradlew build
+  - ./gradlew clean build
 before_install: 
   - chmod +x gradlew
+  - mkdir "$ANDROID_HOME/licenses" || true
