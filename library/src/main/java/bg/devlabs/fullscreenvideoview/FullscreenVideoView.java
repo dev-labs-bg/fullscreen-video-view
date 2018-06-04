@@ -30,20 +30,20 @@ import bg.devlabs.fullscreenvideoview.orientation.OrientationHelper;
 @SuppressWarnings("unused")
 public class FullscreenVideoView extends FrameLayout {
     @Nullable
-    VideoSurfaceView surfaceView;
+    private VideoSurfaceView surfaceView;
     @Nullable
-    SurfaceHolder surfaceHolder;
+    private SurfaceHolder surfaceHolder;
     @Nullable
     private ProgressBar progressBar;
     @Nullable
-    VideoControllerView controller;
+    private VideoControllerView controller;
     @Nullable
-    VideoMediaPlayer videoMediaPlayer;
-    boolean isMediaPlayerPrepared;
+    private VideoMediaPlayer videoMediaPlayer;
+    private boolean isMediaPlayerPrepared;
     @Nullable
-    OrientationHelper orientationHelper;
+    private OrientationHelper orientationHelper;
     private SurfaceHolder.Callback surfaceHolderCallback;
-    boolean isPaused;
+    private boolean isPaused;
 
     public FullscreenVideoView(@NonNull Context context) {
         super(context);
@@ -101,7 +101,6 @@ public class FullscreenVideoView extends FrameLayout {
 
                 @Override
                 public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
                 }
 
                 @Override
@@ -149,14 +148,14 @@ public class FullscreenVideoView extends FrameLayout {
     @Override
     protected void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        if (orientationHelper == null) {
+            return;
+        }
+
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            if (orientationHelper != null) {
-                orientationHelper.activateFullscreen();
-            }
+            orientationHelper.activateFullscreen();
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            if (orientationHelper != null) {
-                orientationHelper.exitFullscreen();
-            }
+            orientationHelper.exitFullscreen();
         }
     }
 
@@ -207,7 +206,7 @@ public class FullscreenVideoView extends FrameLayout {
         setOnTouchListener(null);
     }
 
-    void setupMediaPlayer(String videoPath) {
+    public void setupMediaPlayer(String videoPath) {
         showProgress();
         try {
             if (videoMediaPlayer != null) {
@@ -257,7 +256,7 @@ public class FullscreenVideoView extends FrameLayout {
         }
     }
 
-    void hideProgress() {
+    private void hideProgress() {
         if (progressBar != null) {
             progressBar.setVisibility(View.INVISIBLE);
         }
@@ -269,13 +268,13 @@ public class FullscreenVideoView extends FrameLayout {
         }
     }
 
-    void toggleFullscreen() {
+    private void toggleFullscreen() {
         if (orientationHelper != null) {
             orientationHelper.toggleFullscreen();
         }
     }
 
-    void enableAutoStart() {
+    public void enableAutoStart() {
         if (videoMediaPlayer != null) {
             videoMediaPlayer.enableAutoStart();
         }

@@ -77,10 +77,10 @@ class VideoControllerView extends FrameLayout {
     private static final int SHOW_PROGRESS = 2;
 
     @Nullable
-    VideoMediaPlayer videoMediaPlayer;
+    private VideoMediaPlayer videoMediaPlayer;
     private TextView endTime;
     private TextView currentTime;
-    boolean isDragging;
+    private boolean isDragging;
     @Nullable
     private Handler handler = new VideoControllerView.MessageHandler(this);
     private SeekBar progress;
@@ -571,31 +571,27 @@ class VideoControllerView extends FrameLayout {
     }
 
     private static class MessageHandler extends Handler {
-        private final WeakReference<VideoControllerView> mView;
+        private final WeakReference<VideoControllerView> view;
 
         MessageHandler(VideoControllerView view) {
-            mView = new WeakReference<>(view);
+            this.view = new WeakReference<>(view);
         }
 
         @Override
         public void handleMessage(Message msg) {
-            VideoControllerView view = mView.get();
+            VideoControllerView view = this.view.get();
             if (view == null || view.videoMediaPlayer == null) {
                 return;
             }
 
-            int pos;
-            switch (msg.what) {
-                case FADE_OUT:
-                    view.hide();
-                    break;
-                case SHOW_PROGRESS:
-                    pos = view.setProgress();
-                    if (!view.isDragging && view.isShowing() && view.videoMediaPlayer.isPlaying()) {
-                        msg = obtainMessage(SHOW_PROGRESS);
-                        sendMessageDelayed(msg, 1000 - (pos % 1000));
-                    }
-                    break;
+            if (msg.what == FADE_OUT) {
+                view.hide();
+            } else { // SHOW_PROGRESS
+                int position = view.setProgress();
+                if (!view.isDragging && view.isShowing() && view.videoMediaPlayer.isPlaying()) {
+                    Message message = obtainMessage(SHOW_PROGRESS);
+                    sendMessageDelayed(message, 1000 - (position % 1000));
+                }
             }
         }
     }
