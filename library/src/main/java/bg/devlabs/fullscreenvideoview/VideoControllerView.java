@@ -403,7 +403,7 @@ class VideoControllerView extends FrameLayout {
                 long pos = Constants.ONE_MILLISECOND * position / duration;
                 progress.setProgress((int) pos);
             }
-            int percent = VideoMediaPlayer.getBufferPercentage();
+            int percent = videoMediaPlayer.getBufferPercentage();
             progress.setSecondaryProgress(percent * 10);
         }
 

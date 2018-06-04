@@ -20,29 +20,29 @@ class VideoMediaPlayer extends MediaPlayer {
         this.fullscreenVideoView = fullscreenVideoView;
     }
 
-    static int getBufferPercentage() {
+    public int getBufferPercentage() {
         return 0;
     }
 
-    boolean canPause() {
+    public boolean canPause() {
         return canPause;
     }
 
-    boolean canSeekBackward() {
+    public boolean canSeekBackward() {
         return canSeekBackward;
     }
 
-    boolean canSeekForward() {
+    public boolean canSeekForward() {
         return canSeekForward;
     }
 
-    void toggleFullScreen() {
+    public void toggleFullScreen() {
         if (fullscreenVideoView != null) {
             fullscreenVideoView.toggleFullscreen();
         }
     }
 
-    void onPauseResume() {
+    public void onPauseResume() {
         if (isPlaying()) {
             pause();
         } else {
@@ -50,30 +50,30 @@ class VideoMediaPlayer extends MediaPlayer {
         }
     }
 
-    void onDetach() {
+    public void onDetach() {
         fullscreenVideoView = null;
         setOnPreparedListener(null);
         stop();
         release();
     }
 
-    boolean isAutoStartEnabled() {
+    public boolean isAutoStartEnabled() {
         return isAutoStartEnabled;
     }
 
-    void enableAutoStart() {
+    public void enableAutoStart() {
         isAutoStartEnabled = true;
     }
 
-    void setPauseEnabled(boolean canPause) {
+    public void setPauseEnabled(boolean canPause) {
         this.canPause = canPause;
     }
 
-    void setCanSeekBackward(boolean canSeekBackward) {
+    public void setCanSeekBackward(boolean canSeekBackward) {
         this.canSeekBackward = canSeekBackward;
     }
 
-    void setCanSeekForward(boolean canSeekForward) {
+    public void setCanSeekForward(boolean canSeekForward) {
         this.canSeekForward = canSeekForward;
     }
 }
