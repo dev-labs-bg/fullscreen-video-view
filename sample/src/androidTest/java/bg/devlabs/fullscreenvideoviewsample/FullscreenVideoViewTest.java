@@ -41,7 +41,7 @@ public class FullscreenVideoViewTest {
 
     @Test
     public void fullscreenVideoViewShown() {
-        onView(withId(R.id.video_player))
+        onView(withId(R.id.fullscreenVideoView))
                 .check(matches(isDisplayed()));
     }
 
@@ -107,7 +107,7 @@ public class FullscreenVideoViewTest {
     }
 
     private static void clickToShowController() {
-        onView(withId(R.id.video_player))
+        onView(withId(R.id.fullscreenVideoView))
                 .check(matches(isDisplayed()))
                 .perform(click());
     }
