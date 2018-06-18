@@ -1,7 +1,7 @@
 ![logo](https://raw.githubusercontent.com/dev-labs-bg/fullscreen-video-view/master/logo.png)
 ==========
 [![Download](https://api.bintray.com/packages/slavipetrov/maven/fullscreen-video-view/images/download.svg) ](https://bintray.com/slavipetrov/maven/fullscreen-video-view/_latestVersion)
-[![Build Status](https://travis-ci.org/dev-labs-bg/fullscreen-video-view.svg?branch=master)](https://travis-ci.org/dev-labs-bg/fullscreen-video-view)
+[![Build Status](https://travis-ci.org/dev-labs-bg/fullscreen-video-view.svg?branch=0.0.9)](https://travis-ci.org/dev-labs-bg/fullscreen-video-view)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/5d2c2572dd7b4a2fb5eeabd6c2e18fbc)](https://www.codacy.com/app/slavipetrov/fullscreen-video-view?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dev-labs-bg/fullscreen-video-view&amp;utm_campaign=Badge_Grade)
 
 FullscreenVideoView is a custom VideoView Android library which makes loading, setting up and going fullscreen for video views easy.
