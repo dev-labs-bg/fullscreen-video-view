@@ -24,8 +24,10 @@ public class Builder {
     private final OrientationHelper orientationHelper;
     private final VideoMediaPlayer videoMediaPlayer;
 
-    Builder(FullscreenVideoView fullscreenVideoView, VideoControllerView controller,
-            OrientationHelper orientationHelper, VideoMediaPlayer videoMediaPlayer) {
+    Builder(FullscreenVideoView fullscreenVideoView,
+            VideoControllerView controller,
+            OrientationHelper orientationHelper,
+            VideoMediaPlayer videoMediaPlayer) {
         this.fullscreenVideoView = fullscreenVideoView;
         this.controller = controller;
         this.orientationHelper = orientationHelper;
@@ -137,11 +139,39 @@ public class Builder {
         return this;
     }
 
+    public Builder addSeekForwardButton() {
+        videoMediaPlayer.addSeekForwardButton();
+        return this;
+    }
+
+    public Builder addSeekBackwardButton() {
+        videoMediaPlayer.addSeekBackwardButton();
+        return this;
+    }
+
+    /**
+     * Method implementation: pass 'true' to enable and pass 'false' to disable the
+     * seek backward button. It's is disabled by default, so when it has to be disabled the
+     * user passes 'false' to the method or just does not use it. In this case passing 'true' or
+     * 'false' is confusing.
+     *
+     * @deprecated As of release 1.0.0, replaced by {@link #addSeekBackwardButton()} ()}
+     */
+    @Deprecated
     public Builder canSeekBackward(boolean canSeekBackward) {
         videoMediaPlayer.setCanSeekBackward(canSeekBackward);
         return this;
     }
 
+    /**
+     * Method implementation: pass 'true' to enable and pass 'false' to disable the
+     * seek forward button. It's is disabled by default, so when it has to be disabled the
+     * user passes 'false' to the method or just does not use it. In this case passing 'true' or
+     * 'false' is confusing.
+     *
+     * @deprecated As of release 1.0.0, replaced by {@link #addSeekForwardButton()}
+     */
+    @Deprecated
     public Builder canSeekForward(boolean canSeekForward) {
         videoMediaPlayer.setCanSeekForward(canSeekForward);
         return this;

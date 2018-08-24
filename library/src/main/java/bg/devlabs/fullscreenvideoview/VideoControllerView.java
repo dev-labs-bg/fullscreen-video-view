@@ -157,7 +157,7 @@ class VideoControllerView extends FrameLayout {
 
     public VideoControllerView(Context context) {
         super(context);
-        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+        LayoutInflater layoutInflater = LayoutInflater.from(context);
         layoutInflater.inflate(R.layout.video_controller, this, true);
         initControllerView();
     }
@@ -241,25 +241,23 @@ class VideoControllerView extends FrameLayout {
     }
 
     /**
-     * Disable pause or seek buttons if the stream cannot be paused or seeked.
-     * This requires the control interface to be a MediaPlayerControlExt
+     * Change the buttons visibility according to the flags in {@link #videoMediaPlayer}.
      */
-    @SuppressWarnings("FeatureEnvy")
-    private void disableUnsupportedButtons() {
+    private void setupButtonsVisibility() {
         if (videoMediaPlayer == null) {
             return;
         }
 
         try {
             if (startPauseButton != null && !videoMediaPlayer.canPause()) {
-                startPauseButton.setEnabled(false);
+                startPauseButton.setEnabled(true);
             }
-            if (rewButton != null && !videoMediaPlayer.canSeekBackward()) {
-                rewButton.setEnabled(false);
+            if (rewButton != null && !videoMediaPlayer.showSeekBackwardButton()) {
+                rewButton.setEnabled(true);
                 rewButton.setVisibility(INVISIBLE);
             }
-            if (ffwdButton != null && !videoMediaPlayer.canSeekForward()) {
-                ffwdButton.setEnabled(false);
+            if (ffwdButton != null && !videoMediaPlayer.showSeekForwardButton()) {
+                ffwdButton.setEnabled(true);
                 ffwdButton.setVisibility(INVISIBLE);
             }
         } catch (IncompatibleClassChangeError ex) {
@@ -284,7 +282,7 @@ class VideoControllerView extends FrameLayout {
             if (startPauseButton != null) {
                 startPauseButton.requestFocus();
             }
-            disableUnsupportedButtons();
+            setupButtonsVisibility();
             setVisibility(VISIBLE);
         }
 
@@ -403,7 +401,7 @@ class VideoControllerView extends FrameLayout {
         if (progress != null) {
             progress.setEnabled(enabled);
         }
-        disableUnsupportedButtons();
+        setupButtonsVisibility();
         super.setEnabled(enabled);
     }
 

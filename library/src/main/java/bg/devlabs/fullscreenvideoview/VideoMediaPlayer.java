@@ -13,8 +13,8 @@ class VideoMediaPlayer extends MediaPlayer {
     private FullscreenVideoView fullscreenVideoView;
     private boolean isAutoStartEnabled;
     private boolean canPause = true;
-    private boolean canSeekBackward = true;
-    private boolean canSeekForward = true;
+    private boolean showSeekBackwardButton = false;
+    private boolean showSeekForwardButton = false;
 
     VideoMediaPlayer(@Nullable FullscreenVideoView fullscreenVideoView) {
         this.fullscreenVideoView = fullscreenVideoView;
@@ -28,12 +28,12 @@ class VideoMediaPlayer extends MediaPlayer {
         return canPause;
     }
 
-    public boolean canSeekBackward() {
-        return canSeekBackward;
+    public boolean showSeekForwardButton() {
+        return showSeekForwardButton;
     }
 
-    public boolean canSeekForward() {
-        return canSeekForward;
+    public boolean showSeekBackwardButton() {
+        return showSeekBackwardButton;
     }
 
     public void toggleFullScreen() {
@@ -69,11 +69,21 @@ class VideoMediaPlayer extends MediaPlayer {
         this.canPause = canPause;
     }
 
-    public void setCanSeekBackward(boolean canSeekBackward) {
-        this.canSeekBackward = canSeekBackward;
+    public void addSeekForwardButton() {
+        this.showSeekForwardButton = true;
     }
 
-    public void setCanSeekForward(boolean canSeekForward) {
-        this.canSeekForward = canSeekForward;
+    public void addSeekBackwardButton() {
+        this.showSeekBackwardButton = true;
+    }
+    
+    @Deprecated
+    void setCanSeekBackward(boolean canSeekBackward) {
+        this.showSeekBackwardButton = canSeekBackward;
+    }
+
+    @Deprecated
+    void setCanSeekForward(boolean canSeekForward) {
+        this.showSeekForwardButton = canSeekForward;
     }
 }
