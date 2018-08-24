@@ -12,7 +12,6 @@ android {
         targetSdkVersion versions.compileSdk
         versionCode versions.publishVersionCode
         versionName versions.publishVersion
-
     }
     lintOptions {
         abortOnError false
