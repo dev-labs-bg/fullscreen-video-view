@@ -38,6 +38,7 @@ dependencies {
     implementation "com.android.support:design:$versions.supportLib"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin"
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$versions.leakCanary"
+    androidTestImplementation "com.android.support.test:rules:$versions.testRules"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:$versions.espresso"
 }
 
