@@ -34,7 +34,8 @@ class ActionBarActivity : AppCompatActivity() {
                 .enableAutoStart()
                 .landscapeOrientation(LandscapeOrientation.SENSOR)
                 .portraitOrientation(PortraitOrientation.DEFAULT)
-                .canSeekForward(false)
-                .canSeekBackward(false)
+                .addSeekForwardButton()
+                .addSeekBackwardButton()
+//                .addPlaybackSpeedButton()
     }
 }

@@ -4,4 +4,5 @@
     <string name="cd_pause_media_button">Pause media button</string>
     <string name="cd_forward_media_button">Forward media button</string>
     <string name="cd_fullscreen_media_button">Fullscreen media button</string>
+    <string name="cd_playback_speed_button">Playback speed button</string>
 </resources>

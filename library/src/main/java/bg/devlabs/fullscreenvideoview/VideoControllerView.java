@@ -87,6 +87,7 @@ class VideoControllerView extends FrameLayout {
     private ImageButton startPauseButton;
     private ImageButton ffwdButton;
     private ImageButton rewButton;
+    private ImageButton playbackSpeedButton;
     @Nullable
     private View.OnClickListener pauseListener = new OnClickListener() {
         @Override
@@ -146,6 +147,13 @@ class VideoControllerView extends FrameLayout {
             setProgress();
 
             show(DEFAULT_TIMEOUT);
+        }
+    };
+    @Nullable
+    private View.OnClickListener playbackSpeedListener = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
         }
     };
 
@@ -217,6 +225,11 @@ class VideoControllerView extends FrameLayout {
             rewButton.setOnClickListener(rewListener);
         }
 
+        playbackSpeedButton = findViewById(R.id.playback_speed_button);
+        if (playbackSpeedButton != null) {
+            playbackSpeedButton.setOnClickListener(playbackSpeedListener);
+        }
+
         drawableHelper = new DrawableHelper(getContext(), startPauseButton, ffwdButton, rewButton,
                 fullscreenButton);
 
@@ -250,15 +263,19 @@ class VideoControllerView extends FrameLayout {
 
         try {
             if (startPauseButton != null && !videoMediaPlayer.canPause()) {
-                startPauseButton.setEnabled(true);
+                startPauseButton.setEnabled(false);
             }
             if (rewButton != null && !videoMediaPlayer.showSeekBackwardButton()) {
-                rewButton.setEnabled(true);
+                rewButton.setEnabled(false);
                 rewButton.setVisibility(INVISIBLE);
             }
             if (ffwdButton != null && !videoMediaPlayer.showSeekForwardButton()) {
-                ffwdButton.setEnabled(true);
+                ffwdButton.setEnabled(false);
                 ffwdButton.setVisibility(INVISIBLE);
+            }
+            if (playbackSpeedButton != null && !videoMediaPlayer.showPlaybackSpeedButton()) {
+                playbackSpeedButton.setEnabled(false);
+                playbackSpeedButton.setVisibility(INVISIBLE);
             }
         } catch (IncompatibleClassChangeError ex) {
             // We were given an old version of the interface, that doesn't have

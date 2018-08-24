@@ -15,6 +15,7 @@ class VideoMediaPlayer extends MediaPlayer {
     private boolean canPause = true;
     private boolean showSeekBackwardButton = false;
     private boolean showSeekForwardButton = false;
+    private boolean showPlaybackSpeedButton = false;
 
     VideoMediaPlayer(@Nullable FullscreenVideoView fullscreenVideoView) {
         this.fullscreenVideoView = fullscreenVideoView;
@@ -34,6 +35,10 @@ class VideoMediaPlayer extends MediaPlayer {
 
     public boolean showSeekBackwardButton() {
         return showSeekBackwardButton;
+    }
+
+    public boolean showPlaybackSpeedButton() {
+        return showPlaybackSpeedButton;
     }
 
     public void toggleFullScreen() {
@@ -76,7 +81,11 @@ class VideoMediaPlayer extends MediaPlayer {
     public void addSeekBackwardButton() {
         this.showSeekBackwardButton = true;
     }
-    
+
+    public void addPlaybackSpeedButton() {
+        this.showPlaybackSpeedButton = true;
+    }
+
     @Deprecated
     void setCanSeekBackward(boolean canSeekBackward) {
         this.showSeekBackwardButton = canSeekBackward;

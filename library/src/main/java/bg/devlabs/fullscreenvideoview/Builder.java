@@ -149,6 +149,11 @@ public class Builder {
         return this;
     }
 
+    public Builder addPlaybackSpeedButton() {
+        videoMediaPlayer.addPlaybackSpeedButton();
+        return this;
+    }
+
     /**
      * Method implementation: pass 'true' to enable and pass 'false' to disable the
      * seek backward button. It's is disabled by default, so when it has to be disabled the
