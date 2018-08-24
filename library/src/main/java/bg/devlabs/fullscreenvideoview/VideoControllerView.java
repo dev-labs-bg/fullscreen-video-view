@@ -153,7 +153,7 @@ class VideoControllerView extends FrameLayout {
     private View.OnClickListener playbackSpeedListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
-
+            // TODO: Add implementation
         }
     };
 
@@ -415,6 +415,9 @@ class VideoControllerView extends FrameLayout {
         if (rewButton != null) {
             rewButton.setEnabled(enabled);
         }
+        if (playbackSpeedButton != null) {
+            playbackSpeedButton.setEnabled(enabled);
+        }
         if (progress != null) {
             progress.setEnabled(enabled);
         }
@@ -428,6 +431,7 @@ class VideoControllerView extends FrameLayout {
         pauseListener = null;
         rewListener = null;
         seekListener = null;
+        playbackSpeedListener = null;
         handler = null;
         videoMediaPlayer = null;
     }
