@@ -87,31 +87,6 @@ class CustomChecks {
         return null;
     }
 
-    // TODO: Add method for checking if the rotation is enabled
-    static ViewAction setOrientation(final int orientation) {
-        return new ViewAction() {
-            @Override
-            public Matcher<View> getConstraints() {
-                return isRoot();
-            }
-
-            @Override
-            public String getDescription() {
-                return "Change orientation";
-            }
-
-            @Override
-            public void perform(UiController uiController, View view) {
-                uiController.loopMainThreadUntilIdle();
-                changeOrientation(view, orientation);
-            }
-        };
-    }
-
-    private static void changeOrientation(View view, int orientation) {
-        getActivityByView(view).setRequestedOrientation(orientation);
-    }
-
     static class OrientationViewAction implements ViewAction {
         enum OrientationType {PORTRAIT, LANDSCAPE}
 
