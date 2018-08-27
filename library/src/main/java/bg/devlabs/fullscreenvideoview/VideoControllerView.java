@@ -31,7 +31,6 @@ import android.support.v7.widget.PopupMenu;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -158,19 +157,20 @@ class VideoControllerView extends FrameLayout {
         @Override
         public void onClick(View v) {
             // Initialize the PopupMenu
-            PopupMenu popupMenu = new PopupMenu(getContext(), playbackSpeedButton);
+            PlaybackSpeedPopupMenu popupMenu = new PlaybackSpeedPopupMenu(getContext(), playbackSpeedButton);
             // Inflate the PopupMenu
             popupMenu.getMenuInflater()
                     .inflate(R.menu.playback_speed_popup_menu, popupMenu.getMenu());
 
-            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            popupMenu.setOnSpeedSelectedListener(new PlaybackSpeedPopupMenu.OnSpeedSelectedListener() {
                 @Override
-                public boolean onMenuItemClick(MenuItem item) {
+                public void onSpeedSelected(float speed, int drawableResId) {
                     // Update the Playback Speed Drawable according to the clicked menu item
-                    drawableHelper.updatePlaybackSpeedDrawable(getContext(), item.getItemId());
+                    drawableHelper.updatePlaybackSpeedDrawable(getContext(), drawableResId);
+                    // Change the Playback Speed of the VideoMediaPlayer
+                    videoMediaPlayer.changePlaybackSpeed(speed);
                     // Hide the VideoControllerView
                     hide();
-                    return true;
                 }
             });
 

@@ -1,6 +1,9 @@
 package bg.devlabs.fullscreenvideoview;
 
+import android.annotation.TargetApi;
 import android.media.MediaPlayer;
+import android.media.PlaybackParams;
+import android.os.Build;
 import android.support.annotation.Nullable;
 
 /**
@@ -94,5 +97,12 @@ class VideoMediaPlayer extends MediaPlayer {
     @Deprecated
     void setCanSeekForward(boolean canSeekForward) {
         this.showSeekForwardButton = canSeekForward;
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    public void changePlaybackSpeed(float speed) {
+        PlaybackParams playbackParams = new PlaybackParams();
+        playbackParams.setSpeed(speed);
+        setPlaybackParams(playbackParams);
     }
 }

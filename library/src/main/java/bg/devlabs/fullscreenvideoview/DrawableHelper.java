@@ -186,24 +186,8 @@ public class DrawableHelper {
         this.videoMediaPlayer = new WeakReference<>(videoMediaPlayer);
     }
 
-    public void updatePlaybackSpeedDrawable(Context context, int itemId) {
-        Drawable drawable = null;
-
-        if (itemId == R.id.speed_0_25_button) {
-            drawable = ContextCompat.getDrawable(context, R.drawable.ic_playback_speed_0_25);
-        } else if (itemId == R.id.speed_0_5_button) {
-            drawable = ContextCompat.getDrawable(context, R.drawable.ic_playback_speed_0_5);
-        } else if (itemId == R.id.speed_0_75_button) {
-            drawable = ContextCompat.getDrawable(context, R.drawable.ic_playback_speed_0_75);
-        } else if (itemId == R.id.speed_1_button) {
-            drawable = ContextCompat.getDrawable(context, R.drawable.ic_playback_speed_1);
-        } else if (itemId == R.id.speed_1_25_button) {
-            drawable = ContextCompat.getDrawable(context, R.drawable.ic_playback_speed_1_25);
-        } else if (itemId == R.id.speed_1_5_button) {
-            drawable = ContextCompat.getDrawable(context, R.drawable.ic_playback_speed_1_5);
-        } else if (itemId == R.id.speed_2_button) {
-            drawable = ContextCompat.getDrawable(context, R.drawable.ic_playback_speed_2);
-        }
+    public void updatePlaybackSpeedDrawable(Context context, int drawableResId) {
+        Drawable drawable = ContextCompat.getDrawable(context, drawableResId);
         // Set the drawable to the Playback Speed Button
         playbackSpeedButton.get().setImageDrawable(drawable);
     }

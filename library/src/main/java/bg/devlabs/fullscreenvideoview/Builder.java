@@ -2,8 +2,10 @@ package bg.devlabs.fullscreenvideoview;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 
 import java.io.File;
@@ -149,6 +151,7 @@ public class Builder {
         return this;
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     public Builder addPlaybackSpeedButton() {
         videoMediaPlayer.addPlaybackSpeedButton();
         return this;
