@@ -44,6 +44,7 @@ public class FullscreenVideoView extends FrameLayout {
     private OrientationHelper orientationHelper;
     private SurfaceHolder.Callback surfaceHolderCallback;
     private boolean isPaused;
+    private int previousOrientation;
 
     public FullscreenVideoView(@NonNull Context context) {
         super(context);
@@ -136,13 +137,13 @@ public class FullscreenVideoView extends FrameLayout {
     }
 
     public Builder videoFile(File videoFile) {
-        return new Builder(this, controller, orientationHelper,
-                videoMediaPlayer).videoFile(videoFile);
+        return new Builder(this, controller, orientationHelper, videoMediaPlayer)
+                .videoFile(videoFile);
     }
 
     public Builder videoUrl(String videoUrl) {
-        return new Builder(this, controller, orientationHelper,
-                videoMediaPlayer).videoUrl(videoUrl);
+        return new Builder(this, controller, orientationHelper, videoMediaPlayer)
+                .videoUrl(videoUrl);
     }
 
     @Override
@@ -151,6 +152,12 @@ public class FullscreenVideoView extends FrameLayout {
         if (orientationHelper == null) {
             return;
         }
+
+        // Avoid calling onConfigurationChanged twice
+        if (previousOrientation == newConfig.orientation) {
+            return;
+        }
+        previousOrientation = newConfig.orientation;
 
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             orientationHelper.activateFullscreen();
