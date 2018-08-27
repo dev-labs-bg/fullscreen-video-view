@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="playback_speed_0_25">0.25x</string>
+    <string name="playback_speed_0_5">0.5x</string>
+    <string name="playback_speed_0_75">0.75x</string>
+    <string name="playback_speed_1">1x</string>
+    <string name="playback_speed_1_25">1.25x</string>
+    <string name="playback_speed_1_5">1.5x</string>
+    <string name="playback_speed_2">2x</string>
+</resources>

@@ -39,7 +39,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 import java.util.Locale;
@@ -167,11 +166,8 @@ class VideoControllerView extends FrameLayout {
             popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
-                    Toast.makeText(
-                            getContext(),
-                            "You clicked: " + item.getTitle(),
-                            Toast.LENGTH_LONG
-                    ).show();
+                    // Update the Playback Speed Drawable according to the clicked menu item
+                    drawableHelper.updatePlaybackSpeedDrawable(getContext(), item.getItemId());
                     // Hide the VideoControllerView
                     hide();
                     return true;
@@ -267,7 +263,7 @@ class VideoControllerView extends FrameLayout {
         }
 
         drawableHelper = new DrawableHelper(getContext(), startPauseButton, ffwdButton, rewButton,
-                fullscreenButton);
+                fullscreenButton, playbackSpeedButton);
 
         progress = findViewById(R.id.progress_seek_bar);
         if (progress != null) {
@@ -532,7 +528,8 @@ class VideoControllerView extends FrameLayout {
                                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                                     | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                                     | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+                                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            );
                 }
             }
         });
