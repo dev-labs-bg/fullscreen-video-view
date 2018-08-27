@@ -17,6 +17,7 @@ package bg.devlabs.fullscreenvideoview;
  */
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -26,15 +27,19 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.PopupMenu;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 import java.util.Locale;
@@ -153,7 +158,38 @@ class VideoControllerView extends FrameLayout {
     private View.OnClickListener playbackSpeedListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            // TODO: Add implementation
+            // Initialize the PopupMenu
+            PopupMenu popupMenu = new PopupMenu(getContext(), playbackSpeedButton);
+            // Inflate the PopupMenu
+            popupMenu.getMenuInflater()
+                    .inflate(R.menu.playback_speed_popup_menu, popupMenu.getMenu());
+
+            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    Toast.makeText(
+                            getContext(),
+                            "You clicked: " + item.getTitle(),
+                            Toast.LENGTH_LONG
+                    ).show();
+                    // Hide the VideoControllerView
+                    hide();
+                    return true;
+                }
+            });
+
+            popupMenu.setOnDismissListener(new PopupMenu.OnDismissListener() {
+                @Override
+                public void onDismiss(PopupMenu menu) {
+                    show();
+                }
+            });
+
+            // Show the PopupMenu
+            popupMenu.show();
+
+            // Show the VideoControllerView and until hide is called
+            show(0);
         }
     };
 
@@ -319,6 +355,8 @@ class VideoControllerView extends FrameLayout {
         if (timeout != 0) {
             handler.removeMessages(FADE_OUT);
             handler.sendMessageDelayed(msg, timeout);
+        } else {
+            handler.removeMessages(FADE_OUT);
         }
     }
 
@@ -472,7 +510,7 @@ class VideoControllerView extends FrameLayout {
         drawableHelper.setRewindDrawable(rewindDrawable);
     }
 
-    public void init(OrientationHelper orientationHelper, VideoMediaPlayer videoMediaPlayer,
+    public void init(final OrientationHelper orientationHelper, VideoMediaPlayer videoMediaPlayer,
                      AttributeSet attrs) {
         setupXmlAttributes(attrs);
         this.videoMediaPlayer = videoMediaPlayer;
@@ -483,6 +521,21 @@ class VideoControllerView extends FrameLayout {
         drawableHelper.updateFullScreenDrawable();
         drawableHelper.updateFastForwardDrawable();
         drawableHelper.updateRewindDrawable();
+
+        getViewTreeObserver().addOnWindowFocusChangeListener(new ViewTreeObserver.OnWindowFocusChangeListener() {
+            @Override
+            public void onWindowFocusChanged(boolean hasFocus) {
+                if (orientationHelper.isLandscape()) {
+                    ((Activity) getContext()).getWindow().getDecorView()
+                            .setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+                }
+            }
+        });
     }
 
     private static class MessageHandler extends Handler {

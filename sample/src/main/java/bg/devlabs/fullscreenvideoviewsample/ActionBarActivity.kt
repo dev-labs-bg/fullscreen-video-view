@@ -8,6 +8,7 @@ import bg.devlabs.fullscreenvideoview.orientation.LandscapeOrientation
 import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation
 import kotlinx.android.synthetic.main.activity_action_bar.*
 
+
 /**
  * Created by Slavi Petrov on 13.10.2017
  * Dev Labs
@@ -36,6 +37,6 @@ class ActionBarActivity : AppCompatActivity() {
                 .portraitOrientation(PortraitOrientation.DEFAULT)
                 .addSeekForwardButton()
                 .addSeekBackwardButton()
-//                .addPlaybackSpeedButton()
+                .addPlaybackSpeedButton()
     }
 }
