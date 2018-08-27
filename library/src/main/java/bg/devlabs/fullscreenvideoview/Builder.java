@@ -51,63 +51,63 @@ public class Builder {
         return this;
     }
 
-    public Builder enterFullscreenDrawable(@NonNull Drawable enterFullscreenDrawable) {
-        controller.setEnterFullscreenDrawable(enterFullscreenDrawable);
+    public Builder enterFullscreenDrawable(@NonNull Drawable drawable) {
+        controller.setEnterFullscreenDrawable(drawable);
         return this;
     }
 
-    public Builder enterFullscreenDrawable(@DrawableRes int enterFullscreenDrawableResId) {
-        controller.setEnterFullscreenDrawable(getDrawable(enterFullscreenDrawableResId));
+    public Builder enterFullscreenDrawable(@DrawableRes int drawableResId) {
+        controller.setEnterFullscreenDrawable(getDrawable(drawableResId));
         return this;
     }
 
-    public Builder exitFullscreenDrawable(@NonNull Drawable exitFullscreenDrawable) {
-        controller.setExitFullscreenDrawable(exitFullscreenDrawable);
+    public Builder exitFullscreenDrawable(@NonNull Drawable drawable) {
+        controller.setExitFullscreenDrawable(drawable);
         return this;
     }
 
-    public Builder exitFullscreenDrawable(@DrawableRes int exitFullscreenDrawable) {
-        controller.setExitFullscreenDrawable(getDrawable(exitFullscreenDrawable));
+    public Builder exitFullscreenDrawable(@DrawableRes int drawableResId) {
+        controller.setExitFullscreenDrawable(getDrawable(drawableResId));
         return this;
     }
 
-    public Builder playDrawable(@NonNull Drawable playDrawable) {
-        controller.setPlayDrawable(playDrawable);
+    public Builder playDrawable(@NonNull Drawable drawable) {
+        controller.setPlayDrawable(drawable);
         return this;
     }
 
-    public Builder playDrawable(@DrawableRes int playDrawable) {
-        controller.setPlayDrawable(getDrawable(playDrawable));
+    public Builder playDrawable(@DrawableRes int drawableResId) {
+        controller.setPlayDrawable(getDrawable(drawableResId));
         return this;
     }
 
-    public Builder pauseDrawable(@NonNull Drawable pauseDrawable) {
-        controller.setPauseDrawable(pauseDrawable);
+    public Builder pauseDrawable(@NonNull Drawable drawable) {
+        controller.setPauseDrawable(drawable);
         return this;
     }
 
-    public Builder pauseDrawable(@DrawableRes int pauseDrawable) {
-        controller.setPauseDrawable(getDrawable(pauseDrawable));
+    public Builder pauseDrawable(@DrawableRes int drawableResId) {
+        controller.setPauseDrawable(getDrawable(drawableResId));
         return this;
     }
 
-    public Builder fastForwardDrawable(@NonNull Drawable fastForwardDrawable) {
-        controller.setFastForwardDrawable(fastForwardDrawable);
+    public Builder fastForwardDrawable(@NonNull Drawable drawable) {
+        controller.setFastForwardDrawable(drawable);
         return this;
     }
 
-    public Builder fastForwardDrawable(@DrawableRes int fastForwardDrawable) {
-        controller.setFastForwardDrawable(getDrawable(fastForwardDrawable));
+    public Builder fastForwardDrawable(@DrawableRes int drawableResId) {
+        controller.setFastForwardDrawable(getDrawable(drawableResId));
         return this;
     }
 
-    public Builder rewindDrawable(@NonNull Drawable rewindDrawable) {
-        controller.setRewindDrawable(rewindDrawable);
+    public Builder rewindDrawable(@NonNull Drawable drawable) {
+        controller.setRewindDrawable(drawable);
         return this;
     }
 
-    public Builder rewindDrawable(@DrawableRes int rewindDrawable) {
-        controller.setRewindDrawable(getDrawable(rewindDrawable));
+    public Builder rewindDrawable(@DrawableRes int drawableResId) {
+        controller.setRewindDrawable(getDrawable(drawableResId));
         return this;
     }
 
@@ -188,5 +188,10 @@ public class Builder {
     private Drawable getDrawable(int drawableResId) {
         Context context = fullscreenVideoView.getContext();
         return ContextCompat.getDrawable(context, drawableResId);
+    }
+
+    public Builder playbackSpeedOptions(PlaybackSpeedOptions playbackSpeedOptions) {
+        controller.setPlaybackSpeedOptions(playbackSpeedOptions);
+        return this;
     }
 }

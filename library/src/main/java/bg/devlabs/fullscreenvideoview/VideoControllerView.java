@@ -84,6 +84,7 @@ class VideoControllerView extends FrameLayout {
     private TextView endTime;
     private TextView currentTime;
     private boolean isDragging;
+    private PlaybackSpeedPopupMenu popupMenu;
     @Nullable
     private Handler handler = new VideoControllerView.MessageHandler(this);
     private SeekBar progress;
@@ -156,11 +157,9 @@ class VideoControllerView extends FrameLayout {
     private View.OnClickListener playbackSpeedListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            // Initialize the PopupMenu
-            PlaybackSpeedPopupMenu popupMenu = new PlaybackSpeedPopupMenu(getContext(), playbackSpeedButton);
             // Inflate the PopupMenu
-            popupMenu.getMenuInflater()
-                    .inflate(R.menu.playback_speed_popup_menu, popupMenu.getMenu());
+//            popupMenu.getMenuInflater()
+//                    .inflate(R.menu.playback_speed_popup_menu, popupMenu.getMenu());
 
             popupMenu.setOnSpeedSelectedListener(new PlaybackSpeedPopupMenu.OnSpeedSelectedListener() {
                 @Override
@@ -506,6 +505,10 @@ class VideoControllerView extends FrameLayout {
         drawableHelper.setRewindDrawable(rewindDrawable);
     }
 
+    public void setPlaybackSpeedOptions(PlaybackSpeedOptions playbackSpeedOptions) {
+        popupMenu.setPlaybackSpeedOptions(playbackSpeedOptions);
+    }
+
     public void init(final OrientationHelper orientationHelper, VideoMediaPlayer videoMediaPlayer,
                      AttributeSet attrs) {
         setupXmlAttributes(attrs);
@@ -517,6 +520,9 @@ class VideoControllerView extends FrameLayout {
         drawableHelper.updateFullScreenDrawable();
         drawableHelper.updateFastForwardDrawable();
         drawableHelper.updateRewindDrawable();
+
+        // Initialize the PopupMenu
+        popupMenu = new PlaybackSpeedPopupMenu(getContext(), playbackSpeedButton);
 
         getViewTreeObserver().addOnWindowFocusChangeListener(new ViewTreeObserver.OnWindowFocusChangeListener() {
             @Override
