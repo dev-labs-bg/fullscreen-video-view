@@ -91,7 +91,7 @@ class VideoControllerView extends FrameLayout {
     private ImageButton startPauseButton;
     private ImageButton ffwdButton;
     private ImageButton rewButton;
-    private ImageButton playbackSpeedButton;
+    private TextView playbackSpeedButton;
     @Nullable
     private View.OnClickListener pauseListener = new OnClickListener() {
         @Override
@@ -163,9 +163,9 @@ class VideoControllerView extends FrameLayout {
 
             popupMenu.setOnSpeedSelectedListener(new PlaybackSpeedPopupMenu.OnSpeedSelectedListener() {
                 @Override
-                public void onSpeedSelected(float speed, int drawableResId) {
+                public void onSpeedSelected(float speed, String text) {
                     // Update the Playback Speed Drawable according to the clicked menu item
-                    drawableHelper.updatePlaybackSpeedDrawable(getContext(), drawableResId);
+                    buttonHelper.updatePlaybackSpeedText(text);
                     // Change the Playback Speed of the VideoMediaPlayer
                     videoMediaPlayer.changePlaybackSpeed(speed);
                     // Hide the VideoControllerView
@@ -188,7 +188,7 @@ class VideoControllerView extends FrameLayout {
         }
     };
 
-    private DrawableHelper drawableHelper;
+    private ButtonHelper buttonHelper;
     private int progressBarColor = Color.WHITE;
 
     private int fastForwardDuration = Constants.FAST_FORWARD_DURATION;
@@ -213,7 +213,7 @@ class VideoControllerView extends FrameLayout {
     private void setupXmlAttributes(AttributeSet attrs) {
         TypedArray typedArray = getContext().obtainStyledAttributes(attrs,
                 R.styleable.VideoControllerView, 0, 0);
-        drawableHelper.setupDrawables(typedArray);
+        buttonHelper.setupDrawables(typedArray);
         setupProgressBar(typedArray);
         // Recycle the TypedArray
         typedArray.recycle();
@@ -261,7 +261,7 @@ class VideoControllerView extends FrameLayout {
             playbackSpeedButton.setOnClickListener(playbackSpeedListener);
         }
 
-        drawableHelper = new DrawableHelper(getContext(), startPauseButton, ffwdButton, rewButton,
+        buttonHelper = new ButtonHelper(getContext(), startPauseButton, ffwdButton, rewButton,
                 fullscreenButton, playbackSpeedButton);
 
         progress = findViewById(R.id.progress_seek_bar);
@@ -334,8 +334,8 @@ class VideoControllerView extends FrameLayout {
             setVisibility(VISIBLE);
         }
 
-        drawableHelper.updatePausePlay();
-        drawableHelper.updateFullScreenDrawable();
+        buttonHelper.updatePausePlay();
+        buttonHelper.updateFullScreenDrawable();
 
         // Cause the progress bar to be updated even if it's showing.
         // This happens, for example, if we're
@@ -356,7 +356,7 @@ class VideoControllerView extends FrameLayout {
     }
 
     public void updateFullScreenDrawable() {
-        drawableHelper.updateFullScreenDrawable();
+        buttonHelper.updateFullScreenDrawable();
     }
 
     private boolean isShowing() {
@@ -426,7 +426,7 @@ class VideoControllerView extends FrameLayout {
             return;
         }
         videoMediaPlayer.onPauseResume();
-        drawableHelper.updatePausePlay();
+        buttonHelper.updatePausePlay();
     }
 
     private void doToggleFullscreen() {
@@ -470,11 +470,11 @@ class VideoControllerView extends FrameLayout {
     }
 
     public void setEnterFullscreenDrawable(Drawable enterFullscreenDrawable) {
-        drawableHelper.setEnterFullscreenDrawable(enterFullscreenDrawable);
+        buttonHelper.setEnterFullscreenDrawable(enterFullscreenDrawable);
     }
 
     public void setExitFullscreenDrawable(Drawable exitFullscreenDrawable) {
-        drawableHelper.setExitFullscreenDrawable(exitFullscreenDrawable);
+        buttonHelper.setExitFullscreenDrawable(exitFullscreenDrawable);
     }
 
     public void setProgressBarColor(int progressBarColor) {
@@ -482,11 +482,11 @@ class VideoControllerView extends FrameLayout {
     }
 
     public void setPlayDrawable(Drawable playDrawable) {
-        drawableHelper.setPlayDrawable(playDrawable);
+        buttonHelper.setPlayDrawable(playDrawable);
     }
 
     public void setPauseDrawable(Drawable pauseDrawable) {
-        drawableHelper.setPauseDrawable(pauseDrawable);
+        buttonHelper.setPauseDrawable(pauseDrawable);
     }
 
     public void setFastForwardDuration(int fastForwardDuration) {
@@ -498,11 +498,11 @@ class VideoControllerView extends FrameLayout {
     }
 
     public void setFastForwardDrawable(Drawable fastForwardDrawable) {
-        drawableHelper.setFastForwardDrawable(fastForwardDrawable);
+        buttonHelper.setFastForwardDrawable(fastForwardDrawable);
     }
 
     public void setRewindDrawable(Drawable rewindDrawable) {
-        drawableHelper.setRewindDrawable(rewindDrawable);
+        buttonHelper.setRewindDrawable(rewindDrawable);
     }
 
     public void setPlaybackSpeedOptions(PlaybackSpeedOptions playbackSpeedOptions) {
@@ -514,12 +514,12 @@ class VideoControllerView extends FrameLayout {
         setupXmlAttributes(attrs);
         this.videoMediaPlayer = videoMediaPlayer;
 
-        drawableHelper.setOrientationHelper(orientationHelper);
-        drawableHelper.setVideoMediaPlayer(videoMediaPlayer);
-        drawableHelper.updatePausePlay();
-        drawableHelper.updateFullScreenDrawable();
-        drawableHelper.updateFastForwardDrawable();
-        drawableHelper.updateRewindDrawable();
+        buttonHelper.setOrientationHelper(orientationHelper);
+        buttonHelper.setVideoMediaPlayer(videoMediaPlayer);
+        buttonHelper.updatePausePlay();
+        buttonHelper.updateFullScreenDrawable();
+        buttonHelper.updateFastForwardDrawable();
+        buttonHelper.updateRewindDrawable();
 
         // Initialize the PopupMenu
         popupMenu = new PlaybackSpeedPopupMenu(getContext(), playbackSpeedButton);
@@ -608,7 +608,7 @@ class VideoControllerView extends FrameLayout {
         public void onStopTrackingTouch(SeekBar seekBar) {
             isDragging = false;
             setProgress();
-            drawableHelper.updatePausePlay();
+            buttonHelper.updatePausePlay();
             show(DEFAULT_TIMEOUT);
 
             // Ensure that progress is properly updated in the future,

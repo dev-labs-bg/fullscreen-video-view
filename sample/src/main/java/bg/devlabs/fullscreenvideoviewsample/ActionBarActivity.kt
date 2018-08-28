@@ -3,9 +3,7 @@ package bg.devlabs.fullscreenvideoviewsample
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
-import bg.devlabs.fullscreenvideoview.PlaybackSpeed
 import bg.devlabs.fullscreenvideoview.PlaybackSpeedOptions
 import bg.devlabs.fullscreenvideoview.orientation.LandscapeOrientation
 import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation
@@ -43,10 +41,7 @@ class ActionBarActivity : AppCompatActivity() {
                 .addPlaybackSpeedButton()
                 .playbackSpeedOptions(
                         PlaybackSpeedOptions()
-                                .addPlaybackSpeed(PlaybackSpeed.SPEED_0_25, R.drawable.ic_fast_forward_white_48dp)
-                                .addPlaybackSpeed(PlaybackSpeed.SPEED_0_50, R.drawable.ic_fast_forward_white_48dp)
-                                .addPlaybackSpeed(PlaybackSpeed.SPEED_0_75, R.drawable.ic_fast_forward_white_48dp)
-                                .addPlaybackSpeed(PlaybackSpeed.SPEED_1_00, R.drawable.ic_fast_forward_white_48dp)
+                                .addSpeeds(arrayListOf(0.25f, 0.5f, 0.75f, 1f))
                 )
     }
 }

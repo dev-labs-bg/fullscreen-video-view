@@ -15,6 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="#CC000000"
@@ -44,16 +45,22 @@
             android:layout_toEndOf="@id/start_pause_media_button"
             android:contentDescription="@string/cd_forward_media_button" />
 
-        <ImageButton
+        <TextView
             android:id="@+id/playback_speed_button"
             style="?android:attr/buttonBarStyle"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="24dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="16dp"
+            android:background="@color/white"
             android:contentDescription="@string/cd_playback_speed_button"
-            android:src="@drawable/ic_playback_speed_1" />
+            android:gravity="center"
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp"
+            android:text="1.00x"
+            android:textColor="#CC000000"
+            tools:ignore="HardcodedText" />
     </RelativeLayout>
 
     <LinearLayout
