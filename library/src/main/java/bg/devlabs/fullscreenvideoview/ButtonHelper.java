@@ -16,7 +16,7 @@ import bg.devlabs.fullscreenvideoview.orientation.OrientationHelper;
  * Dev Labs
  * slavi@devlabs.bg
  */
-public class ButtonHelper {
+class ButtonHelper {
     // Drawables for the buttons of the controller
     private Drawable exitFullscreenDrawable;
     private Drawable enterFullscreenDrawable;

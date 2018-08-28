@@ -89,12 +89,10 @@ class VideoMediaPlayer extends MediaPlayer {
         this.showPlaybackSpeedButton = true;
     }
 
-    @Deprecated
     void setCanSeekBackward(boolean canSeekBackward) {
         this.showSeekBackwardButton = canSeekBackward;
     }
 
-    @Deprecated
     void setCanSeekForward(boolean canSeekForward) {
         this.showSeekForwardButton = canSeekForward;
     }
