@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!-- Copyright (C) 2007 The Android Open Source Project
      Modifications Copyright (C) 2017 Dev Labs
 
@@ -14,33 +15,52 @@
      See the License for the specific language governing permissions and
      limitations under the License.-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="#CC000000"
     android:orientation="vertical">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:orientation="horizontal"
         android:paddingTop="4dp">
 
         <ImageButton
-            android:id="@+id/rewind_media_button"
-            style="@android:style/MediaButton.Rew"
-            android:contentDescription="@string/cd_rewind_media_button" />
-
-        <ImageButton
             android:id="@+id/start_pause_media_button"
             style="@android:style/MediaButton.Play"
+            android:layout_centerHorizontal="true"
             android:contentDescription="@string/cd_pause_media_button" />
+
+        <ImageButton
+            android:id="@+id/rewind_media_button"
+            style="@android:style/MediaButton.Rew"
+            android:layout_toStartOf="@id/start_pause_media_button"
+            android:contentDescription="@string/cd_rewind_media_button" />
 
         <ImageButton
             android:id="@+id/forward_media_button"
             style="@android:style/MediaButton.Ffwd"
+            android:layout_toEndOf="@id/start_pause_media_button"
             android:contentDescription="@string/cd_forward_media_button" />
-    </LinearLayout>
+
+        <TextView
+            android:id="@+id/playback_speed_button"
+            style="?android:attr/buttonBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="16dp"
+            android:background="@color/white"
+            android:gravity="center"
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp"
+            android:text="1.00x"
+            android:textColor="#CC000000"
+            tools:ignore="HardcodedText" />
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -52,8 +72,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
+            android:paddingEnd="4dp"
+            android:paddingStart="8dp"
             android:paddingTop="4dp"
             android:textColor="@color/white"
             android:textSize="14sp"
@@ -71,8 +91,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
+            android:paddingEnd="4dp"
+            android:paddingStart="4dp"
             android:paddingTop="4dp"
             android:textColor="@color/white"
             android:textSize="14sp"

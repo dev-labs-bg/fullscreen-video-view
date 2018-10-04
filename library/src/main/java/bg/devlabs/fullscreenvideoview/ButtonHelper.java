@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
 
@@ -15,7 +16,7 @@ import bg.devlabs.fullscreenvideoview.orientation.OrientationHelper;
  * Dev Labs
  * slavi@devlabs.bg
  */
-public class DrawableHelper {
+class ButtonHelper {
     // Drawables for the buttons of the controller
     private Drawable exitFullscreenDrawable;
     private Drawable enterFullscreenDrawable;
@@ -28,12 +29,13 @@ public class DrawableHelper {
     private WeakReference<ImageButton> ffwdButton;
     private WeakReference<ImageButton> rewButton;
     private WeakReference<ImageButton> fullscreenButton;
+    private WeakReference<TextView> playbackSpeedButton;
 
     private WeakReference<OrientationHelper> orientationHelper;
     private WeakReference<VideoMediaPlayer> videoMediaPlayer;
 
-    public DrawableHelper(Context context, ImageButton startPauseButton, ImageButton ffwdButton,
-                          ImageButton rewButton, ImageButton fullscreenButton) {
+    ButtonHelper(Context context, ImageButton startPauseButton, ImageButton ffwdButton,
+                 ImageButton rewButton, ImageButton fullscreenButton, TextView playbackSpeedButton) {
         this.exitFullscreenDrawable = ContextCompat.getDrawable(context,
                 R.drawable.ic_fullscreen_exit_white_48dp);
         this.enterFullscreenDrawable = ContextCompat.getDrawable(context,
@@ -51,6 +53,7 @@ public class DrawableHelper {
         this.ffwdButton = new WeakReference<>(ffwdButton);
         this.rewButton = new WeakReference<>(rewButton);
         this.fullscreenButton = new WeakReference<>(fullscreenButton);
+        this.playbackSpeedButton = new WeakReference<>(playbackSpeedButton);
     }
 
     public void setupDrawables(TypedArray typedArray) {
@@ -182,5 +185,9 @@ public class DrawableHelper {
 
     public void setVideoMediaPlayer(VideoMediaPlayer videoMediaPlayer) {
         this.videoMediaPlayer = new WeakReference<>(videoMediaPlayer);
+    }
+
+    public void updatePlaybackSpeedText(String text) {
+        playbackSpeedButton.get().setText(text);
     }
 }

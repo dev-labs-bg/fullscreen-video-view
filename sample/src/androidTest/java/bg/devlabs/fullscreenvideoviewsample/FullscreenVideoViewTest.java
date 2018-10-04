@@ -1,8 +1,5 @@
 package bg.devlabs.fullscreenvideoviewsample;
 
-import android.content.ContentResolver;
-import android.content.pm.ActivityInfo;
-import android.provider.Settings;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -22,7 +19,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static bg.devlabs.fullscreenvideoviewsample.CustomChecks.clickNoConstraints;
 import static bg.devlabs.fullscreenvideoviewsample.CustomChecks.isOrientationLandscape;
 import static bg.devlabs.fullscreenvideoviewsample.CustomChecks.isOrientationPortrait;
-import static bg.devlabs.fullscreenvideoviewsample.CustomChecks.setOrientation;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
@@ -94,27 +90,9 @@ public class FullscreenVideoViewTest {
         assertTrue(isOrientationPortrait(isRoot()));
     }
 
-    @Test
-    public void deviceRotation() {
-        if (isRotationEnabled()) {
-            onView(isRoot())
-                    .perform(setOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE));
-
-            assertTrue(isOrientationLandscape(isRoot()));
-        } else {
-            throw new IllegalStateException("The orientation of the device is not unlocked!");
-        }
-    }
-
     private static void clickToShowController() {
         onView(withId(R.id.fullscreenVideoView))
                 .check(matches(isDisplayed()))
                 .perform(click());
-    }
-
-    private boolean isRotationEnabled() {
-        ContentResolver contentResolver = activityTestRule.getActivity().getContentResolver();
-        return Settings.System.getInt(contentResolver, Settings.System.ACCELEROMETER_ROTATION,
-                0) == 1;
     }
 }

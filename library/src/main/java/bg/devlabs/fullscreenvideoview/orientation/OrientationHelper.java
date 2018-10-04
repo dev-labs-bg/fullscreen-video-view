@@ -51,15 +51,12 @@ public class OrientationHelper extends OrientationEventListener {
 
     public void activateFullscreen() {
         // Update isLandscape flag
-        if (!isLandscape) {
-            isLandscape = true;
-        }
+        isLandscape = true;
 
         // Fullscreen active
         videoView.onOrientationChanged();
 
         // Change the screen orientation to SENSOR_LANDSCAPE
-        Activity activity = ((Activity) videoView.getContext());
         setOrientation(landscapeOrientation.getValue());
 
         UiUtils.hideOtherViews(getParent());
@@ -69,18 +66,17 @@ public class OrientationHelper extends OrientationEventListener {
         originalHeight = videoView.getHeight();
         updateLayoutParams();
 
-        // Hiding the supportToolbar
+        // Hide the supportToolbar
         toggleToolbarVisibility(false);
 
         // Hide status bar
-        toggleSystemUiVisibility(activity.getWindow());
+        toggleSystemUiVisibility();
     }
 
     private void updateLayoutParams() {
         ViewGroup.LayoutParams params = videoView.getLayoutParams();
         Context context = videoView.getContext();
-        WindowManager windowManager = (WindowManager) context.getSystemService(
-                Context.WINDOW_SERVICE);
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         if (windowManager == null) {
             return;
         }
@@ -94,15 +90,12 @@ public class OrientationHelper extends OrientationEventListener {
 
     public void exitFullscreen() {
         // Update isLandscape flag
-        if (isLandscape) {
-            isLandscape = false;
-        }
+        isLandscape = false;
 
         // Update the fullscreen button drawable
         videoView.onOrientationChanged();
 
         // Change the screen orientation to PORTRAIT
-        Activity activity = (Activity) videoView.getContext();
         setOrientation(portraitOrientation.getValue());
 
         UiUtils.showOtherViews(getParent());
@@ -113,7 +106,7 @@ public class OrientationHelper extends OrientationEventListener {
         videoView.setLayoutParams(params);
 
         toggleToolbarVisibility(true);
-        toggleSystemUiVisibility(activity.getWindow());
+        toggleSystemUiVisibility();
     }
 
     private ViewGroup getParent() {
@@ -122,12 +115,14 @@ public class OrientationHelper extends OrientationEventListener {
         return decorView.findViewById(android.R.id.content);
     }
 
-    private static void toggleSystemUiVisibility(Window activityWindow) {
-        int newUiOptions = activityWindow.getDecorView().getSystemUiVisibility();
+    private void toggleSystemUiVisibility() {
+        Window activityWindow = ((Activity) videoView.getContext()).getWindow();
+        View decorView = activityWindow.getDecorView();
+        int newUiOptions = decorView.getSystemUiVisibility();
         newUiOptions ^= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
         newUiOptions ^= View.SYSTEM_UI_FLAG_FULLSCREEN;
         newUiOptions ^= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-        activityWindow.getDecorView().setSystemUiVisibility(newUiOptions);
+        decorView.setSystemUiVisibility(newUiOptions);
     }
 
     private void toggleToolbarVisibility(boolean visible) {
@@ -196,7 +191,7 @@ public class OrientationHelper extends OrientationEventListener {
         this.portraitOrientation = portraitOrientation;
     }
 
-    private static boolean shouldChangeOrientation(int a, int b) {
+    private boolean shouldChangeOrientation(int a, int b) {
         return a > b - ROTATE_THRESHOLD && a < b + ROTATE_THRESHOLD;
     }
 
@@ -227,7 +222,7 @@ public class OrientationHelper extends OrientationEventListener {
      * @param contentResolver from the app's context
      * @return true or false according to whether the rotation is enabled or disabled
      */
-    private static boolean isRotationEnabled(ContentResolver contentResolver) {
+    private boolean isRotationEnabled(ContentResolver contentResolver) {
         return Settings.System.getInt(contentResolver, Settings.System.ACCELEROMETER_ROTATION,
                 0) == 1;
     }

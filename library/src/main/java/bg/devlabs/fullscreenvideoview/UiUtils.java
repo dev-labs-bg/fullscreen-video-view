@@ -18,8 +18,6 @@ import static android.view.View.VISIBLE;
  * slavi@devlabs.bg
  */
 public class UiUtils {
-    private UiUtils() {
-    }
 
     /**
      * Shows all views except the parent layout

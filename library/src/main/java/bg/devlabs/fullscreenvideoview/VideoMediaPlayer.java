@@ -1,6 +1,9 @@
 package bg.devlabs.fullscreenvideoview;
 
+import android.annotation.TargetApi;
 import android.media.MediaPlayer;
+import android.media.PlaybackParams;
+import android.os.Build;
 import android.support.annotation.Nullable;
 
 /**
@@ -13,8 +16,9 @@ class VideoMediaPlayer extends MediaPlayer {
     private FullscreenVideoView fullscreenVideoView;
     private boolean isAutoStartEnabled;
     private boolean canPause = true;
-    private boolean canSeekBackward = true;
-    private boolean canSeekForward = true;
+    private boolean showSeekBackwardButton = false;
+    private boolean showSeekForwardButton = false;
+    private boolean showPlaybackSpeedButton = false;
 
     VideoMediaPlayer(@Nullable FullscreenVideoView fullscreenVideoView) {
         this.fullscreenVideoView = fullscreenVideoView;
@@ -28,12 +32,16 @@ class VideoMediaPlayer extends MediaPlayer {
         return canPause;
     }
 
-    public boolean canSeekBackward() {
-        return canSeekBackward;
+    public boolean showSeekForwardButton() {
+        return showSeekForwardButton;
     }
 
-    public boolean canSeekForward() {
-        return canSeekForward;
+    public boolean showSeekBackwardButton() {
+        return showSeekBackwardButton;
+    }
+
+    public boolean showPlaybackSpeedButton() {
+        return showPlaybackSpeedButton;
     }
 
     public void toggleFullScreen() {
@@ -69,11 +77,34 @@ class VideoMediaPlayer extends MediaPlayer {
         this.canPause = canPause;
     }
 
-    public void setCanSeekBackward(boolean canSeekBackward) {
-        this.canSeekBackward = canSeekBackward;
+    public void disablePause() {
+        this.canPause = false;
     }
 
-    public void setCanSeekForward(boolean canSeekForward) {
-        this.canSeekForward = canSeekForward;
+    public void addSeekForwardButton() {
+        this.showSeekForwardButton = true;
+    }
+
+    public void addSeekBackwardButton() {
+        this.showSeekBackwardButton = true;
+    }
+
+    public void addPlaybackSpeedButton() {
+        this.showPlaybackSpeedButton = true;
+    }
+
+    void setCanSeekBackward(boolean canSeekBackward) {
+        this.showSeekBackwardButton = canSeekBackward;
+    }
+
+    void setCanSeekForward(boolean canSeekForward) {
+        this.showSeekForwardButton = canSeekForward;
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    public void changePlaybackSpeed(float speed) {
+        PlaybackParams playbackParams = new PlaybackParams();
+        playbackParams.setSpeed(speed);
+        setPlaybackParams(playbackParams);
     }
 }
