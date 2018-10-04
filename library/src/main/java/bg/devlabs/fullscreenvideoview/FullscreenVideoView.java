@@ -237,7 +237,6 @@ public class FullscreenVideoView extends FrameLayout {
                 videoMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     @Override
                     public void onPrepared(MediaPlayer mediaPlayer) {
-                        hideThumbnail();
                         hideProgress();
                         // Get the dimensions of the video
                         int videoWidth = videoMediaPlayer.getVideoWidth();
@@ -250,6 +249,7 @@ public class FullscreenVideoView extends FrameLayout {
                             // Start media player if auto start is enabled
                             if (mediaPlayer != null && videoMediaPlayer.isAutoStartEnabled()) {
                                 mediaPlayer.start();
+                                hideThumbnail();
                             }
                         }
                     }
@@ -261,8 +261,8 @@ public class FullscreenVideoView extends FrameLayout {
         }
     }
 
-    private void hideThumbnail() {
-        if (thumbnailImageView != null) {
+    void hideThumbnail() {
+        if (thumbnailImageView != null && thumbnailImageView.getVisibility() == View.VISIBLE) {
             thumbnailImageView.setVisibility(GONE);
         }
     }
