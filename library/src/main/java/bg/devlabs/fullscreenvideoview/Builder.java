@@ -163,7 +163,7 @@ public class Builder {
      * user passes 'false' to the method or just does not use it. In this case passing 'true' or
      * 'false' is confusing.
      *
-     * @deprecated As of release 1.0.0, replaced by {@link #addSeekBackwardButton()} ()}
+     * @deprecated As of release 1.0.0, replaced by {@link #addSeekBackwardButton()}
      */
     @Deprecated
     public Builder canSeekBackward(boolean canSeekBackward) {
