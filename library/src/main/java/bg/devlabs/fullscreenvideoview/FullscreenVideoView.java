@@ -221,7 +221,7 @@ public class FullscreenVideoView extends FrameLayout {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     AudioAttributes audioAttributes = new AudioAttributes.Builder()
                             .setUsage(AudioAttributes.USAGE_MEDIA)
-                            .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                             .setLegacyStreamType(AudioManager.STREAM_MUSIC)
                             .build();
                     videoMediaPlayer.setAudioAttributes(audioAttributes);

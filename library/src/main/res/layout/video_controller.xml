@@ -54,7 +54,6 @@
             android:layout_centerVertical="true"
             android:layout_marginEnd="16dp"
             android:background="@color/white"
-            android:contentDescription="@string/cd_playback_speed_button"
             android:gravity="center"
             android:paddingEnd="8dp"
             android:paddingStart="8dp"
