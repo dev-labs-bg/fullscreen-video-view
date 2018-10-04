@@ -205,4 +205,9 @@ public class Builder {
         controller.setPlaybackSpeedOptions(playbackSpeedOptions);
         return this;
     }
+
+    public Builder thumbnail(int thumbnailResId) {
+        fullscreenVideoView.setVideoThumbnail(thumbnailResId);
+        return this;
+    }
 }

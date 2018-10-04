@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import java.io.File;
@@ -35,6 +36,8 @@ public class FullscreenVideoView extends FrameLayout {
     private SurfaceHolder surfaceHolder;
     @Nullable
     private ProgressBar progressBar;
+    @Nullable
+    private ImageView thumbnailImageView;
     @Nullable
     private VideoControllerView controller;
     @Nullable
@@ -122,6 +125,7 @@ public class FullscreenVideoView extends FrameLayout {
         surfaceView = findViewById(R.id.surface_view);
         progressBar = findViewById(R.id.progress_bar);
         controller = findViewById(R.id.video_controller);
+        thumbnailImageView = findViewById(R.id.thumbnail_image_view);
     }
 
     private void initOnBackPressedListener() {
@@ -233,6 +237,7 @@ public class FullscreenVideoView extends FrameLayout {
                 videoMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     @Override
                     public void onPrepared(MediaPlayer mediaPlayer) {
+                        hideThumbnail();
                         hideProgress();
                         // Get the dimensions of the video
                         int videoWidth = videoMediaPlayer.getVideoWidth();
@@ -253,6 +258,12 @@ public class FullscreenVideoView extends FrameLayout {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void hideThumbnail() {
+        if (thumbnailImageView != null) {
+            thumbnailImageView.setVisibility(GONE);
         }
     }
 
@@ -295,6 +306,12 @@ public class FullscreenVideoView extends FrameLayout {
         if (surfaceView != null && videoMediaPlayer != null) {
             surfaceView.updateLayoutParams(videoMediaPlayer.getVideoWidth(),
                     videoMediaPlayer.getVideoHeight());
+        }
+    }
+
+    public void setVideoThumbnail(int thumbnailResId) {
+        if (thumbnailImageView != null) {
+            thumbnailImageView.setBackgroundResource(thumbnailResId);
         }
     }
 }

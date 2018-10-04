@@ -36,6 +36,7 @@ class ActionBarActivity : AppCompatActivity() {
                 .enableAutoStart()
                 .landscapeOrientation(LandscapeOrientation.SENSOR)
                 .portraitOrientation(PortraitOrientation.DEFAULT)
+                .thumbnail(R.drawable.video_thumbnail)
                 .addSeekForwardButton()
                 .addSeekBackwardButton()
                 .addPlaybackSpeedButton()
