@@ -295,6 +295,7 @@ class VideoControllerView extends FrameLayout {
         try {
             if (startPauseButton != null && !videoMediaPlayer.canPause()) {
                 startPauseButton.setEnabled(false);
+                startPauseButton.setVisibility(INVISIBLE);
             }
             if (rewButton != null && !videoMediaPlayer.showSeekBackwardButton()) {
                 rewButton.setEnabled(false);

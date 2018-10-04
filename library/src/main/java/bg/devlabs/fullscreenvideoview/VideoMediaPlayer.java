@@ -77,6 +77,10 @@ class VideoMediaPlayer extends MediaPlayer {
         this.canPause = canPause;
     }
 
+    public void disablePause() {
+        this.canPause = false;
+    }
+
     public void addSeekForwardButton() {
         this.showSeekForwardButton = true;
     }
