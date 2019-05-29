@@ -2,6 +2,8 @@ package bg.devlabs.fullscreenvideoview;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -311,7 +313,11 @@ public class FullscreenVideoView extends FrameLayout {
 
     public void setVideoThumbnail(int thumbnailResId) {
         if (thumbnailImageView != null) {
-            thumbnailImageView.setBackgroundResource(thumbnailResId);
+            int screenWidth = DeviceDimensionsHelper.getDisplayWidth(getContext());
+            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), thumbnailResId);
+            BitmapScaler.scaleToFitWidth(bitmap, screenWidth);
+
+            thumbnailImageView.setImageBitmap(bitmap);
         }
     }
 }

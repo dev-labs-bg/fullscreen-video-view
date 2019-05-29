@@ -33,7 +33,7 @@ class ActionBarActivity : AppCompatActivity() {
 
         fullscreenVideoView.videoUrl(videoPath)
                 .progressBarColor(R.color.colorAccent)
-                .enableAutoStart()
+//                .enableAutoStart()
                 .landscapeOrientation(LandscapeOrientation.SENSOR)
                 .portraitOrientation(PortraitOrientation.DEFAULT)
                 .thumbnail(R.drawable.video_thumbnail)
