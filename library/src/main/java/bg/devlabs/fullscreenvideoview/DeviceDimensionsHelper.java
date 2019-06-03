@@ -10,6 +10,8 @@ import android.util.TypedValue;
  * Dev Labs
  * slavi@devlabs.bg
  */
+
+// TODO: Change this class to Singleton
 public class DeviceDimensionsHelper {
     // DeviceDimensionsHelper.getDisplayWidth(context) => (display width in pixels)
     public static int getDisplayWidth(Context context) {
