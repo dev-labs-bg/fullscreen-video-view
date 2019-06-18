@@ -545,6 +545,12 @@ class VideoControllerView extends FrameLayout {
         });
     }
 
+    public void hideProgress() {
+        currentTime.setVisibility(View.INVISIBLE);
+        endTime.setVisibility(View.INVISIBLE);
+        progress.setVisibility(View.INVISIBLE);
+    }
+
     private static class MessageHandler extends Handler {
         private final WeakReference<VideoControllerView> view;
 
