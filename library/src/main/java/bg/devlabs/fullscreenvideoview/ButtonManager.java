@@ -9,14 +9,14 @@ import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
 
-import bg.devlabs.fullscreenvideoview.orientation.OrientationHelper;
+import bg.devlabs.fullscreenvideoview.orientation.OrientationManager;
 
 /**
  * Created by Slavi Petrov on 04.06.2018
  * Dev Labs
  * slavi@devlabs.bg
  */
-class ButtonHelper {
+class ButtonManager {
     // Drawables for the buttons of the controller
     private Drawable exitFullscreenDrawable;
     private Drawable enterFullscreenDrawable;
@@ -31,11 +31,11 @@ class ButtonHelper {
     private WeakReference<ImageButton> fullscreenButton;
     private WeakReference<TextView> playbackSpeedButton;
 
-    private WeakReference<OrientationHelper> orientationHelper;
+    private WeakReference<OrientationManager> orientationHelper;
     private WeakReference<VideoMediaPlayer> videoMediaPlayer;
 
-    ButtonHelper(Context context, ImageButton startPauseButton, ImageButton ffwdButton,
-                 ImageButton rewButton, ImageButton fullscreenButton, TextView playbackSpeedButton) {
+    ButtonManager(Context context, ImageButton startPauseButton, ImageButton ffwdButton,
+                  ImageButton rewButton, ImageButton fullscreenButton, TextView playbackSpeedButton) {
         this.exitFullscreenDrawable = ContextCompat.getDrawable(context,
                 R.drawable.ic_fullscreen_exit_white_48dp);
         this.enterFullscreenDrawable = ContextCompat.getDrawable(context,
@@ -179,8 +179,8 @@ class ButtonHelper {
         }
     }
 
-    public void setOrientationHelper(OrientationHelper orientationHelper) {
-        this.orientationHelper = new WeakReference<>(orientationHelper);
+    public void setOrientationHelper(OrientationManager orientationManager) {
+        this.orientationHelper = new WeakReference<>(orientationManager);
     }
 
     public void setVideoMediaPlayer(VideoMediaPlayer videoMediaPlayer) {

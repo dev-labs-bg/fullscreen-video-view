@@ -10,7 +10,6 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -23,7 +22,7 @@ import android.widget.ProgressBar;
 import java.io.File;
 import java.io.IOException;
 
-import bg.devlabs.fullscreenvideoview.orientation.OrientationHelper;
+import bg.devlabs.fullscreenvideoview.orientation.OrientationManager;
 
 /**
  * Created by Slavi Petrov on 05.10.2017
@@ -46,7 +45,7 @@ public class FullscreenVideoView extends FrameLayout {
     private VideoMediaPlayer videoMediaPlayer;
     private boolean isMediaPlayerPrepared;
     @Nullable
-    private OrientationHelper orientationHelper;
+    private OrientationManager orientationManager;
     private SurfaceHolder.Callback surfaceHolderCallback;
     private boolean isPaused;
     private int previousOrientation;
@@ -71,12 +70,12 @@ public class FullscreenVideoView extends FrameLayout {
         // Skip this init rows - needed when changing FullscreenVideoView properties in XML
         if (!isInEditMode()) {
             videoMediaPlayer = new VideoMediaPlayer(this);
-            orientationHelper = new OrientationHelper(getContext(), this);
-            orientationHelper.enable();
+            orientationManager = new OrientationManager(getContext(), this);
+            orientationManager.enable();
         }
         setupSurfaceHolder();
         if (controller != null) {
-            controller.init(orientationHelper, videoMediaPlayer, attrs);
+            controller.init(orientationManager, videoMediaPlayer, attrs);
         }
         setupProgressBarColor();
         setFocusableInTouchMode(true);
@@ -136,26 +135,26 @@ public class FullscreenVideoView extends FrameLayout {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 return (event.getAction() == KeyEvent.ACTION_UP)
                         && (keyCode == KeyEvent.KEYCODE_BACK)
-                        && (orientationHelper != null
-                        && orientationHelper.shouldHandleOnBackPressed());
+                        && (orientationManager != null
+                        && orientationManager.shouldHandleOnBackPressed());
             }
         });
     }
 
     public Builder videoFile(File videoFile) {
-        return new Builder(this, controller, orientationHelper, videoMediaPlayer)
+        return new Builder(this, controller, orientationManager, videoMediaPlayer)
                 .videoFile(videoFile);
     }
 
     public Builder videoUrl(String videoUrl) {
-        return new Builder(this, controller, orientationHelper, videoMediaPlayer)
+        return new Builder(this, controller, orientationManager, videoMediaPlayer)
                 .videoUrl(videoUrl);
     }
 
     @Override
     protected void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (orientationHelper == null) {
+        if (orientationManager == null) {
             return;
         }
 
@@ -166,9 +165,9 @@ public class FullscreenVideoView extends FrameLayout {
         previousOrientation = newConfig.orientation;
 
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            orientationHelper.activateFullscreen();
+            orientationManager.activateFullscreen();
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            orientationHelper.exitFullscreen();
+            orientationManager.exitFullscreen();
         }
     }
 
@@ -190,8 +189,8 @@ public class FullscreenVideoView extends FrameLayout {
         }
 
         // Disable and null the OrientationEventListener
-        if (orientationHelper != null) {
-            orientationHelper.disable();
+        if (orientationManager != null) {
+            orientationManager.disable();
         }
 
         if (videoMediaPlayer != null) {
@@ -209,7 +208,7 @@ public class FullscreenVideoView extends FrameLayout {
         }
 
         controller = null;
-        orientationHelper = null;
+        orientationManager = null;
         videoMediaPlayer = null;
         surfaceHolder = null;
         surfaceView = null;
@@ -289,8 +288,8 @@ public class FullscreenVideoView extends FrameLayout {
     }
 
     public void toggleFullscreen() {
-        if (orientationHelper != null) {
-            orientationHelper.toggleFullscreen();
+        if (orientationManager != null) {
+            orientationManager.toggleFullscreen();
         }
     }
 

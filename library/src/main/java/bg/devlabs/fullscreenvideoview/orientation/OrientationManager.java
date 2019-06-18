@@ -27,7 +27,7 @@ import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAP
  * <p>
  * Handles orientation changes. Updates the VideoView layout params. Hides/shows the toolbar.
  */
-public class OrientationHelper extends OrientationEventListener {
+public class OrientationManager extends OrientationEventListener {
     private static final int LEFT_LANDSCAPE = 90;
     private static final int RIGHT_LANDSCAPE = 270;
     private static final int PORTRAIT = 0;
@@ -43,7 +43,7 @@ public class OrientationHelper extends OrientationEventListener {
     private PortraitOrientation portraitOrientation = PortraitOrientation.DEFAULT;
     private boolean shouldEnterPortrait;
 
-    public OrientationHelper(Context context, FullscreenVideoView fullscreenVideoView) {
+    public OrientationManager(Context context, FullscreenVideoView fullscreenVideoView) {
         super(context);
         videoView = fullscreenVideoView;
         contentResolver = context.getContentResolver();
