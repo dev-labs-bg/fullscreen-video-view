@@ -6,14 +6,12 @@ import android.content.Context;
 import android.provider.Settings;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 
+import bg.devlabs.fullscreenvideoview.DeviceDimensionsManager;
 import bg.devlabs.fullscreenvideoview.FullscreenVideoView;
 import bg.devlabs.fullscreenvideoview.UiUtils;
 
@@ -27,7 +25,7 @@ import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAP
  * <p>
  * Handles orientation changes. Updates the VideoView layout params. Hides/shows the toolbar.
  */
-public class OrientationHelper extends OrientationEventListener {
+public class OrientationManager extends OrientationEventListener {
     private static final int LEFT_LANDSCAPE = 90;
     private static final int RIGHT_LANDSCAPE = 270;
     private static final int PORTRAIT = 0;
@@ -43,7 +41,7 @@ public class OrientationHelper extends OrientationEventListener {
     private PortraitOrientation portraitOrientation = PortraitOrientation.DEFAULT;
     private boolean shouldEnterPortrait;
 
-    public OrientationHelper(Context context, FullscreenVideoView fullscreenVideoView) {
+    public OrientationManager(Context context, FullscreenVideoView fullscreenVideoView) {
         super(context);
         videoView = fullscreenVideoView;
         contentResolver = context.getContentResolver();
@@ -76,15 +74,11 @@ public class OrientationHelper extends OrientationEventListener {
     private void updateLayoutParams() {
         ViewGroup.LayoutParams params = videoView.getLayoutParams();
         Context context = videoView.getContext();
-        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        if (windowManager == null) {
-            return;
-        }
-        Display display = windowManager.getDefaultDisplay();
-        DisplayMetrics realMetrics = new DisplayMetrics();
-        display.getRealMetrics(realMetrics);
-        params.width = realMetrics.widthPixels;
-        params.height = realMetrics.heightPixels;
+        DeviceDimensionsManager deviceDimensionsManager = DeviceDimensionsManager.getInstance();
+
+        params.width = deviceDimensionsManager.getRealWidth(context);
+        params.height = deviceDimensionsManager.getRealHeight(context);
+
         videoView.setLayoutParams(params);
     }
 

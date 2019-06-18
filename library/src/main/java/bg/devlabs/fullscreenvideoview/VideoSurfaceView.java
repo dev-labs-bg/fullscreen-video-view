@@ -2,9 +2,9 @@ package bg.devlabs.fullscreenvideoview;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.SurfaceView;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 
@@ -30,38 +30,40 @@ class VideoSurfaceView extends SurfaceView {
     }
 
     public void updateLayoutParams(int videoWidth, int videoHeight) {
-        resetLayoutParams();
-        previousHeight = getLayoutParams().height;
-        previousWidth = getLayoutParams().width;
+        ViewGroup.LayoutParams layoutParams = getLayoutParams();
+        resetLayoutParams(layoutParams);
+        previousHeight = layoutParams.height;
+        previousWidth = layoutParams.width;
         // Get the Display Metrics
-        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+        DeviceDimensionsManager deviceDimensionsManager = DeviceDimensionsManager.getInstance();
         // Get the width of the screen
-        int screenWidth = displayMetrics.widthPixels;
-        int screenHeight = displayMetrics.heightPixels;
+        Context context = getContext();
+        int screenWidth = deviceDimensionsManager.getDisplayWidth(context);
+        int screenHeight = deviceDimensionsManager.getDisplayHeight(context);
         // Get the SurfaceView layout parameters
-        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) getLayoutParams();
+        FrameLayout.LayoutParams surfaceViewLayoutParams = (FrameLayout.LayoutParams) layoutParams;
         if ((float) videoHeight / screenHeight > (float) videoWidth / screenWidth) {
-            lp.height = screenHeight;
+            surfaceViewLayoutParams.height = screenHeight;
             // Set the width of the SurfaceView to match the aspect ratio of the video
             // be sure to cast these as floats otherwise the calculation will likely be 0
-            lp.width = (int) (((float) videoWidth / videoHeight) * screenHeight);
+            surfaceViewLayoutParams.width = (int) (((float) videoWidth / videoHeight) * screenHeight);
         } else {
             // Set the width of the SurfaceView to the width of the screen
-            lp.width = screenWidth;
+            surfaceViewLayoutParams.width = screenWidth;
             // Set the height of the SurfaceView to match the aspect ratio of the video
             // be sure to cast these as floats otherwise the calculation will likely be 0
-            lp.height = (int) (((float) videoHeight / videoWidth) * screenWidth);
+            surfaceViewLayoutParams.height = (int) (((float) videoHeight / videoWidth) * screenWidth);
         }
         // Change the gravity to center
-        lp.gravity = Gravity.CENTER;
+        surfaceViewLayoutParams.gravity = Gravity.CENTER;
         // Commit the layout parameters
-        setLayoutParams(lp);
+        setLayoutParams(surfaceViewLayoutParams);
     }
 
-    private void resetLayoutParams() {
-        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) getLayoutParams();
-        layoutParams.height = previousHeight;
-        layoutParams.width = previousWidth;
+    private void resetLayoutParams(ViewGroup.LayoutParams layoutParams) {
+        FrameLayout.LayoutParams frameLayoutParams = (FrameLayout.LayoutParams) layoutParams;
+        frameLayoutParams.height = previousHeight;
+        frameLayoutParams.width = previousWidth;
         setLayoutParams(layoutParams);
     }
 }

@@ -11,8 +11,9 @@ import android.support.v4.content.ContextCompat;
 import java.io.File;
 
 import bg.devlabs.fullscreenvideoview.orientation.LandscapeOrientation;
-import bg.devlabs.fullscreenvideoview.orientation.OrientationHelper;
+import bg.devlabs.fullscreenvideoview.orientation.OrientationManager;
 import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation;
+import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedOptions;
 
 /**
  * Created by Slavi Petrov on 25.10.2017
@@ -23,16 +24,16 @@ import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation;
 public class Builder {
     private final FullscreenVideoView fullscreenVideoView;
     private final VideoControllerView controller;
-    private final OrientationHelper orientationHelper;
+    private final OrientationManager orientationManager;
     private final VideoMediaPlayer videoMediaPlayer;
 
     Builder(FullscreenVideoView fullscreenVideoView,
             VideoControllerView controller,
-            OrientationHelper orientationHelper,
+            OrientationManager orientationManager,
             VideoMediaPlayer videoMediaPlayer) {
         this.fullscreenVideoView = fullscreenVideoView;
         this.controller = controller;
-        this.orientationHelper = orientationHelper;
+        this.orientationManager = orientationManager;
         this.videoMediaPlayer = videoMediaPlayer;
     }
 
@@ -127,12 +128,12 @@ public class Builder {
     }
 
     public Builder landscapeOrientation(LandscapeOrientation landscapeOrientation) {
-        orientationHelper.setLandscapeOrientation(landscapeOrientation);
+        orientationManager.setLandscapeOrientation(landscapeOrientation);
         return this;
     }
 
     public Builder portraitOrientation(PortraitOrientation portraitOrientation) {
-        orientationHelper.setPortraitOrientation(portraitOrientation);
+        orientationManager.setPortraitOrientation(portraitOrientation);
         return this;
     }
 
@@ -203,6 +204,11 @@ public class Builder {
 
     public Builder playbackSpeedOptions(PlaybackSpeedOptions playbackSpeedOptions) {
         controller.setPlaybackSpeedOptions(playbackSpeedOptions);
+        return this;
+    }
+
+    public Builder thumbnail(int thumbnailResId) {
+        fullscreenVideoView.setVideoThumbnail(thumbnailResId);
         return this;
     }
 }

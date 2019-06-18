@@ -1,4 +1,4 @@
-package bg.devlabs.fullscreenvideoview;
+package bg.devlabs.fullscreenvideoview.playbackspeed;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -9,6 +9,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <ImageView
+        android:id="@+id/thumbnail_image_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/cd_background_image_view"
+        android:scaleType="centerInside" />
+
     <bg.devlabs.fullscreenvideoview.VideoControllerView
         android:id="@+id/video_controller"
         android:layout_width="match_parent"
