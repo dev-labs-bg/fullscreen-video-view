@@ -238,7 +238,7 @@ public class FullscreenVideoView extends FrameLayout {
                 videoMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     @Override
                     public void onPrepared(MediaPlayer mediaPlayer) {
-                        hideProgress();
+                        hideProgressBar();
                         // Get the dimensions of the video
                         int videoWidth = videoMediaPlayer.getVideoWidth();
                         int videoHeight = videoMediaPlayer.getVideoHeight();
@@ -275,7 +275,7 @@ public class FullscreenVideoView extends FrameLayout {
         }
     }
 
-    private void hideProgress() {
+    private void hideProgressBar() {
         if (progressBar != null) {
             progressBar.setVisibility(View.INVISIBLE);
         }
@@ -320,6 +320,12 @@ public class FullscreenVideoView extends FrameLayout {
     public void pause() {
         if (videoMediaPlayer != null) {
             videoMediaPlayer.pause();
+        }
+    }
+
+    public void hideProgress() {
+        if (controller != null) {
+            controller.hideProgress();
         }
     }
 }

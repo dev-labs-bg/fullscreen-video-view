@@ -211,4 +211,9 @@ public class Builder {
         fullscreenVideoView.setVideoThumbnail(thumbnailResId);
         return this;
     }
+
+    public Builder hideProgress() {
+        controller.hideProgress();
+        return this;
+    }
 }
