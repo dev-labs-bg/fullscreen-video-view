@@ -92,6 +92,7 @@ class VideoControllerView extends FrameLayout {
     private Handler handler = new VideoControllerView.MessageHandler(this);
     private SeekBar progress;
     private ImageButton startPauseButton;
+    private ImageButton fullscreenButton;
     private ImageButton ffwdButton;
     private ImageButton rewButton;
     private TextView playbackSpeedButton;
@@ -243,7 +244,7 @@ class VideoControllerView extends FrameLayout {
             startPauseButton.setOnClickListener(pauseListener);
         }
 
-        ImageButton fullscreenButton = findViewById(R.id.fullscreen_media_button);
+        fullscreenButton = findViewById(R.id.fullscreen_media_button);
         if (fullscreenButton != null) {
             fullscreenButton.requestFocus();
             fullscreenButton.setOnClickListener(fullscreenListener);
@@ -546,9 +547,13 @@ class VideoControllerView extends FrameLayout {
     }
 
     public void hideProgress() {
-        currentTime.setVisibility(View.INVISIBLE);
-        endTime.setVisibility(View.INVISIBLE);
-        progress.setVisibility(View.INVISIBLE);
+        currentTime.setVisibility(View.GONE);
+        endTime.setVisibility(View.GONE);
+        progress.setVisibility(View.GONE);
+    }
+
+    public void hideFullscreenButton() {
+        fullscreenButton.setVisibility(View.GONE);
     }
 
     private static class MessageHandler extends Handler {

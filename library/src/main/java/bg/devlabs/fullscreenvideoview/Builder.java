@@ -216,4 +216,9 @@ public class Builder {
         controller.hideProgress();
         return this;
     }
+
+    public Builder hideFullscreenButton() {
+        controller.hideFullscreenButton();
+        return this;
+    }
 }

@@ -323,9 +323,19 @@ public class FullscreenVideoView extends FrameLayout {
         }
     }
 
+    /**
+     * Hides the progress views - the current time TextView, the ProgressBar and
+     * the end time TextView.
+     */
     public void hideProgress() {
         if (controller != null) {
             controller.hideProgress();
+        }
+    }
+
+    public void hideFullscreenButton() {
+        if (controller != null) {
+            controller.hideFullscreenButton();
         }
     }
 }
