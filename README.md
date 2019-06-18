@@ -67,8 +67,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
 }
 ```
 
-Change controls drawable resources
----
+### Change controls drawable resources
+
 Java or Kotlin
 ```kotlin
 fullscreenVideoView.videoUrl(videoUrl)
@@ -94,8 +94,8 @@ XML
         app:exit_fullscreen_drawable="@drawable/ic_fullscreen_exit"/>
 ```
 
-Enable/disable controls
----
+### Enable/disable controls
+
 ```kotlin
 fullscreenVideoView.videoUrl(videoUrl)
         .disablePause()
@@ -103,22 +103,23 @@ fullscreenVideoView.videoUrl(videoUrl)
         .addSeekForwardButton()
 ```
 
-Enable video auto-start
----
+### Enable video auto-start
+
 ```kotlin
 fullscreenVideoView.videoUrl(videoUrl)
         .enableAutoStart()
 ```
 
-Customize fast-forward and/or rewind seconds
----
+### Customize fast-forward and/or rewind seconds
+
 ```kotlin
 fullscreenVideoView.videoUrl(videoUrl)
         .fastForwardSeconds(5)
         .rewindSeconds(5)
 ```
-Change the playback speed (only for API 23 and above)
----
+
+### Change the playback speed (only for API 23 and above)
+
 There are 7 playback speed values which are added by default, but they can be changed with custom ones when `playbackSpeedOptions` is used.
 ```kotlin
 val playbackOptions = PlaybackSpeedOptions().addSpeeds(0.25f, 0.5f, 0.75f, 1f)
@@ -127,8 +128,9 @@ fullscreenVideoView.videoUrl(videoUrl)
         .addPlaybackSpeedButton()
         .playbackSpeedOptions(playbackOptions)
 ```
-Add thumbnail
----
+
+### Add thumbnail
+
 This feature supports loading only drawables from the Android project.
 ```kotlin
 val thumbnailResId = R.drawable.video_thumbnail
@@ -136,14 +138,15 @@ val thumbnailResId = R.drawable.video_thumbnail
 fullscreenVideoView.videoUrl(videoUrl)
 	.thumbnail(thumbnailResId)
 ```
-Pause video
----
+### Pause video
+
 If you want to pause the video programmatically you can use the `pause()` method.
 ```kotlin
 fullscreenVideoView.pause()
 ```
-Hide fullscreen button
----
+
+### Hide fullscreen button
+
 ```kotlin
 fullscreenVideoView.hideFullscreenButton()
 ```
