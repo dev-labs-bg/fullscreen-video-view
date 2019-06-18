@@ -109,6 +109,7 @@ class VideoControllerView extends FrameLayout {
     private View.OnClickListener fullscreenListener = new OnClickListener() {
         @Override
         public void onClick(View view) {
+            view.setTag("Clicked");
             doToggleFullscreen();
             show(DEFAULT_TIMEOUT);
         }

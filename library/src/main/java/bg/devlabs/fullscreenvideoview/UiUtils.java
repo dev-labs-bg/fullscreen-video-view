@@ -20,10 +20,12 @@ import android.os.Build;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -87,7 +89,14 @@ public class UiUtils {
             if (shouldCheckChildren(view)) {
                 children.addAll(getAllChildViews(view));
             } else {
-                if (!(view instanceof FullscreenVideoView)) {
+                if (view instanceof FullscreenVideoView) {
+                    ImageButton fullscreenButton = view.findViewById(R.id.fullscreen_media_button);
+                    String buttonTag = (String) fullscreenButton.getTag();
+
+                    if (!Objects.equals(buttonTag, "Clicked")) {
+                        children.add(view);
+                    }
+                } else {
                     children.add(view);
                 }
             }
