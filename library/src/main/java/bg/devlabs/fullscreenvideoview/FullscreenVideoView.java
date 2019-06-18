@@ -316,4 +316,10 @@ public class FullscreenVideoView extends FrameLayout {
             thumbnailImageView.setImageBitmap(scaledBitmap);
         }
     }
+
+    public void pause() {
+        if (videoMediaPlayer != null) {
+            videoMediaPlayer.pause();
+        }
+    }
 }
