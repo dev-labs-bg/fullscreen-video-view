@@ -136,6 +136,12 @@ val thumbnailResId = R.drawable.video_thumbnail
 fullscreenVideoView.videoUrl(videoUrl)
 	.thumbnail(thumbnailResId)
 ```
+Pause video
+---
+If you want to pause the video programmatically you can use the `pause()` method.
+```kotlin
+fullscreenVideoView.pause()
+```
 
 Compatibility
 ===
