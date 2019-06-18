@@ -1,4 +1,3 @@
-package bg.devlabs.fullscreenvideoview;
 /*
  * Copyright (C) 2006 The Android Open Source Project
  * Modifications Copyright (C) 2017 Dev Labs
@@ -15,6 +14,8 @@ package bg.devlabs.fullscreenvideoview;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+package bg.devlabs.fullscreenvideoview;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
