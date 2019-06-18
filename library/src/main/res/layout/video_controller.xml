@@ -1,113 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!-- Copyright (C) 2007 The Android Open Source Project
-     Modifications Copyright (C) 2017 Dev Labs
+<!--
+    Copyright 2017 Dev Labs
 
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-          http://www.apache.org/licenses/LICENSE-2.0
+        http://www.apache.org/licenses/LICENSE-2.0
 
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.-->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#CC000000"
-    android:orientation="vertical">
+    android:background="#CC000000">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
+    <ImageButton
+        android:id="@+id/start_pause_media_button"
+        style="@android:style/MediaButton.Play"
+        android:contentDescription="@string/cd_pause_media_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/rewind_media_button"
+        style="@android:style/MediaButton.Rew"
+        android:layout_toStartOf="@id/start_pause_media_button"
+        android:contentDescription="@string/cd_rewind_media_button"
+        app:layout_constraintEnd_toStartOf="@id/start_pause_media_button"
+        app:layout_constraintTop_toTopOf="@id/start_pause_media_button" />
+
+    <ImageButton
+        android:id="@+id/forward_media_button"
+        style="@android:style/MediaButton.Ffwd"
+        android:layout_toEndOf="@id/start_pause_media_button"
+        android:contentDescription="@string/cd_forward_media_button"
+        app:layout_constraintStart_toEndOf="@id/start_pause_media_button"
+        app:layout_constraintTop_toTopOf="@id/start_pause_media_button" />
+
+    <TextView
+        android:id="@+id/playback_speed_button"
+        style="?android:attr/buttonBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:layout_marginEnd="16dp"
+        android:background="@color/white"
+        android:gravity="center"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:text="1.00x"
+        android:textColor="#CC000000"
+        app:layout_constraintBottom_toBottomOf="@id/start_pause_media_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/time_current"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingTop="4dp">
+        android:layout_gravity="center_horizontal"
+        android:paddingStart="8dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="4dp"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/start_pause_media_button"
+        tools:text="00:00:00" />
 
-        <ImageButton
-            android:id="@+id/start_pause_media_button"
-            style="@android:style/MediaButton.Play"
-            android:layout_centerHorizontal="true"
-            android:contentDescription="@string/cd_pause_media_button" />
-
-        <ImageButton
-            android:id="@+id/rewind_media_button"
-            style="@android:style/MediaButton.Rew"
-            android:layout_toStartOf="@id/start_pause_media_button"
-            android:contentDescription="@string/cd_rewind_media_button" />
-
-        <ImageButton
-            android:id="@+id/forward_media_button"
-            style="@android:style/MediaButton.Ffwd"
-            android:layout_toEndOf="@id/start_pause_media_button"
-            android:contentDescription="@string/cd_forward_media_button" />
-
-        <TextView
-            android:id="@+id/playback_speed_button"
-            style="?android:attr/buttonBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="24dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="16dp"
-            android:background="@color/white"
-            android:gravity="center"
-            android:paddingEnd="8dp"
-            android:paddingStart="8dp"
-            android:text="1.00x"
-            android:textColor="#CC000000"
-            tools:ignore="HardcodedText" />
-    </RelativeLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
+    <ImageButton
+        android:id="@+id/fullscreen_media_button"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_gravity="top"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/cd_fullscreen_media_button"
+        android:paddingStart="10dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="4dp"
+        android:paddingBottom="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/time_current" />
 
-        <TextView
-            android:id="@+id/time_current"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:paddingEnd="4dp"
-            android:paddingStart="8dp"
-            android:paddingTop="4dp"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+    <TextView
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:paddingStart="4dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="4dp"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/fullscreen_media_button"
+        app:layout_constraintTop_toTopOf="@id/time_current"
+        tools:text="01:00:00" />
 
-        <SeekBar
-            android:id="@+id/progress_seek_bar"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="0dp"
-            android:layout_height="32dp"
-            android:layout_weight="1" />
-
-        <TextView
-            android:id="@+id/time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:paddingEnd="4dp"
-            android:paddingStart="4dp"
-            android:paddingTop="4dp"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-
-        <ImageButton
-            android:id="@+id/fullscreen_media_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/cd_fullscreen_media_button"
-            android:paddingBottom="4dp"
-            android:paddingEnd="4dp"
-            android:paddingStart="10dp"
-            android:paddingTop="4dp" />
-    </LinearLayout>
-</LinearLayout>
+    <SeekBar
+        android:id="@+id/progress_seek_bar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="32dp"
+        android:layout_weight="1"
+        app:layout_constraintEnd_toStartOf="@id/time"
+        app:layout_constraintStart_toEndOf="@id/time_current"
+        app:layout_constraintTop_toTopOf="@id/time_current" />
+</android.support.constraint.ConstraintLayout>

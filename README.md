@@ -67,8 +67,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
 }
 ```
 
-Change controls drawable resources
----
+### Change controls drawable resources
+
 Java or Kotlin
 ```kotlin
 fullscreenVideoView.videoUrl(videoUrl)
@@ -94,8 +94,8 @@ XML
         app:exit_fullscreen_drawable="@drawable/ic_fullscreen_exit"/>
 ```
 
-Enable/disable controls
----
+### Enable/disable controls
+
 ```kotlin
 fullscreenVideoView.videoUrl(videoUrl)
         .disablePause()
@@ -103,22 +103,23 @@ fullscreenVideoView.videoUrl(videoUrl)
         .addSeekForwardButton()
 ```
 
-Enable video auto-start
----
+### Enable video auto-start
+
 ```kotlin
 fullscreenVideoView.videoUrl(videoUrl)
         .enableAutoStart()
 ```
 
-Customize fast-forward and/or rewind seconds
----
+### Customize fast-forward and/or rewind seconds
+
 ```kotlin
 fullscreenVideoView.videoUrl(videoUrl)
         .fastForwardSeconds(5)
         .rewindSeconds(5)
 ```
-Change the playback speed (only for API 23 and above)
----
+
+### Change the playback speed (only for API 23 and above)
+
 There are 7 playback speed values which are added by default, but they can be changed with custom ones when `playbackSpeedOptions` is used.
 ```kotlin
 val playbackOptions = PlaybackSpeedOptions().addSpeeds(0.25f, 0.5f, 0.75f, 1f)
@@ -127,14 +128,27 @@ fullscreenVideoView.videoUrl(videoUrl)
         .addPlaybackSpeedButton()
         .playbackSpeedOptions(playbackOptions)
 ```
-Add thumbnail
----
+
+### Add thumbnail
+
 This feature supports loading only drawables from the Android project.
 ```kotlin
 val thumbnailResId = R.drawable.video_thumbnail
 
 fullscreenVideoView.videoUrl(videoUrl)
 	.thumbnail(thumbnailResId)
+```
+### Pause video
+
+If you want to pause the video programmatically you can use the `pause()` method.
+```kotlin
+fullscreenVideoView.pause()
+```
+
+### Hide fullscreen button
+
+```kotlin
+fullscreenVideoView.hideFullscreenButton()
 ```
 
 Compatibility
@@ -149,4 +163,19 @@ in the LeakCanary repository issues.
 
 License
 ===
-Apache 2.0. See the [LICENSE](https://github.com/dev-labs-bg/fullscreen-video-view/blob/master/LICENSE.txt) file for details.
+
+```
+Copyright 2017 Dev Labs
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```

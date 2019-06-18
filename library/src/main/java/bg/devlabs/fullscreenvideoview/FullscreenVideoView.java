@@ -1,3 +1,19 @@
+/*
+ * Copyright 2017 Dev Labs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package bg.devlabs.fullscreenvideoview;
 
 import android.content.Context;
@@ -238,7 +254,7 @@ public class FullscreenVideoView extends FrameLayout {
                 videoMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     @Override
                     public void onPrepared(MediaPlayer mediaPlayer) {
-                        hideProgress();
+                        hideProgressBar();
                         // Get the dimensions of the video
                         int videoWidth = videoMediaPlayer.getVideoWidth();
                         int videoHeight = videoMediaPlayer.getVideoHeight();
@@ -275,7 +291,7 @@ public class FullscreenVideoView extends FrameLayout {
         }
     }
 
-    private void hideProgress() {
+    private void hideProgressBar() {
         if (progressBar != null) {
             progressBar.setVisibility(View.INVISIBLE);
         }
@@ -320,6 +336,22 @@ public class FullscreenVideoView extends FrameLayout {
     public void pause() {
         if (videoMediaPlayer != null) {
             videoMediaPlayer.pause();
+        }
+    }
+
+    /**
+     * Hides the progress views - the current time TextView, the ProgressBar and
+     * the end time TextView.
+     */
+    public void hideProgress() {
+        if (controller != null) {
+            controller.hideProgress();
+        }
+    }
+
+    public void hideFullscreenButton() {
+        if (controller != null) {
+            controller.hideFullscreenButton();
         }
     }
 }
