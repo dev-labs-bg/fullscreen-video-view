@@ -43,6 +43,9 @@ import java.lang.ref.WeakReference;
 import java.util.Locale;
 
 import bg.devlabs.fullscreenvideoview.orientation.OrientationManager;
+import bg.devlabs.fullscreenvideoview.playbackspeed.OnPlaybackSpeedSelectedListener;
+import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedOptions;
+import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedPopupMenu;
 
 /**
  * A view containing controls for a MediaPlayer. Typically contains the
@@ -161,7 +164,7 @@ class VideoControllerView extends FrameLayout {
 //            popupMenu.getMenuInflater()
 //                    .inflate(R.menu.playback_speed_popup_menu, popupMenu.getMenu());
 
-            popupMenu.setOnSpeedSelectedListener(new PlaybackSpeedPopupMenu.OnSpeedSelectedListener() {
+            popupMenu.setOnSpeedSelectedListener(new OnPlaybackSpeedSelectedListener() {
                 @Override
                 public void onSpeedSelected(float speed, String text) {
                     // Update the Playback Speed Drawable according to the clicked menu item

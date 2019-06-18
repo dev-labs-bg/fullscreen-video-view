@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import bg.devlabs.fullscreenvideoview.PlaybackSpeedOptions
+import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedOptions
 import bg.devlabs.fullscreenvideoview.orientation.LandscapeOrientation
 import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation
 import kotlinx.android.synthetic.main.activity_action_bar.*

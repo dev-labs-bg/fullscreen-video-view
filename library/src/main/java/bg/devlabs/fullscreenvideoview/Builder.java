@@ -13,6 +13,7 @@ import java.io.File;
 import bg.devlabs.fullscreenvideoview.orientation.LandscapeOrientation;
 import bg.devlabs.fullscreenvideoview.orientation.OrientationManager;
 import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation;
+import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedOptions;
 
 /**
  * Created by Slavi Petrov on 25.10.2017
