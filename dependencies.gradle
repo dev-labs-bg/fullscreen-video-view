@@ -9,6 +9,7 @@ ext.versions = [
         mavenPlugin       : '1.4.1',
 
         supportLib        : '28.0.0',
+        constraintLayout  : '1.1.3',
         espresso          : '3.0.1',
         kotlin            : '1.3.31',
         leakCanary        : '1.6.1'
