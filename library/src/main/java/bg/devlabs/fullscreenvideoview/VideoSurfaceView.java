@@ -2,7 +2,6 @@ package bg.devlabs.fullscreenvideoview;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.SurfaceView;
 import android.view.ViewGroup;
@@ -36,10 +35,11 @@ class VideoSurfaceView extends SurfaceView {
         previousHeight = layoutParams.height;
         previousWidth = layoutParams.width;
         // Get the Display Metrics
-        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+        DeviceDimensionsManager deviceDimensionsManager = DeviceDimensionsManager.getInstance();
         // Get the width of the screen
-        int screenWidth = displayMetrics.widthPixels;
-        int screenHeight = displayMetrics.heightPixels;
+        Context context = getContext();
+        int screenWidth = deviceDimensionsManager.getDisplayWidth(context);
+        int screenHeight = deviceDimensionsManager.getDisplayHeight(context);
         // Get the SurfaceView layout parameters
         FrameLayout.LayoutParams surfaceViewLayoutParams = (FrameLayout.LayoutParams) layoutParams;
         if ((float) videoHeight / screenHeight > (float) videoWidth / screenWidth) {

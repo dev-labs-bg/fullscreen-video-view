@@ -6,14 +6,12 @@ import android.content.Context;
 import android.provider.Settings;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 
+import bg.devlabs.fullscreenvideoview.DeviceDimensionsManager;
 import bg.devlabs.fullscreenvideoview.FullscreenVideoView;
 import bg.devlabs.fullscreenvideoview.UiUtils;
 
@@ -76,15 +74,11 @@ public class OrientationManager extends OrientationEventListener {
     private void updateLayoutParams() {
         ViewGroup.LayoutParams params = videoView.getLayoutParams();
         Context context = videoView.getContext();
-        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        if (windowManager == null) {
-            return;
-        }
-        Display display = windowManager.getDefaultDisplay();
-        DisplayMetrics realMetrics = new DisplayMetrics();
-        display.getRealMetrics(realMetrics);
-        params.width = realMetrics.widthPixels;
-        params.height = realMetrics.heightPixels;
+        DeviceDimensionsManager deviceDimensionsManager = DeviceDimensionsManager.getInstance();
+
+        params.width = deviceDimensionsManager.getRealWidth(context);
+        params.height = deviceDimensionsManager.getRealHeight(context);
+
         videoView.setLayoutParams(params);
     }
 
