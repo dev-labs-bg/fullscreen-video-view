@@ -145,9 +145,25 @@ If you want to pause the video programmatically you can use the `pause()` method
 fullscreenVideoView.pause()
 ```
 
+### Hide progress views
+
+```kotlin
+// Hide initially from the Builder
+fullscreenVideoView.videoUrl(videoUrl)
+        .hideProgress()
+
+// Hide by calling the view method
+fullscreenVideoView.hideProgress()
+```
+
 ### Hide fullscreen button
 
 ```kotlin
+// Hide initially from the Builder
+fullscreenVideoView.videoUrl(videoUrl)
+        .hideFullscreenButton()
+
+// Hide by calling the view method
 fullscreenVideoView.hideFullscreenButton()
 ```
 
