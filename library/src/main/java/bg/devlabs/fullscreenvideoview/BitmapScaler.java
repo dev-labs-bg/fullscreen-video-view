@@ -9,16 +9,9 @@ import android.graphics.BitmapFactory;
  * Dev Labs
  * slavi@devlabs.bg
  */
-public class BitmapScaler {
+class BitmapScaler {
 
-    // Scale and maintain aspect ratio given a desired width
-    // BitmapScaler.scaleToFitWidth(bitmap, 100);
-    public static Bitmap scaleToFitWidth(Bitmap bitmap, int width) {
-        float factor = width / (float) bitmap.getWidth();
-        return Bitmap.createScaledBitmap(bitmap, width, (int) (bitmap.getHeight() * factor), true);
-    }
-
-    public static Bitmap scaleImage(Resources resources, int thumbnailResId) {
+    static Bitmap scaleImage(Resources resources, int thumbnailResId) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeResource(resources, thumbnailResId, options);
@@ -52,12 +45,4 @@ public class BitmapScaler {
 
         return inSampleSize;
     }
-
-    // Scale and maintain aspect ratio given a desired height
-    // BitmapScaler.scaleToFitHeight(bitmap, 100);
-    public static Bitmap scaleToFitHeight(Bitmap bitmap, int height) {
-        float factor = height / (float) bitmap.getHeight();
-        return Bitmap.createScaledBitmap(bitmap, (int) (bitmap.getWidth() * factor), height, true);
-    }
-
 }
