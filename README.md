@@ -127,6 +127,15 @@ fullscreenVideoView.videoUrl(videoUrl)
         .addPlaybackSpeedButton()
         .playbackSpeedOptions(playbackOptions)
 ```
+Add thumbnail
+---
+This feature supports loading only drawables from the Android project.
+```kotlin
+val thumbnailResId = R.drawable.video_thumbnail
+
+fullscreenVideoView.videoUrl(videoUrl)
+	.thumbnail(thumbnailResId)
+```
 
 Compatibility
 ===
