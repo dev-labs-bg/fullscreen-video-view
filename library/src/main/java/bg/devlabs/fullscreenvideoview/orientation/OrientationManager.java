@@ -29,7 +29,7 @@ import android.view.Window;
 
 import bg.devlabs.fullscreenvideoview.DeviceDimensionsManager;
 import bg.devlabs.fullscreenvideoview.FullscreenVideoView;
-import bg.devlabs.fullscreenvideoview.UiUtils;
+import bg.devlabs.fullscreenvideoview.VisibilityManager;
 
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
@@ -52,6 +52,7 @@ public class OrientationManager extends OrientationEventListener {
     private int originalHeight;
     private boolean isLandscape;
     private final ContentResolver contentResolver;
+    private final VisibilityManager visibilityManager;
     // Orientation
     private LandscapeOrientation landscapeOrientation = LandscapeOrientation.SENSOR;
     private PortraitOrientation portraitOrientation = PortraitOrientation.DEFAULT;
@@ -61,6 +62,7 @@ public class OrientationManager extends OrientationEventListener {
         super(context);
         videoView = fullscreenVideoView;
         contentResolver = context.getContentResolver();
+        visibilityManager = new VisibilityManager();
     }
 
     public void activateFullscreen() {
@@ -73,7 +75,7 @@ public class OrientationManager extends OrientationEventListener {
         // Change the screen orientation to SENSOR_LANDSCAPE
         setOrientation(landscapeOrientation.getValue());
 
-        UiUtils.hideOtherViews(getParent());
+        visibilityManager.hideVisibleViews(getParent());
 
         // Save the video player original width and height
         originalWidth = videoView.getWidth();
@@ -108,7 +110,7 @@ public class OrientationManager extends OrientationEventListener {
         // Change the screen orientation to PORTRAIT
         setOrientation(portraitOrientation.getValue());
 
-        UiUtils.showOtherViews(getParent());
+        visibilityManager.showHiddenViews();
 
         ViewGroup.LayoutParams params = videoView.getLayoutParams();
         params.width = originalWidth;
