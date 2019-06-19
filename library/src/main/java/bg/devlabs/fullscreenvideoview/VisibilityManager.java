@@ -36,20 +36,21 @@ import static bg.devlabs.fullscreenvideoview.Constants.VIEW_TAG_CLICKED;
  * Dev Labs
  * slavi@devlabs.bg
  */
-public class UiUtils {
+public class VisibilityManager {
+
+    private ArrayList<View> hiddenViews = new ArrayList<>();
 
     /**
      * Shows all views except the parent layout
-     *
-     * @param parentLayout the top layout in the XML file
      */
-    public static void showOtherViews(ViewGroup parentLayout) {
-        List<View> views = getAllChildViews(parentLayout);
-        int size = views.size();
+    public void showHiddenViews() {
+        int size = hiddenViews.size();
         for (int i = 0; i < size; i++) {
-            View view = views.get(i);
+            View view = hiddenViews.get(i);
             view.setVisibility(VISIBLE);
         }
+
+        hiddenViews.clear();
     }
 
     /**
@@ -57,12 +58,14 @@ public class UiUtils {
      *
      * @param parentLayout the top layout in the XML file
      */
-    public static void hideOtherViews(ViewGroup parentLayout) {
-        List<View> views = getAllChildViews(parentLayout);
+    public void hideVisibleViews(ViewGroup parentLayout) {
+        List<View> views = getVisibleChildViews(parentLayout);
         int size = views.size();
         for (int i = 0; i < size; i++) {
             View view = views.get(i);
             view.setVisibility(GONE);
+            // Add the view in the hidden views
+            hiddenViews.add(view);
         }
     }
 
@@ -71,14 +74,14 @@ public class UiUtils {
      * If they are ViewGroup classes, continues the recursion,
      * if they are View classes, terminates the recursion
      * <p>
-     * Used in {@link #hideOtherViews(ViewGroup)} to get all the Views that should be hidden
-     * Used in {@link #showOtherViews(ViewGroup)} to get all the Views that should be shown
+     * Used in {@link #hideVisibleViews(ViewGroup)} to get all the Views that should be hidden
+     * Used in {@link #showHiddenViews()} to get all the Views that should be shown
      *
      * @param parentLayout the top layout in XML file
      * @return a list of all non-ViewGroup views from the parent layout except the VideoView,
      * but including Toolbar
      */
-    private static List<View> getAllChildViews(View parentLayout) {
+    private List<View> getVisibleChildViews(View parentLayout) {
         if (!shouldCheckChildren(parentLayout)) {
             return Collections.singletonList(parentLayout);
         }
@@ -88,17 +91,20 @@ public class UiUtils {
         for (int i = 0; i < childCount; i++) {
             View view = ((ViewGroup) parentLayout).getChildAt(i);
             if (shouldCheckChildren(view)) {
-                children.addAll(getAllChildViews(view));
+                children.addAll(getVisibleChildViews(view));
             } else {
                 if (view instanceof FullscreenVideoView) {
                     ImageButton fullscreenButton = view.findViewById(R.id.fullscreen_media_button);
                     String buttonTag = (String) fullscreenButton.getTag();
 
-                    if (!Objects.equals(buttonTag, VIEW_TAG_CLICKED)) {
+                    if (view.getVisibility() == VISIBLE &&
+                            !Objects.equals(buttonTag, VIEW_TAG_CLICKED)) {
                         children.add(view);
                     }
                 } else {
-                    children.add(view);
+                    if (view.getVisibility() == VISIBLE) {
+                        children.add(view);
+                    }
                 }
             }
         }
@@ -113,7 +119,7 @@ public class UiUtils {
      * @param view the {@link View} that should be checked
      * @return true if the View is a ViewGroup, but not FullscreenVideoView or Toolbar
      */
-    private static boolean shouldCheckChildren(View view) {
+    private boolean shouldCheckChildren(View view) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             return view instanceof ViewGroup &&
                     !(view instanceof Toolbar) &&
