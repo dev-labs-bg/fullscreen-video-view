@@ -12,14 +12,14 @@ Download
 ===
 You can use Gradle:
 ```gradle
-compile 'bg.devlabs.fullscreenvideoview:library:1.1.0'
+compile 'bg.devlabs.fullscreenvideoview:library:1.1.1'
 ```
 or Maven:
 ```maven
 <dependency>
   <groupId>bg.devlabs.fullscreenvideoview</groupId>
   <artifactId>library</artifactId>
-  <version>1.1.0</version>
+  <version>1.1.1</version>
   <type>pom</type>
 </dependency>
 ```
