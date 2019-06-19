@@ -114,7 +114,7 @@ public class VisibilityManager {
     /**
      * Check if a view has children to iterate
      * <p>
-     * Used in {@link #getAllChildViews(View)} as a terminating case
+     * Used in {@link #getVisibleChildViews(View)} (View)} as a terminating case
      *
      * @param view the {@link View} that should be checked
      * @return true if the View is a ViewGroup, but not FullscreenVideoView or Toolbar
