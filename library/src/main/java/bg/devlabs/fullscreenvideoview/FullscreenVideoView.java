@@ -72,6 +72,7 @@ public class FullscreenVideoView extends FrameLayout {
 
     public FullscreenVideoView(@NonNull Context context) {
         super(context);
+        init(null);
     }
 
     public FullscreenVideoView(@NonNull Context context, @Nullable AttributeSet attrs) {
