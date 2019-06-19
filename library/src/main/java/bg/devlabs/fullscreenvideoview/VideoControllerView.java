@@ -48,6 +48,8 @@ import bg.devlabs.fullscreenvideoview.playbackspeed.OnPlaybackSpeedSelectedListe
 import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedOptions;
 import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedPopupMenu;
 
+import static bg.devlabs.fullscreenvideoview.Constants.VIEW_TAG_CLICKED;
+
 /**
  * A view containing controls for a MediaPlayer. Typically contains the
  * buttons like "Play/Pause", "Rewind", "Fast Forward" and a progress
@@ -109,7 +111,7 @@ class VideoControllerView extends FrameLayout {
     private View.OnClickListener fullscreenListener = new OnClickListener() {
         @Override
         public void onClick(View view) {
-            view.setTag("Clicked");
+            view.setTag(VIEW_TAG_CLICKED);
             doToggleFullscreen();
             show(DEFAULT_TIMEOUT);
         }

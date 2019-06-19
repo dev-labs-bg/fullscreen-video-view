@@ -29,6 +29,7 @@ import java.util.Objects;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static bg.devlabs.fullscreenvideoview.Constants.VIEW_TAG_CLICKED;
 
 /**
  * Created by Slavi Petrov on 19.10.2017
@@ -93,7 +94,7 @@ public class UiUtils {
                     ImageButton fullscreenButton = view.findViewById(R.id.fullscreen_media_button);
                     String buttonTag = (String) fullscreenButton.getTag();
 
-                    if (!Objects.equals(buttonTag, "Clicked")) {
+                    if (!Objects.equals(buttonTag, VIEW_TAG_CLICKED)) {
                         children.add(view);
                     }
                 } else {

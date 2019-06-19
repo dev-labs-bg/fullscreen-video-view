@@ -42,6 +42,8 @@ import java.util.Objects;
 
 import bg.devlabs.fullscreenvideoview.orientation.OrientationManager;
 
+import static bg.devlabs.fullscreenvideoview.Constants.VIEW_TAG_CLICKED;
+
 /**
  * Created by Slavi Petrov on 05.10.2017
  * Dev Labs
@@ -176,7 +178,7 @@ public class FullscreenVideoView extends FrameLayout {
         ImageButton fullscreenButton = findViewById(R.id.fullscreen_media_button);
         String fullscreenButtonTag = (String) fullscreenButton.getTag();
         // Do not proceed if the FullscreenVideoView is not the clicked one
-        if (!Objects.equals(fullscreenButtonTag, "Clicked")) {
+        if (!Objects.equals(fullscreenButtonTag, VIEW_TAG_CLICKED)) {
             return;
         }
 
@@ -192,13 +194,17 @@ public class FullscreenVideoView extends FrameLayout {
 
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             orientationManager.activateFullscreen();
+
+            // Focus the view which is in fullscreen mode, because otherwise the Activity will
+            // handle the back button
+            setFocusable(true);
+            setFocusableInTouchMode(true);
+            requestFocus();
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             orientationManager.exitFullscreen();
+            // Clear the Clicked tag in the fullscreen button
+            fullscreenButton.setTag(null);
         }
-        // TODO: Fix not hiding the Toolbar after first selecting on one of the FullscreenVideoViews
-        //  to be fullscreen and then selecting the other one
-        // Clear the Clicked tag in the fullscreen button
-//        fullscreenButton.setTag(null);
     }
 
     @Override
