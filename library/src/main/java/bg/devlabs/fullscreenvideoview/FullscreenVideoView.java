@@ -32,13 +32,17 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 import bg.devlabs.fullscreenvideoview.orientation.OrientationManager;
+
+import static bg.devlabs.fullscreenvideoview.Constants.VIEW_TAG_CLICKED;
 
 /**
  * Created by Slavi Petrov on 05.10.2017
@@ -170,6 +174,14 @@ public class FullscreenVideoView extends FrameLayout {
     @Override
     protected void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+
+        ImageButton fullscreenButton = findViewById(R.id.fullscreen_media_button);
+        String fullscreenButtonTag = (String) fullscreenButton.getTag();
+        // Do not proceed if the FullscreenVideoView is not the clicked one
+        if (!Objects.equals(fullscreenButtonTag, VIEW_TAG_CLICKED)) {
+            return;
+        }
+
         if (orientationManager == null) {
             return;
         }
@@ -182,8 +194,16 @@ public class FullscreenVideoView extends FrameLayout {
 
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             orientationManager.activateFullscreen();
+
+            // Focus the view which is in fullscreen mode, because otherwise the Activity will
+            // handle the back button
+            setFocusable(true);
+            setFocusableInTouchMode(true);
+            requestFocus();
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             orientationManager.exitFullscreen();
+            // Clear the Clicked tag in the fullscreen button
+            fullscreenButton.setTag(null);
         }
     }
 

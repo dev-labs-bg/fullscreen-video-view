@@ -20,9 +20,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedOptions
+import android.util.Log
 import bg.devlabs.fullscreenvideoview.orientation.LandscapeOrientation
 import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation
+import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedOptions
 import kotlinx.android.synthetic.main.activity_action_bar.*
 
 
