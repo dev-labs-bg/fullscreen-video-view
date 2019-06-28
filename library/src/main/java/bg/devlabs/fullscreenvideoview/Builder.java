@@ -175,45 +175,6 @@ public class Builder {
         return this;
     }
 
-    /**
-     * Method implementation: pass 'true' to enable and pass 'false' to disable the play/pause
-     * button. It's enabled by default and to disable it the user passes 'false' to the method
-     * or just does not use it. In this case passing 'true' or 'false' is confusing.
-     *
-     * @deprecated As of release 1.0.0, replaced by {@link #disablePause()}
-     */
-    @Deprecated
-    public Builder canPause(boolean canPause) {
-        videoMediaPlayer.setPauseEnabled(canPause);
-        return this;
-    }
-
-    /**
-     * Method implementation: pass 'true' to enable and pass 'false' to disable the
-     * seek backward button. It's is disabled by default and to enable it the user passes 'true'
-     * to the method or just does not use it. In this case passing 'true' or 'false' is confusing.
-     *
-     * @deprecated As of release 1.0.0, replaced by {@link #addSeekBackwardButton()}
-     */
-    @Deprecated
-    public Builder canSeekBackward(boolean canSeekBackward) {
-        videoMediaPlayer.setCanSeekBackward(canSeekBackward);
-        return this;
-    }
-
-    /**
-     * Method implementation: pass 'true' to enable and pass 'false' to disable the
-     * seek forward button. It's is disabled by default and to enable it the user passes 'true'
-     * to the method or just does not use it. In this case passing 'true' or 'false' is confusing.
-     *
-     * @deprecated As of release 1.0.0, replaced by {@link #addSeekForwardButton()}
-     */
-    @Deprecated
-    public Builder canSeekForward(boolean canSeekForward) {
-        videoMediaPlayer.setCanSeekForward(canSeekForward);
-        return this;
-    }
-
     private Drawable getDrawable(int drawableResId) {
         Context context = fullscreenVideoView.getContext();
         return ContextCompat.getDrawable(context, drawableResId);
