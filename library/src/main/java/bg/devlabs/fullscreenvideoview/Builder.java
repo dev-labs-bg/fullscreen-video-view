@@ -26,6 +26,7 @@ import android.support.v4.content.ContextCompat;
 
 import java.io.File;
 
+import bg.devlabs.fullscreenvideoview.listener.OnErrorListener;
 import bg.devlabs.fullscreenvideoview.orientation.LandscapeOrientation;
 import bg.devlabs.fullscreenvideoview.orientation.OrientationManager;
 import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation;
@@ -235,6 +236,16 @@ public class Builder {
 
     public Builder hideFullscreenButton() {
         controller.hideFullscreenButton();
+        return this;
+    }
+
+    /**
+     * Adds an error listener which is called when an error occurs.
+     *
+     * @param onErrorListener listener for errors
+     */
+    public Builder addOnErrorListener(OnErrorListener onErrorListener) {
+        fullscreenVideoView.addOnErrorListener(onErrorListener);
         return this;
     }
 }

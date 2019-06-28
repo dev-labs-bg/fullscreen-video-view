@@ -40,8 +40,18 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
+import bg.devlabs.fullscreenvideoview.listener.FullscreenVideoViewException;
+import bg.devlabs.fullscreenvideoview.listener.OnErrorListener;
 import bg.devlabs.fullscreenvideoview.orientation.OrientationManager;
 
+import static android.media.MediaPlayer.MEDIA_ERROR_IO;
+import static android.media.MediaPlayer.MEDIA_ERROR_MALFORMED;
+import static android.media.MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK;
+import static android.media.MediaPlayer.MEDIA_ERROR_SERVER_DIED;
+import static android.media.MediaPlayer.MEDIA_ERROR_TIMED_OUT;
+import static android.media.MediaPlayer.MEDIA_ERROR_UNKNOWN;
+import static android.media.MediaPlayer.MEDIA_ERROR_UNSUPPORTED;
+import static bg.devlabs.fullscreenvideoview.Constants.MEDIA_ERROR_GENERAL;
 import static bg.devlabs.fullscreenvideoview.Constants.VIEW_TAG_CLICKED;
 
 /**
@@ -69,6 +79,8 @@ public class FullscreenVideoView extends FrameLayout {
     private SurfaceHolder.Callback surfaceHolderCallback;
     private boolean isPaused;
     private int previousOrientation;
+    @Nullable
+    private OnErrorListener onErrorListener;
 
     public FullscreenVideoView(@NonNull Context context) {
         super(context);
@@ -253,13 +265,14 @@ public class FullscreenVideoView extends FrameLayout {
 
         setOnKeyListener(null);
         setOnTouchListener(null);
+
+        onErrorListener = null;
     }
 
     public void setupMediaPlayer(String videoPath) {
         showProgress();
         try {
             if (videoMediaPlayer != null) {
-
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     AudioAttributes audioAttributes = new AudioAttributes.Builder()
                             .setUsage(AudioAttributes.USAGE_MEDIA)
@@ -292,10 +305,98 @@ public class FullscreenVideoView extends FrameLayout {
                         }
                     }
                 });
+                videoMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                    @Override
+                    public boolean onError(MediaPlayer mp, int what, int extra) {
+                        handleMediaPlayerError(what);
+                        return false;
+                    }
+                });
                 videoMediaPlayer.prepareAsync();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exception) {
+            if (onErrorListener != null) {
+                FullscreenVideoViewException fullscreenVideoViewException =
+                        new FullscreenVideoViewException(exception.getLocalizedMessage());
+
+                onErrorListener.onError(fullscreenVideoViewException);
+            }
+        }
+    }
+
+    private void handleMediaPlayerError(int what) {
+        if (onErrorListener == null) return;
+
+        switch (what) {
+            case MEDIA_ERROR_IO: {
+                onErrorListener.onError(new FullscreenVideoViewException(
+                        MEDIA_ERROR_IO,
+                        getContext().getString(R.string.media_error_io)
+                ));
+
+                break;
+            }
+
+            case MEDIA_ERROR_MALFORMED: {
+                onErrorListener.onError(new FullscreenVideoViewException(
+                        MEDIA_ERROR_MALFORMED,
+                        getContext().getString(R.string.media_error_malformed)
+                ));
+
+                break;
+            }
+
+            case MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK: {
+                onErrorListener.onError(new FullscreenVideoViewException(
+                        MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK,
+                        getContext().getString(R.string.media_error_not_valid_for_progressive_playback)
+                ));
+
+                break;
+            }
+
+            case MEDIA_ERROR_SERVER_DIED: {
+                onErrorListener.onError(new FullscreenVideoViewException(
+                        MEDIA_ERROR_SERVER_DIED,
+                        getContext().getString(R.string.media_error_server_died)
+                ));
+
+                break;
+            }
+
+            case MEDIA_ERROR_TIMED_OUT: {
+                onErrorListener.onError(new FullscreenVideoViewException(
+                        MEDIA_ERROR_TIMED_OUT,
+                        getContext().getString(R.string.media_error_timed_out)
+                ));
+
+                break;
+            }
+
+            case MEDIA_ERROR_UNKNOWN: {
+                onErrorListener.onError(new FullscreenVideoViewException(
+                        MEDIA_ERROR_UNKNOWN,
+                        getContext().getString(R.string.media_error_unknown)
+                ));
+
+                break;
+            }
+
+            case MEDIA_ERROR_UNSUPPORTED: {
+                onErrorListener.onError(new FullscreenVideoViewException(
+                        MEDIA_ERROR_UNSUPPORTED,
+                        getContext().getString(R.string.media_error_unsupported)
+                ));
+
+                break;
+            }
+
+            default: {
+                onErrorListener.onError(new FullscreenVideoViewException(
+                        MEDIA_ERROR_GENERAL,
+                        getContext().getString(R.string.media_error_general)
+                ));
+            }
         }
     }
 
@@ -374,5 +475,9 @@ public class FullscreenVideoView extends FrameLayout {
         if (controller != null) {
             controller.hideFullscreenButton();
         }
+    }
+
+    public void addOnErrorListener(OnErrorListener onErrorListener) {
+        this.onErrorListener = onErrorListener;
     }
 }

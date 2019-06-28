@@ -147,10 +147,14 @@ fullscreenVideoView.pause()
 
 ### Hide progress views
 
+Hiding the progress views can be implemented initially from calling the Builder function or later by calling the view method.
+
 ```kotlin
 // Hide initially from the Builder
 fullscreenVideoView.videoUrl(videoUrl)
         .hideProgress()
+
+// OR
 
 // Hide by calling the view method
 fullscreenVideoView.hideProgress()
@@ -158,13 +162,40 @@ fullscreenVideoView.hideProgress()
 
 ### Hide fullscreen button
 
+Hiding the fullscreen button can be implemented initially from calling the Builder function or later by calling the view method.
+
 ```kotlin
 // Hide initially from the Builder
 fullscreenVideoView.videoUrl(videoUrl)
         .hideFullscreenButton()
 
+// OR
+
 // Hide by calling the view method
 fullscreenVideoView.hideFullscreenButton()
+```
+
+### Listen for errors
+
+Listening for errors can be implemented initially from calling the Builder function or later by calling the view method.
+
+```kotlin
+// Add initially from the Builder
+fullscreenVideoView.videoUrl(videoUrl)
+        .addOnErrorListener(object : OnErrorListener {
+                override fun onError(exception: FullscreenVideoViewException?) {
+                        // Handle error
+                }        
+        })
+        
+// OR
+
+// Add by calling the view method
+fullscreenVideoView.addOnErrorListener(object : OnErrorListener {
+        override fun onError(exception: FullscreenVideoViewException?) {
+                // Handle error
+        }    
+})
 ```
 
 Compatibility
