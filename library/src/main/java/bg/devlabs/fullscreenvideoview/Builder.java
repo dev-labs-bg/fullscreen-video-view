@@ -64,137 +64,298 @@ public class Builder {
         return this;
     }
 
+    /**
+     * When called the video will start automatically when it's loaded and ready to be played.
+     *
+     * @return the builder instance
+     */
     public Builder enableAutoStart() {
         fullscreenVideoView.enableAutoStart();
         return this;
     }
 
+    /**
+     * Changes the enter fullscreen drawable.
+     *
+     * @param drawable the drawable which will replace the default one
+     * @return the builder instance
+     */
     public Builder enterFullscreenDrawable(@NonNull Drawable drawable) {
         controller.setEnterFullscreenDrawable(drawable);
         return this;
     }
 
+    /**
+     * Changes the enter fullscreen drawable.
+     *
+     * @param drawableResId the resource id of the drawable which will replace the default one
+     * @return the builder instance
+     */
     public Builder enterFullscreenDrawable(@DrawableRes int drawableResId) {
-        controller.setEnterFullscreenDrawable(getDrawable(drawableResId));
-        return this;
+        return enterFullscreenDrawable(getDrawable(drawableResId));
     }
 
+    /**
+     * Changes the exit fullscreen drawable.
+     *
+     * @param drawable the drawable which will replace the default one
+     * @return the builder instance
+     */
     public Builder exitFullscreenDrawable(@NonNull Drawable drawable) {
         controller.setExitFullscreenDrawable(drawable);
         return this;
     }
 
+    /**
+     * Changes the exit fullscreen drawable
+     *
+     * @param drawableResId the resource id of the drawable which will replace the default one
+     * @return the builder instance
+     */
     public Builder exitFullscreenDrawable(@DrawableRes int drawableResId) {
-        controller.setExitFullscreenDrawable(getDrawable(drawableResId));
-        return this;
+        return exitFullscreenDrawable(getDrawable(drawableResId));
     }
 
+    /**
+     * Changes the play drawable.
+     *
+     * @param drawable the drawable which will replace the default one
+     * @return the builder instance
+     */
     public Builder playDrawable(@NonNull Drawable drawable) {
         controller.setPlayDrawable(drawable);
         return this;
     }
 
+    /**
+     * Changes the play drawable.
+     *
+     * @param drawableResId the resource id of the drawable which will replace the default one
+     * @return the builder instance
+     */
     public Builder playDrawable(@DrawableRes int drawableResId) {
-        controller.setPlayDrawable(getDrawable(drawableResId));
-        return this;
+        return playDrawable(getDrawable(drawableResId));
     }
 
+    /**
+     * Changes the pause drawable.
+     *
+     * @param drawable the drawable which will replace the default one
+     * @return the builder instance
+     */
     public Builder pauseDrawable(@NonNull Drawable drawable) {
         controller.setPauseDrawable(drawable);
         return this;
     }
 
+    /**
+     * Changes the pause drawable.
+     *
+     * @param drawableResId the resource id of the drawable which will replace the default one
+     * @return the builder instance
+     */
     public Builder pauseDrawable(@DrawableRes int drawableResId) {
-        controller.setPauseDrawable(getDrawable(drawableResId));
-        return this;
+        return pauseDrawable(getDrawable(drawableResId));
     }
 
+    /**
+     * Changes the fast forward drawable.
+     *
+     * @param drawable the drawable which will replace the default one
+     * @return the builder instance
+     */
     public Builder fastForwardDrawable(@NonNull Drawable drawable) {
         controller.setFastForwardDrawable(drawable);
         return this;
     }
 
+    /**
+     * Changes the fast forward drawable.
+     *
+     * @param drawableResId the resource id of the drawable which will replace the default one
+     * @return the builder instance
+     */
     public Builder fastForwardDrawable(@DrawableRes int drawableResId) {
-        controller.setFastForwardDrawable(getDrawable(drawableResId));
-        return this;
+        return fastForwardDrawable(getDrawable(drawableResId));
     }
 
+    /**
+     * Changes the rewind drawable.
+     *
+     * @param drawable the drawable which will replace the default one
+     * @return the builder instance
+     */
     public Builder rewindDrawable(@NonNull Drawable drawable) {
         controller.setRewindDrawable(drawable);
         return this;
     }
 
+    /**
+     * Changes the rewind drawable.
+     *
+     * @param drawableResId the resource id of the drawable which will replace the default one
+     * @return the builder instance
+     */
     public Builder rewindDrawable(@DrawableRes int drawableResId) {
-        controller.setRewindDrawable(getDrawable(drawableResId));
-        return this;
+        return rewindDrawable(getDrawable(drawableResId));
     }
 
+    /**
+     * Gets a drawable by it's resource id.
+     *
+     * @param drawableResId the drawable resource id
+     * @return the builder instance
+     */
+    private Drawable getDrawable(int drawableResId) {
+        Context context = fullscreenVideoView.getContext();
+        return ContextCompat.getDrawable(context, drawableResId);
+    }
+
+    /**
+     * Changes the progress bar color.
+     *
+     * @param progressBarColor the progress bar color which will replace the default one
+     * @return the builder instance
+     */
     public Builder progressBarColor(int progressBarColor) {
         controller.setProgressBarColor(progressBarColor);
         return this;
     }
 
+    /**
+     * Changes the fast forward duration in seconds.
+     *
+     * @param fastForwardSeconds the fast forward duration in seconds
+     * @return the builder instance
+     */
     public Builder fastForwardSeconds(int fastForwardSeconds) {
         controller.setFastForwardDuration(fastForwardSeconds);
         return this;
     }
 
+    /**
+     * Changes the rewind duration in seconds.
+     *
+     * @param rewindSeconds the rewind duration in seconds
+     * @return the builder instance
+     */
     public Builder rewindSeconds(int rewindSeconds) {
         controller.setRewindDuration(rewindSeconds);
         return this;
     }
 
+    /**
+     * Sets the landscape orientation of the view.
+     *
+     * @see LandscapeOrientation#SENSOR
+     * @see LandscapeOrientation#DEFAULT
+     * @see LandscapeOrientation#REVERSE
+     * @see LandscapeOrientation#USER
+     *
+     * @param landscapeOrientation the preferred orientation in landscape
+     * @return the builder instance
+     */
     public Builder landscapeOrientation(LandscapeOrientation landscapeOrientation) {
         orientationManager.setLandscapeOrientation(landscapeOrientation);
         return this;
     }
 
+    /**
+     * Sets the portrait orientation of the view.
+     *
+     * @see PortraitOrientation#SENSOR
+     * @see PortraitOrientation#DEFAULT
+     * @see PortraitOrientation#REVERSE
+     * @see PortraitOrientation#USER
+     *
+     * @param portraitOrientation the preferred orientation in portrait
+     * @return the builder instance
+     */
     public Builder portraitOrientation(PortraitOrientation portraitOrientation) {
         orientationManager.setPortraitOrientation(portraitOrientation);
         return this;
     }
 
+    /**
+     * Disables the pause of the video.
+     *
+     * @return the builder instance
+     */
     public Builder disablePause() {
         videoMediaPlayer.disablePause();
         return this;
     }
 
+    /**
+     * Adds a seek forward button.
+     *
+     * @return the builder instance
+     */
     public Builder addSeekForwardButton() {
         videoMediaPlayer.addSeekForwardButton();
         return this;
     }
 
+    /**
+     * Adds a seek backward button.
+     *
+     * @return the builder instance
+     */
     public Builder addSeekBackwardButton() {
         videoMediaPlayer.addSeekBackwardButton();
         return this;
     }
 
+    /**
+     * Adds a playback speed button.
+     *
+     * Supports devices with Android API version 23 and above.
+     *
+     * @return the builder instance
+     */
     @RequiresApi(Build.VERSION_CODES.M)
     public Builder addPlaybackSpeedButton() {
         videoMediaPlayer.addPlaybackSpeedButton();
         return this;
     }
 
-    private Drawable getDrawable(int drawableResId) {
-        Context context = fullscreenVideoView.getContext();
-        return ContextCompat.getDrawable(context, drawableResId);
-    }
-
+    /**
+     * Changes the playback speed options.
+     *
+     * @param playbackSpeedOptions the playback speed options which will replace the default ones
+     * @return the builder instance
+     */
     public Builder playbackSpeedOptions(PlaybackSpeedOptions playbackSpeedOptions) {
         controller.setPlaybackSpeedOptions(playbackSpeedOptions);
         return this;
     }
 
+    /**
+     * Adds a thumbnail to the video.
+     *
+     * @param thumbnailResId the thumbnail image resource id
+     * @return the builder instance
+     */
     public Builder thumbnail(int thumbnailResId) {
         fullscreenVideoView.setVideoThumbnail(thumbnailResId);
         return this;
     }
 
+    /**
+     * Hides all progress related views.
+     *
+     * @return the builder instance
+     */
     public Builder hideProgress() {
         controller.hideProgress();
         return this;
     }
 
+    /**
+     * Hides the fullscreen button.
+     *
+     * @return the builder instance
+     */
     public Builder hideFullscreenButton() {
         controller.hideFullscreenButton();
         return this;
@@ -204,6 +365,7 @@ public class Builder {
      * Adds an error listener which is called when an error occurs.
      *
      * @param onErrorListener listener for errors
+     * @return the builder instance
      */
     public Builder addOnErrorListener(OnErrorListener onErrorListener) {
         fullscreenVideoView.addOnErrorListener(onErrorListener);
