@@ -461,6 +461,13 @@ public class FullscreenVideoView extends FrameLayout {
         }
     }
 
+    public void play() {
+        if (videoMediaPlayer != null) {
+            videoMediaPlayer.start();
+            hideThumbnail();
+        }
+    }
+
     /**
      * Hides the progress views - the current time TextView, the ProgressBar and
      * the end time TextView.
