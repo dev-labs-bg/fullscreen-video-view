@@ -7,10 +7,8 @@ package bg.devlabs.fullscreenvideoview.listener;
  */
 public class FullscreenVideoViewException {
 
-    @SuppressWarnings("unused")
-    private int code;
-    @SuppressWarnings("unused")
-    private String message;
+    public int code;
+    public String message;
 
     public FullscreenVideoViewException(int code, String message) {
         this.code = code;
