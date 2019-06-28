@@ -30,4 +30,6 @@ class Constants {
     public static final int REWIND_DURATION = 5000;
     public static final long ONE_MILLISECOND = 1000L;
     public static final String VIEW_TAG_CLICKED = "view_tag:clicked";
+    // Media player error codes
+    public static final int MEDIA_ERROR_GENERAL = 1000;
 }
