@@ -31,7 +31,7 @@
     </string>
     <string name="media_error_not_valid_for_progressive_playback">
         The video is streamed and its container is not valid for progressive playback i.e the
-        video's index (e.g moov atom) is not at the start of the file.
+        video\'s index (e.g moov atom) is not at the start of the file.
     </string>
     <string name="media_error_server_died">
         Media server died. In this case, the application must release the MediaPlayer object and
