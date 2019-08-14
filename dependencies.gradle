@@ -20,7 +20,7 @@ ext.versions = [
         buildTools        : '28.0.3',
         publishVersion    : '0.0.8',
         publishVersionCode: 1,
-        gradlePlugin      : '3.4.1',
+        gradlePlugin      : '3.4.2',
         bintrayPlugin     : '1.7.3',
         mavenPlugin       : '1.4.1',
 
