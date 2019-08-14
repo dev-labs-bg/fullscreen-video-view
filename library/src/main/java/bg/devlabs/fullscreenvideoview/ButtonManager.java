@@ -20,12 +20,17 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
 
+import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedPopupMenuListener;
 import bg.devlabs.fullscreenvideoview.orientation.OrientationManager;
+import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedOptions;
+
+import static android.view.View.INVISIBLE;
 
 /**
  * Created by Slavi Petrov on 04.06.2018
@@ -45,31 +50,49 @@ class ButtonManager {
     private WeakReference<ImageButton> ffwdButton;
     private WeakReference<ImageButton> rewButton;
     private WeakReference<ImageButton> fullscreenButton;
-    private WeakReference<TextView> playbackSpeedButton;
-
+    // Other
     private WeakReference<OrientationManager> orientationHelper;
     private WeakReference<VideoMediaPlayer> videoMediaPlayer;
+    private PlaybackSpeedManager playbackSpeedManager;
 
-    ButtonManager(Context context, ImageButton startPauseButton, ImageButton ffwdButton,
-                  ImageButton rewButton, ImageButton fullscreenButton, TextView playbackSpeedButton) {
-        this.exitFullscreenDrawable = ContextCompat.getDrawable(context,
-                R.drawable.ic_fullscreen_exit_white_48dp);
-        this.enterFullscreenDrawable = ContextCompat.getDrawable(context,
-                R.drawable.ic_fullscreen_white_48dp);
-        this.playDrawable = ContextCompat.getDrawable(context,
-                R.drawable.ic_play_arrow_white_48dp);
-        this.pauseDrawable = ContextCompat.getDrawable(context,
-                R.drawable.ic_pause_white_48dp);
-        this.fastForwardDrawable = ContextCompat.getDrawable(context,
-                R.drawable.ic_fast_forward_white_48dp);
-        this.rewindDrawable = ContextCompat.getDrawable(context,
-                R.drawable.ic_fast_rewind_white_48dp);
+    ButtonManager(Context context,
+                  ImageButton startPauseButton,
+                  ImageButton ffwdButton,
+                  ImageButton rewButton,
+                  ImageButton fullscreenButton,
+                  TextView playbackSpeedButton) {
+
+        this.exitFullscreenDrawable = ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_fullscreen_exit_white_48dp
+        );
+        this.enterFullscreenDrawable = ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_fullscreen_white_48dp
+        );
+        this.playDrawable = ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_play_arrow_white_48dp
+        );
+        this.pauseDrawable = ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_pause_white_48dp
+        );
+        this.fastForwardDrawable = ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_fast_forward_white_48dp
+        );
+        this.rewindDrawable = ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_fast_rewind_white_48dp
+        );
 
         this.startPauseButton = new WeakReference<>(startPauseButton);
         this.ffwdButton = new WeakReference<>(ffwdButton);
         this.rewButton = new WeakReference<>(rewButton);
         this.fullscreenButton = new WeakReference<>(fullscreenButton);
-        this.playbackSpeedButton = new WeakReference<>(playbackSpeedButton);
+
+        playbackSpeedManager = new PlaybackSpeedManager(context, playbackSpeedButton);
     }
 
     public void setupDrawables(TypedArray typedArray) {
@@ -97,14 +120,19 @@ class ButtonManager {
 
     private void setupFullscreenButton(TypedArray a) {
         Drawable enterDrawable = a.getDrawable(
-                R.styleable.VideoControllerView_enter_fullscreen_drawable);
+                R.styleable.VideoControllerView_enter_fullscreen_drawable
+        );
+
         if (enterDrawable != null) {
             enterFullscreenDrawable = enterDrawable;
         }
+
         fullscreenButton.get().setImageDrawable(enterFullscreenDrawable);
 
         Drawable exitDrawable = a.getDrawable(
-                R.styleable.VideoControllerView_exit_fullscreen_drawable);
+                R.styleable.VideoControllerView_exit_fullscreen_drawable
+        );
+
         if (exitDrawable != null) {
             setExitFullscreenDrawable(exitDrawable);
         }
@@ -204,6 +232,77 @@ class ButtonManager {
     }
 
     public void updatePlaybackSpeedText(String text) {
-        playbackSpeedButton.get().setText(text);
+        playbackSpeedManager.setPlaybackSpeedText(text);
+    }
+
+    public void setFullscreenButtonClickListener(View.OnClickListener onClickListener) {
+        fullscreenButton.get().requestFocus();
+        fullscreenButton.get().setOnClickListener(onClickListener);
+    }
+
+    public void setStartPauseButtonClickListener(View.OnClickListener onClickListener) {
+        startPauseButton.get().requestFocus();
+        startPauseButton.get().setOnClickListener(onClickListener);
+    }
+
+    public void hideFullscreenButton() {
+        fullscreenButton.get().setVisibility(View.GONE);
+    }
+
+    public void setupButtonsVisibility() {
+        if (startPauseButton != null && !videoMediaPlayer.get().canPause()) {
+            startPauseButton.get().setEnabled(false);
+            startPauseButton.get().setVisibility(INVISIBLE);
+        }
+
+        if (rewButton != null && !videoMediaPlayer.get().showSeekBackwardButton()) {
+            rewButton.get().setEnabled(false);
+            rewButton.get().setVisibility(INVISIBLE);
+        }
+
+        if (ffwdButton != null && !videoMediaPlayer.get().showSeekForwardButton()) {
+            ffwdButton.get().setEnabled(false);
+            ffwdButton.get().setVisibility(INVISIBLE);
+        }
+
+        playbackSpeedManager.hidePlaybackButton(videoMediaPlayer.get().showPlaybackSpeedButton());
+    }
+
+    public void requestStartPauseButtonFocus() {
+        if (startPauseButton != null) {
+            startPauseButton.get().requestFocus();
+        }
+    }
+
+    public void setButtonsEnabled(boolean isEnabled) {
+        if (startPauseButton != null) {
+            startPauseButton.get().setEnabled(isEnabled);
+        }
+
+        if (ffwdButton != null) {
+            ffwdButton.get().setEnabled(isEnabled);
+        }
+
+        if (rewButton != null) {
+            rewButton.get().setEnabled(isEnabled);
+        }
+
+        playbackSpeedManager.setPlaybackSpeedButtonEnabled(isEnabled);
+    }
+
+    public void setFfwdButtonOnClickListener(View.OnClickListener onClickListener) {
+        ffwdButton.get().setOnClickListener(onClickListener);
+    }
+
+    public void setRewButtonOnClickListener(View.OnClickListener onClickListener) {
+        rewButton.get().setOnClickListener(onClickListener);
+    }
+
+    public void setPlaybackSpeedPopupMenuListener(PlaybackSpeedPopupMenuListener listener) {
+        playbackSpeedManager.setPlaybackSpeedButtonOnClickListener(listener);
+    }
+
+    public void setPlaybackSpeedOptions(PlaybackSpeedOptions playbackSpeedOptions) {
+        playbackSpeedManager.setPlaybackSpeedOptions(playbackSpeedOptions);
     }
 }

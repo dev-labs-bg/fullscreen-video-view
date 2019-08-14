@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 apply from: 'keystore.gradle'
 
 ext {
     publishedGroupId = 'bg.devlabs.fullscreenvideoview'
     artifactId = 'library'
-    libraryVersion = '1.1.2'
+    libraryVersion = '1.1.3'
 }
 
 version = libraryVersion
@@ -42,16 +41,13 @@ bintray {
     }
 }
 
-install {
-    repositories.mavenInstaller {
-        pom.project {
-            packaging 'aar'
-            groupId publishedGroupId
-            artifactId artifactId
-            version libraryVersion
-            name artifactId
-        }
-    }
+project.ext {
+    mavDevelopers = ["SP":"Slavi Petrov"]
+    mavSiteUrl = "https://github.com/dev-labs-bg/fullscreen-video-view"
+    mavGitUrl = mavSiteUrl + '.git'
+    mavProjectName = 'FullscreenVideoView'
+    mavLibraryLicenses = ["Apache-2.0":'http://www.apache.org/licenses/LICENSE-2.0.txt']
+    mavLibraryDescription = "FullscreenVideoView is a custom VideoView Android library which makes loading, setting up and going fullscreen for video views easy."
 }
 
 if (project.hasProperty("android")) {
@@ -88,3 +84,5 @@ artifacts {
     archives javadocJar
     archives sourcesJar
 }
+
+apply from: 'https://raw.githubusercontent.com/sky-uk/gradle-maven-plugin/master/gradle-mavenizer.gradle'

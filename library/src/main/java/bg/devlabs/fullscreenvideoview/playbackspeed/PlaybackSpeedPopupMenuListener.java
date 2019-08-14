@@ -14,19 +14,30 @@
  * limitations under the License.
  */
 
-ext.versions = [
-        minSdk            : 19,
-        compileSdk        : 29,
-        buildTools        : '28.0.3',
-        publishVersion    : '1.1.3',
-        publishVersionCode: 1,
-        gradlePlugin      : '3.4.2',
-        bintrayPlugin     : '1.8.4',
-        mavenPlugin       : '1.4.1',
+package bg.devlabs.fullscreenvideoview.playbackspeed;
 
-        supportLib        : '28.0.0',
-        constraintLayout  : '1.1.3',
-        espresso          : '3.0.1',
-        kotlin            : '1.3.41',
-        leakCanary        : '1.6.1'
-]
+/**
+ * Created by Slavi Petrov on 14.08.2019
+ * Dev Labs
+ * slavi@devlabs.bg
+ */
+public interface PlaybackSpeedPopupMenuListener {
+
+    /**
+     * A playback speed is selected.
+     *
+     * @param speed the value of the speed
+     * @param text the speed value converted to string
+     */
+    void onSpeedSelected(float speed, String text);
+
+    /**
+     * The PopupMenu is dismissed.
+     */
+    void onPopupMenuDismissed();
+
+    /**
+     * The PopupMenu is shown.
+     */
+    void onPopupMenuShown();
+}
