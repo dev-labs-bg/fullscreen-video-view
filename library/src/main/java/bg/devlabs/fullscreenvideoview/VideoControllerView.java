@@ -28,7 +28,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.PopupMenu;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -43,10 +42,10 @@ import android.widget.TextView;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 
+import bg.devlabs.fullscreenvideoview.listener.mediacontroller.MediaControllerListener;
+import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedPopupMenuListener;
 import bg.devlabs.fullscreenvideoview.orientation.OrientationManager;
-import bg.devlabs.fullscreenvideoview.playbackspeed.OnPlaybackSpeedSelectedListener;
 import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedOptions;
-import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedPopupMenu;
 
 import static bg.devlabs.fullscreenvideoview.Constants.VIEW_TAG_CLICKED;
 
@@ -90,32 +89,9 @@ class VideoControllerView extends FrameLayout {
     private TextView endTime;
     private TextView currentTime;
     private boolean isDragging;
-    private PlaybackSpeedPopupMenu popupMenu;
     @Nullable
     private Handler handler = new VideoControllerView.MessageHandler(this);
     private SeekBar progress;
-    private ImageButton startPauseButton;
-    private ImageButton fullscreenButton;
-    private ImageButton ffwdButton;
-    private ImageButton rewButton;
-    private TextView playbackSpeedButton;
-    @Nullable
-    private View.OnClickListener pauseListener = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            doPauseResume();
-            show(DEFAULT_TIMEOUT);
-        }
-    };
-    @Nullable
-    private View.OnClickListener fullscreenListener = new OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            view.setTag(VIEW_TAG_CLICKED);
-            doToggleFullscreen();
-            show(DEFAULT_TIMEOUT);
-        }
-    };
     // There are two scenarios that can trigger the SeekBar listener to trigger:
     //
     // The first is the user using the TouchPad to adjust the position of the
@@ -129,72 +105,9 @@ class VideoControllerView extends FrameLayout {
     // we will simply apply the updated position without suspending regular updates.
     @Nullable
     private SeekBar.OnSeekBarChangeListener seekListener = new OnSeekChangeListener();
+
     @Nullable
-    private View.OnClickListener rewListener = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (videoMediaPlayer == null) {
-                return;
-            }
-
-            int pos = videoMediaPlayer.getCurrentPosition();
-            pos -= rewindDuration; // milliseconds
-            videoMediaPlayer.seekTo(pos);
-            setProgress();
-
-            show(DEFAULT_TIMEOUT);
-        }
-    };
-    @Nullable
-    private View.OnClickListener ffwdListener = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (videoMediaPlayer == null) {
-                return;
-            }
-
-            int pos = videoMediaPlayer.getCurrentPosition();
-            pos += fastForwardDuration; // milliseconds
-            videoMediaPlayer.seekTo(pos);
-            setProgress();
-
-            show(DEFAULT_TIMEOUT);
-        }
-    };
-    @Nullable
-    private View.OnClickListener playbackSpeedListener = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            // Inflate the PopupMenu
-//            popupMenu.getMenuInflater()
-//                    .inflate(R.menu.playback_speed_popup_menu, popupMenu.getMenu());
-
-            popupMenu.setOnSpeedSelectedListener(new OnPlaybackSpeedSelectedListener() {
-                @Override
-                public void onSpeedSelected(float speed, String text) {
-                    // Update the Playback Speed Drawable according to the clicked menu item
-                    buttonManager.updatePlaybackSpeedText(text);
-                    // Change the Playback Speed of the VideoMediaPlayer
-                    videoMediaPlayer.changePlaybackSpeed(speed);
-                    // Hide the VideoControllerView
-                    hide();
-                }
-            });
-
-            popupMenu.setOnDismissListener(new PopupMenu.OnDismissListener() {
-                @Override
-                public void onDismiss(PopupMenu menu) {
-                    show();
-                }
-            });
-
-            // Show the PopupMenu
-            popupMenu.show();
-
-            // Show the VideoControllerView and until hide is called
-            show(0);
-        }
-    };
+    private MediaControllerListener mediaControllerListener;
 
     private ButtonManager buttonManager;
     private int progressBarColor = Color.WHITE;
@@ -206,7 +119,7 @@ class VideoControllerView extends FrameLayout {
         super(context);
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         layoutInflater.inflate(R.layout.video_controller, this, true);
-        initControllerView();
+        init();
     }
 
     public VideoControllerView(Context context, AttributeSet attrs) {
@@ -214,13 +127,143 @@ class VideoControllerView extends FrameLayout {
 
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
         layoutInflater.inflate(R.layout.video_controller, this, true);
-        initControllerView();
+        init();
         setupXmlAttributes(attrs);
     }
 
+    private void init() {
+        if (!isInEditMode()) {
+            setVisibility(INVISIBLE);
+        }
+
+        buttonManager = new ButtonManager(
+                getContext(),
+                (ImageButton) findViewById(R.id.start_pause_media_button),
+                (ImageButton) findViewById(R.id.forward_media_button),
+                (ImageButton) findViewById(R.id.rewind_media_button),
+                (ImageButton) findViewById(R.id.fullscreen_media_button),
+                (TextView) findViewById(R.id.playback_speed_button)
+        );
+
+        setupButtonListeners();
+
+        progress = findViewById(R.id.progress_seek_bar);
+        if (progress != null) {
+            progress.getProgressDrawable().setColorFilter(progressBarColor, PorterDuff.Mode.SRC_IN);
+            progress.getThumb().setColorFilter(progressBarColor, PorterDuff.Mode.SRC_IN);
+            progress.setOnSeekBarChangeListener(seekListener);
+            progress.setMax(1000);
+        }
+
+        endTime = findViewById(R.id.time);
+        currentTime = findViewById(R.id.time_current);
+    }
+
+    private void setupButtonListeners() {
+        buttonManager.setStartPauseButtonClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (videoMediaPlayer != null && mediaControllerListener != null) {
+                    if (videoMediaPlayer.isPlaying()) {
+                        mediaControllerListener.onPauseClicked();
+                    } else {
+                        mediaControllerListener.onPlayClicked();
+                    }
+                }
+
+                doPauseResume();
+                show(DEFAULT_TIMEOUT);
+            }
+        });
+
+        buttonManager.setFullscreenButtonClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mediaControllerListener != null) {
+                    mediaControllerListener.onFullscreenClicked();
+                }
+
+                view.setTag(VIEW_TAG_CLICKED);
+                doToggleFullscreen();
+                show(DEFAULT_TIMEOUT);
+            }
+        });
+
+        buttonManager.setFfwdButtonOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (videoMediaPlayer == null) {
+                    return;
+                }
+
+                if (mediaControllerListener != null) {
+                    mediaControllerListener.onFastForwardClicked();
+                }
+
+                int pos = videoMediaPlayer.getCurrentPosition();
+                pos += fastForwardDuration; // milliseconds
+                videoMediaPlayer.seekTo(pos);
+                setProgress();
+
+                show(DEFAULT_TIMEOUT);
+            }
+        });
+
+        buttonManager.setRewButtonOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (videoMediaPlayer == null) {
+                    return;
+                }
+
+                if (mediaControllerListener != null) {
+                    mediaControllerListener.onRewindClicked();
+                }
+
+                int pos = videoMediaPlayer.getCurrentPosition();
+                pos -= rewindDuration; // milliseconds
+                videoMediaPlayer.seekTo(pos);
+                setProgress();
+
+                show(DEFAULT_TIMEOUT);
+            }
+        });
+
+        buttonManager.setPlaybackSpeedPopupMenuListener(
+                new PlaybackSpeedPopupMenuListener() {
+                    @Override
+                    public void onSpeedSelected(float speed, String text) {
+                        // Update the Playback Speed Drawable according to the clicked menu item
+                        buttonManager.updatePlaybackSpeedText(text);
+                        // Change the Playback Speed of the VideoMediaPlayer
+                        if (videoMediaPlayer != null) {
+                            videoMediaPlayer.changePlaybackSpeed(speed);
+                        }
+                        // Hide the VideoControllerView
+                        hide();
+                    }
+
+                    @Override
+                    public void onPopupMenuDismissed() {
+                        show();
+                    }
+
+                    @Override
+                    public void onPopupMenuShown() {
+                        // Show the VideoControllerView and until hide is called
+                        show(0);
+                    }
+                }
+        );
+    }
+
     private void setupXmlAttributes(AttributeSet attrs) {
-        TypedArray typedArray = getContext().obtainStyledAttributes(attrs,
-                R.styleable.VideoControllerView, 0, 0);
+        TypedArray typedArray = getContext().obtainStyledAttributes(
+                attrs,
+                R.styleable.VideoControllerView,
+                0,
+                0
+        );
         buttonManager.setupDrawables(typedArray);
         setupProgressBar(typedArray);
         // Recycle the TypedArray
@@ -235,53 +278,6 @@ class VideoControllerView extends FrameLayout {
         }
         progress.getProgressDrawable().setColorFilter(progressBarColor, PorterDuff.Mode.SRC_IN);
         progress.getThumb().setColorFilter(progressBarColor, PorterDuff.Mode.SRC_IN);
-    }
-
-    private void initControllerView() {
-        if (!isInEditMode()) {
-            setVisibility(INVISIBLE);
-        }
-
-        startPauseButton = findViewById(R.id.start_pause_media_button);
-        if (startPauseButton != null) {
-            startPauseButton.requestFocus();
-            startPauseButton.setOnClickListener(pauseListener);
-        }
-
-        fullscreenButton = findViewById(R.id.fullscreen_media_button);
-        if (fullscreenButton != null) {
-            fullscreenButton.requestFocus();
-            fullscreenButton.setOnClickListener(fullscreenListener);
-        }
-
-        ffwdButton = findViewById(R.id.forward_media_button);
-        if (ffwdButton != null) {
-            ffwdButton.setOnClickListener(ffwdListener);
-        }
-
-        rewButton = findViewById(R.id.rewind_media_button);
-        if (rewButton != null) {
-            rewButton.setOnClickListener(rewListener);
-        }
-
-        playbackSpeedButton = findViewById(R.id.playback_speed_button);
-        if (playbackSpeedButton != null) {
-            playbackSpeedButton.setOnClickListener(playbackSpeedListener);
-        }
-
-        buttonManager = new ButtonManager(getContext(), startPauseButton, ffwdButton, rewButton,
-                fullscreenButton, playbackSpeedButton);
-
-        progress = findViewById(R.id.progress_seek_bar);
-        if (progress != null) {
-            progress.getProgressDrawable().setColorFilter(progressBarColor, PorterDuff.Mode.SRC_IN);
-            progress.getThumb().setColorFilter(progressBarColor, PorterDuff.Mode.SRC_IN);
-            progress.setOnSeekBarChangeListener(seekListener);
-            progress.setMax(1000);
-        }
-
-        endTime = findViewById(R.id.time);
-        currentTime = findViewById(R.id.time_current);
     }
 
     /**
@@ -300,30 +296,7 @@ class VideoControllerView extends FrameLayout {
             return;
         }
 
-        try {
-            if (startPauseButton != null && !videoMediaPlayer.canPause()) {
-                startPauseButton.setEnabled(false);
-                startPauseButton.setVisibility(INVISIBLE);
-            }
-            if (rewButton != null && !videoMediaPlayer.showSeekBackwardButton()) {
-                rewButton.setEnabled(false);
-                rewButton.setVisibility(INVISIBLE);
-            }
-            if (ffwdButton != null && !videoMediaPlayer.showSeekForwardButton()) {
-                ffwdButton.setEnabled(false);
-                ffwdButton.setVisibility(INVISIBLE);
-            }
-            if (playbackSpeedButton != null && !videoMediaPlayer.showPlaybackSpeedButton()) {
-                playbackSpeedButton.setEnabled(false);
-                playbackSpeedButton.setVisibility(INVISIBLE);
-            }
-        } catch (IncompatibleClassChangeError ex) {
-            // We were given an old version of the interface, that doesn't have
-            // the canPause/canSeekXYZ methods. This is OK, it just means we
-            // assume the media can be paused and seeked, and so we don't disable
-            // the buttons.
-            ex.printStackTrace();
-        }
+        buttonManager.setupButtonsVisibility();
     }
 
     /**
@@ -335,10 +308,8 @@ class VideoControllerView extends FrameLayout {
      */
     private void show(int timeout) {
         if (!isShowing()) {
+            buttonManager.requestStartPauseButtonFocus();
             setProgress();
-            if (startPauseButton != null) {
-                startPauseButton.requestFocus();
-            }
             setupButtonsVisibility();
             setVisibility(VISIBLE);
         }
@@ -407,6 +378,7 @@ class VideoControllerView extends FrameLayout {
                 long pos = Constants.ONE_MILLISECOND * position / duration;
                 progress.setProgress((int) pos);
             }
+
             int percent = videoMediaPlayer.getBufferPercentage();
             progress.setSecondaryProgress(percent * 10);
         }
@@ -448,34 +420,20 @@ class VideoControllerView extends FrameLayout {
 
     @Override
     public void setEnabled(boolean enabled) {
-        if (startPauseButton != null) {
-            startPauseButton.setEnabled(enabled);
-        }
-        if (ffwdButton != null) {
-            ffwdButton.setEnabled(enabled);
-        }
-        if (rewButton != null) {
-            rewButton.setEnabled(enabled);
-        }
-        if (playbackSpeedButton != null) {
-            playbackSpeedButton.setEnabled(enabled);
-        }
+        buttonManager.setButtonsEnabled(enabled);
         if (progress != null) {
             progress.setEnabled(enabled);
         }
+
         setupButtonsVisibility();
         super.setEnabled(enabled);
     }
 
     public void onDetach() {
-        ffwdListener = null;
-        fullscreenListener = null;
-        pauseListener = null;
-        rewListener = null;
         seekListener = null;
-        playbackSpeedListener = null;
         handler = null;
         videoMediaPlayer = null;
+        mediaControllerListener = null;
     }
 
     public void setEnterFullscreenDrawable(Drawable enterFullscreenDrawable) {
@@ -515,11 +473,17 @@ class VideoControllerView extends FrameLayout {
     }
 
     public void setPlaybackSpeedOptions(PlaybackSpeedOptions playbackSpeedOptions) {
-        popupMenu.setPlaybackSpeedOptions(playbackSpeedOptions);
+        buttonManager.setPlaybackSpeedOptions(playbackSpeedOptions);
     }
 
-    public void init(final OrientationManager orientationManager, VideoMediaPlayer videoMediaPlayer,
+    public void setOnMediaControllerListener(MediaControllerListener mediaControllerListener) {
+        this.mediaControllerListener = mediaControllerListener;
+    }
+
+    public void init(final OrientationManager orientationManager,
+                     VideoMediaPlayer videoMediaPlayer,
                      AttributeSet attrs) {
+
         setupXmlAttributes(attrs);
         this.videoMediaPlayer = videoMediaPlayer;
 
@@ -530,20 +494,17 @@ class VideoControllerView extends FrameLayout {
         buttonManager.updateFastForwardDrawable();
         buttonManager.updateRewindDrawable();
 
-        // Initialize the PopupMenu
-        popupMenu = new PlaybackSpeedPopupMenu(getContext(), playbackSpeedButton);
-
         getViewTreeObserver().addOnWindowFocusChangeListener(new ViewTreeObserver.OnWindowFocusChangeListener() {
             @Override
             public void onWindowFocusChanged(boolean hasFocus) {
                 if (orientationManager.isLandscape()) {
                     ((Activity) getContext()).getWindow().getDecorView()
-                            .setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                                    | View.SYSTEM_UI_FLAG_FULLSCREEN
-                                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            .setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                                    View.SYSTEM_UI_FLAG_FULLSCREEN |
+                                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
+                                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                             );
                 }
             }
@@ -557,7 +518,7 @@ class VideoControllerView extends FrameLayout {
     }
 
     public void hideFullscreenButton() {
-        fullscreenButton.setVisibility(View.GONE);
+        buttonManager.hideFullscreenButton();
     }
 
     private static class MessageHandler extends Handler {
@@ -620,6 +581,10 @@ class VideoControllerView extends FrameLayout {
             videoMediaPlayer.seekTo((int) newPosition);
             if (currentTime != null) {
                 currentTime.setText(stringForTime((int) newPosition));
+            }
+
+            if (mediaControllerListener != null) {
+                mediaControllerListener.onSeekBarProgressChanged(newPosition);
             }
         }
 

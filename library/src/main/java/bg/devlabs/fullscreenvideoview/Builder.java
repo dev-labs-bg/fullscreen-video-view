@@ -26,6 +26,7 @@ import android.support.v4.content.ContextCompat;
 
 import java.io.File;
 
+import bg.devlabs.fullscreenvideoview.listener.mediacontroller.MediaControllerListener;
 import bg.devlabs.fullscreenvideoview.listener.OnErrorListener;
 import bg.devlabs.fullscreenvideoview.orientation.LandscapeOrientation;
 import bg.devlabs.fullscreenvideoview.orientation.OrientationManager;
@@ -369,6 +370,16 @@ public class Builder {
      */
     public Builder addOnErrorListener(OnErrorListener onErrorListener) {
         fullscreenVideoView.addOnErrorListener(onErrorListener);
+        return this;
+    }
+
+    /**
+     * Adds a listener for media controller events.
+     *
+     * @return the builder instance
+     */
+    public Builder mediaControllerListener(MediaControllerListener mediaControllerListener) {
+        controller.setOnMediaControllerListener(mediaControllerListener);
         return this;
     }
 }
