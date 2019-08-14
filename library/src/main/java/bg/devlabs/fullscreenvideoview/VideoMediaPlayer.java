@@ -71,9 +71,13 @@ class VideoMediaPlayer extends MediaPlayer {
             pause();
         } else {
             start();
-            if (fullscreenVideoView != null) {
-                fullscreenVideoView.hideThumbnail();
-            }
+            hideThumbnail();
+        }
+    }
+
+    public void hideThumbnail() {
+        if (fullscreenVideoView != null) {
+            fullscreenVideoView.hideThumbnail();
         }
     }
 

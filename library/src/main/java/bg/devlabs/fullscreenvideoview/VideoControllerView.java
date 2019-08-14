@@ -586,6 +586,8 @@ class VideoControllerView extends FrameLayout {
             if (mediaControllerListener != null) {
                 mediaControllerListener.onSeekBarProgressChanged(newPosition);
             }
+
+            videoMediaPlayer.hideThumbnail();
         }
 
         @Override
