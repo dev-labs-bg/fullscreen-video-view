@@ -248,7 +248,7 @@ fullscreenVideoView.videoUrl(videoUrl)
 
 ### Seek to position
 
-You can seek to a selected position by calling the `seekTo` method and passing the time in milliseconds to it.
+Seek to a selected position by calling the `seekTo` method and passing the time in milliseconds to it.
 
 ```
 fullscreenVideoView.videoUrl(videoUrl)
