@@ -26,8 +26,8 @@ import android.support.v4.content.ContextCompat;
 
 import java.io.File;
 
-import bg.devlabs.fullscreenvideoview.listener.mediacontroller.MediaControllerListener;
 import bg.devlabs.fullscreenvideoview.listener.OnErrorListener;
+import bg.devlabs.fullscreenvideoview.listener.mediacontroller.MediaControllerListener;
 import bg.devlabs.fullscreenvideoview.orientation.LandscapeOrientation;
 import bg.devlabs.fullscreenvideoview.orientation.OrientationManager;
 import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation;
@@ -248,13 +248,12 @@ public class Builder {
     /**
      * Sets the landscape orientation of the view.
      *
+     * @param landscapeOrientation the preferred orientation in landscape
+     * @return the builder instance
      * @see LandscapeOrientation#SENSOR
      * @see LandscapeOrientation#DEFAULT
      * @see LandscapeOrientation#REVERSE
      * @see LandscapeOrientation#USER
-     *
-     * @param landscapeOrientation the preferred orientation in landscape
-     * @return the builder instance
      */
     public Builder landscapeOrientation(LandscapeOrientation landscapeOrientation) {
         orientationManager.setLandscapeOrientation(landscapeOrientation);
@@ -264,13 +263,12 @@ public class Builder {
     /**
      * Sets the portrait orientation of the view.
      *
+     * @param portraitOrientation the preferred orientation in portrait
+     * @return the builder instance
      * @see PortraitOrientation#SENSOR
      * @see PortraitOrientation#DEFAULT
      * @see PortraitOrientation#REVERSE
      * @see PortraitOrientation#USER
-     *
-     * @param portraitOrientation the preferred orientation in portrait
-     * @return the builder instance
      */
     public Builder portraitOrientation(PortraitOrientation portraitOrientation) {
         orientationManager.setPortraitOrientation(portraitOrientation);
@@ -309,7 +307,7 @@ public class Builder {
 
     /**
      * Adds a playback speed button.
-     *
+     * <p>
      * Supports devices with Android API version 23 and above.
      *
      * @return the builder instance
@@ -380,6 +378,16 @@ public class Builder {
      */
     public Builder mediaControllerListener(MediaControllerListener mediaControllerListener) {
         controller.setOnMediaControllerListener(mediaControllerListener);
+        return this;
+    }
+
+    /**
+     * Seeks to a specified point of the video.
+     *
+     * @param timeMillis the value for the seek position
+     */
+    public Builder seekTo(int timeMillis) {
+        fullscreenVideoView.setSeekToTimeMillis(timeMillis);
         return this;
     }
 }

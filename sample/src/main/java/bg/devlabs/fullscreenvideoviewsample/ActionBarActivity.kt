@@ -19,12 +19,13 @@ package bg.devlabs.fullscreenvideoviewsample
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Environment
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import bg.devlabs.fullscreenvideoview.orientation.LandscapeOrientation
 import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation
 import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedOptions
 import kotlinx.android.synthetic.main.activity_action_bar.*
+import java.io.File
 
 
 /**
@@ -46,9 +47,11 @@ class ActionBarActivity : AppCompatActivity() {
 
         // Change the ActionBar title
         supportActionBar?.title = getString(R.string.action_bar_activity)
-        val videoPath = "https://clips.vorwaerts-gmbh.de/VfE_html5.mp4"
+//        val videoPath = "https://clips.vorwaerts-gmbh.de/VfE_html5.mp4"
+        val videoPath = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.absolutePath + "/big_buck_bunny.mp4"
+        val videoFile = File(videoPath)
 
-        fullscreenVideoView.videoUrl(videoPath)
+        fullscreenVideoView.videoFile(videoFile)
                 .progressBarColor(R.color.colorAccent)
                 .landscapeOrientation(LandscapeOrientation.SENSOR)
                 .portraitOrientation(PortraitOrientation.DEFAULT)

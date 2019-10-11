@@ -79,6 +79,7 @@ public class FullscreenVideoView extends FrameLayout {
     private SurfaceHolder.Callback surfaceHolderCallback;
     private boolean isPaused;
     private int previousOrientation;
+    private int seekToTimeMillis;
     @Nullable
     private OnErrorListener onErrorListener;
 
@@ -107,7 +108,7 @@ public class FullscreenVideoView extends FrameLayout {
             orientationManager = new OrientationManager(getContext(), this);
             orientationManager.enable();
         }
-        setupSurfaceHolder();
+        setUpSurfaceHolder();
         if (controller != null) {
             controller.init(orientationManager, videoMediaPlayer, attrs);
         }
@@ -128,7 +129,7 @@ public class FullscreenVideoView extends FrameLayout {
         });
     }
 
-    private void setupSurfaceHolder() {
+    private void setUpSurfaceHolder() {
         if (surfaceView != null) {
             surfaceHolderCallback = new SurfaceHolder.Callback() {
                 @Override
@@ -304,6 +305,8 @@ public class FullscreenVideoView extends FrameLayout {
                                 hideThumbnail();
                             }
                         }
+                        // Seek to a specific time
+                        videoMediaPlayer.seekTo(seekToTimeMillis);
                     }
                 });
                 videoMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
@@ -487,5 +490,9 @@ public class FullscreenVideoView extends FrameLayout {
 
     public void addOnErrorListener(OnErrorListener onErrorListener) {
         this.onErrorListener = onErrorListener;
+    }
+
+    public void setSeekToTimeMillis(int seekToTimeMillis) {
+        this.seekToTimeMillis = seekToTimeMillis;
     }
 }
