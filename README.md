@@ -12,14 +12,14 @@ Download
 ===
 You can use Gradle:
 ```gradle
-compile 'bg.devlabs.fullscreenvideoview:library:1.1.3'
+compile 'bg.devlabs.fullscreenvideoview:library:1.1.4'
 ```
 or Maven:
 ```maven
 <dependency>
   <groupId>bg.devlabs.fullscreenvideoview</groupId>
   <artifactId>library</artifactId>
-  <version>1.1.3</version>
+  <version>1.1.4</version>
   <type>pom</type>
 </dependency>
 ```
@@ -244,6 +244,14 @@ fullscreenVideoView.videoUrl(videoUrl)
 			// Do something when the pause button is clicked
                     }
 	})
+```
+
+### Seek to position
+```
+You can seek to a selected position by calling the `seekTo` method and passing the time in milliseconds to it.
+
+fullscreenVideoView.videoUrl(videoUrl)
+	.seekTo(5000)
 ```
 
 Compatibility
