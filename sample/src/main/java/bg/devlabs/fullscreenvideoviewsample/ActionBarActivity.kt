@@ -47,11 +47,9 @@ class ActionBarActivity : AppCompatActivity() {
 
         // Change the ActionBar title
         supportActionBar?.title = getString(R.string.action_bar_activity)
-//        val videoPath = "https://clips.vorwaerts-gmbh.de/VfE_html5.mp4"
-        val videoPath = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.absolutePath + "/big_buck_bunny.mp4"
-        val videoFile = File(videoPath)
+        val videoPath = "https://clips.vorwaerts-gmbh.de/VfE_html5.mp4"
 
-        fullscreenVideoView.videoFile(videoFile)
+        fullscreenVideoView.videoUrl(videoPath)
                 .progressBarColor(R.color.colorAccent)
                 .landscapeOrientation(LandscapeOrientation.SENSOR)
                 .portraitOrientation(PortraitOrientation.DEFAULT)
