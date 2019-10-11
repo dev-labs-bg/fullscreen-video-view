@@ -12,14 +12,14 @@ Download
 ===
 You can use Gradle:
 ```gradle
-compile 'bg.devlabs.fullscreenvideoview:library:1.1.2'
+compile 'bg.devlabs.fullscreenvideoview:library:1.1.3'
 ```
 or Maven:
 ```maven
 <dependency>
   <groupId>bg.devlabs.fullscreenvideoview</groupId>
   <artifactId>library</artifactId>
-  <version>1.1.2</version>
+  <version>1.1.3</version>
   <type>pom</type>
 </dependency>
 ```
@@ -200,10 +200,56 @@ fullscreenVideoView.addOnErrorListener(object : OnErrorListener {
 })
 ```
 
+### Listen for Media Controller events
+
+To listen for Media Controller events you should use the Builder function `mediaControllerListener`. You can either pass the `MediaControllerListener` interface or `MediaControllerListenerAdapter` if don't need to use all of the methods of the interface.
+
+```kotlin
+// Using the MediaControllerListener interface
+fullscreenVideoView.videoUrl(videoUrl)
+	.mediaControllerListener(object : MediaControllerListener {
+		    override fun onPlayClicked() {
+                        // Do something when the play button is clicked
+                    }
+
+                    override fun onPauseClicked() {
+                        // Do something when the pause button is clicked
+                    }
+
+                    override fun onRewindClicked() {
+                        // Do something when the rewind button is clicked
+                    }
+
+                    override fun onFastForwardClicked() {
+                        // Do something when the fast forward button is clicked
+                    }
+
+                    override fun onFullscreenClicked() {
+                        // Do something when the fullscreen button is clicked
+                    }
+
+                    override fun onSeekBarProgressChanged(progressMs: Long) {
+                        // Do something when the progress SeekBar is changed by click or a drag event
+                    }
+	})
+	
+// Using the MediaControllerListenerAdapter interface with only onPlayClicked and onPauseClicked methods
+fullscreenVideoView.videoUrl(videoUrl)
+	.mediaControllerListener(object : MediaControllerListenerAdapter() {
+		    override fun onPlayClicked() {
+			// Do something when the play button is clicked
+                    }
+
+                    override fun onPauseClicked() {
+			// Do something when the pause button is clicked
+                    }
+	})
+```
+
 Compatibility
 ===
 - Minimum Android SDK: API level 19
-- Compile Android SDK: API level 28
+- Compile Android SDK: API level 29
 
 Known issues
 ===
