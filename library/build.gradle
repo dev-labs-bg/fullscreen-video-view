@@ -41,4 +41,34 @@ dependencies {
     implementation "com.android.support.constraint:constraint-layout:$versions.constraintLayout"
 }
 
-apply from: 'release.gradle'
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'fullscreen-video-view'
+
+    publishedGroupId = 'bg.devlabs.fullscreenvideoview'
+    libraryName = 'fullscreen-video-view'
+    artifact = 'library'
+
+    libraryDescription = 'A custom VideoView Android library which makes video views usage easy'
+
+    siteUrl = 'https://github.com/dev-labs-bg/fullscreen-video-view'
+    gitUrl = 'https://github.com/dev-labs-bg/fullscreen-video-view.git'
+
+    libraryVersion = '1.1.4'
+
+    developerId = 'slavipetrov'
+    developerName = 'Slavi Petrov'
+    developerEmail = 'slavi@devlabs.bg'
+
+    licenseName = 'Apache-2.0'
+    licenseUrl = 'https://github.com/dev-labs-bg/fullscreen-video-view/blob/master/LICENSE'
+    allLicenses = ["Apache-2.0"]
+}
+
+// Turn off javadocs as currently it doesn't work with kotlin
+tasks.withType(Javadoc).all {
+    enabled = false
+}
+
+apply from: 'https://raw.githubusercontent.com/dev-labs-bg/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/dev-labs-bg/JCenter/master/bintrayv1.gradle'
