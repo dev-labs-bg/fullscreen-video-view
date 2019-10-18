@@ -57,5 +57,3 @@ dependencies {
     androidTestImplementation "com.android.support.test:rules:$versions.testRules"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:$versions.espresso"
 }
-
-
