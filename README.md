@@ -48,7 +48,14 @@ The Activity where the FullscreenVideoView is declared should handle configurati
     android:configChanges="orientation|screenSize" />
 ```
 
-Basic video loading (from URL or from a file)
+### Network security configuration on Android API 23 or later
+
+On devices with Android API 23 or later a network security configuration should be set up to allow the cleartext traffic.
+
+- Add the XML tag `android:usesCleartextTraffic="true"` in the application tag in `AndroidManifest.xml`.
+- Add a `network_security_config.xml` file in the `res/xml` directory and add the domains that you want to use in your application. To use this network configuration it must be added in the application tag in `AndroidManifest.xml` (`android:networkSecurityConfig="@xml/network_security_config`).
+
+### Basic video loading (from URL or from a file)
 ```kotlin
 // Loading from URL
 override fun onCreate(savedInstanceState: Bundle?) {
