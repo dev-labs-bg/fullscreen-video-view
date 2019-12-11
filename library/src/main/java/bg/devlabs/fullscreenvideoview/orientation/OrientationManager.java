@@ -30,6 +30,7 @@ import android.view.Window;
 import bg.devlabs.fullscreenvideoview.DeviceDimensionsManager;
 import bg.devlabs.fullscreenvideoview.FullscreenVideoView;
 import bg.devlabs.fullscreenvideoview.VisibilityManager;
+import bg.devlabs.fullscreenvideoview.model.Margins;
 
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
@@ -57,6 +58,7 @@ public class OrientationManager extends OrientationEventListener {
     private LandscapeOrientation landscapeOrientation = LandscapeOrientation.SENSOR;
     private PortraitOrientation portraitOrientation = PortraitOrientation.DEFAULT;
     private boolean shouldEnterPortrait;
+    private Margins margins;
 
     public OrientationManager(Context context, FullscreenVideoView fullscreenVideoView) {
         super(context);
@@ -80,6 +82,17 @@ public class OrientationManager extends OrientationEventListener {
         // Save the video player original width and height
         originalWidth = videoView.getWidth();
         originalHeight = videoView.getHeight();
+
+        // Save the fullscreen video view margins
+        ViewGroup.MarginLayoutParams marginLayoutParams =
+                (ViewGroup.MarginLayoutParams) videoView.getLayoutParams();
+        margins = new Margins(
+                marginLayoutParams.leftMargin,
+                marginLayoutParams.topMargin,
+                marginLayoutParams.rightMargin,
+                marginLayoutParams.bottomMargin
+        );
+
         updateLayoutParams();
 
         // Hide the supportToolbar
@@ -90,12 +103,14 @@ public class OrientationManager extends OrientationEventListener {
     }
 
     private void updateLayoutParams() {
-        ViewGroup.LayoutParams params = videoView.getLayoutParams();
+        ViewGroup.MarginLayoutParams params =
+                (ViewGroup.MarginLayoutParams) videoView.getLayoutParams();
         Context context = videoView.getContext();
         DeviceDimensionsManager deviceDimensionsManager = DeviceDimensionsManager.getInstance();
 
         params.width = deviceDimensionsManager.getRealWidth(context);
         params.height = deviceDimensionsManager.getRealHeight(context);
+        params.setMargins(0, 0, 0, 0);
 
         videoView.setLayoutParams(params);
     }
@@ -112,9 +127,17 @@ public class OrientationManager extends OrientationEventListener {
 
         visibilityManager.showHiddenViews();
 
-        ViewGroup.LayoutParams params = videoView.getLayoutParams();
+        ViewGroup.MarginLayoutParams params =
+                (ViewGroup.MarginLayoutParams) videoView.getLayoutParams();
         params.width = originalWidth;
         params.height = originalHeight;
+        params.setMargins(
+                margins.getLeft(),
+                margins.getTop(),
+                margins.getRight(),
+                margins.getBottom()
+        );
+
         videoView.setLayoutParams(params);
 
         toggleToolbarVisibility(true);
