@@ -12,14 +12,14 @@ Download
 ===
 You can use Gradle:
 ```gradle
-compile 'bg.devlabs.fullscreenvideoview:library:1.1.4'
+compile 'bg.devlabs.fullscreenvideoview:library:1.1.5'
 ```
 or Maven:
 ```maven
 <dependency>
   <groupId>bg.devlabs.fullscreenvideoview</groupId>
   <artifactId>library</artifactId>
-  <version>1.1.4</version>
+  <version>1.1.5</version>
   <type>pom</type>
 </dependency>
 ```
@@ -260,6 +260,24 @@ Seek to a selected position by calling the `seekTo` method and passing the time 
 ```
 fullscreenVideoView.videoUrl(videoUrl)
 	.seekTo(5000)
+```
+
+### Change the video URL at runtime
+
+Change the video URL by calling `changeUrl` method of `FullscreenVideoView` and passing the new URL.
+
+```
+fullscreenVideoView.changeUrl(videoUrl)
+```
+
+### Listen for video completion
+
+Listen for video completion event by calling the `addOnVideoCompletedListener` and passing an instance of `OnVideoCompletedListener`.
+
+```
+fullscreenVideoView.addOnVideoCompletedListener {
+    // Do something when the video is completed
+}
 ```
 
 Compatibility
