@@ -54,7 +54,7 @@ ext {
     siteUrl = 'https://github.com/dev-labs-bg/fullscreen-video-view'
     gitUrl = 'https://github.com/dev-labs-bg/fullscreen-video-view.git'
 
-    libraryVersion = '1.1.4'
+    libraryVersion = '1.1.5'
 
     developerId = 'slavipetrov'
     developerName = 'Slavi Petrov'
