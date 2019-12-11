@@ -90,7 +90,7 @@ class VideoControllerView extends FrameLayout {
     private TextView currentTime;
     private boolean isDragging;
     @Nullable
-    private Handler handler = new VideoControllerView.MessageHandler(this);
+    private Handler handler;
     private SeekBar progress;
     // There are two scenarios that can trigger the SeekBar listener to trigger:
     //
@@ -493,6 +493,8 @@ class VideoControllerView extends FrameLayout {
         buttonManager.updateFullScreenDrawable();
         buttonManager.updateFastForwardDrawable();
         buttonManager.updateRewindDrawable();
+
+        handler = new VideoControllerView.MessageHandler(this);
 
         getViewTreeObserver().addOnWindowFocusChangeListener(new ViewTreeObserver.OnWindowFocusChangeListener() {
             @Override

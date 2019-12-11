@@ -19,12 +19,16 @@ package bg.devlabs.fullscreenvideoview;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -42,7 +46,11 @@ import java.util.Objects;
 
 import bg.devlabs.fullscreenvideoview.listener.FullscreenVideoViewException;
 import bg.devlabs.fullscreenvideoview.listener.OnErrorListener;
+import bg.devlabs.fullscreenvideoview.listener.mediacontroller.MediaControllerListener;
+import bg.devlabs.fullscreenvideoview.orientation.LandscapeOrientation;
 import bg.devlabs.fullscreenvideoview.orientation.OrientationManager;
+import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation;
+import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedOptions;
 
 import static android.media.MediaPlayer.MEDIA_ERROR_IO;
 import static android.media.MediaPlayer.MEDIA_ERROR_MALFORMED;
@@ -82,6 +90,9 @@ public class FullscreenVideoView extends FrameLayout {
     private int seekToTimeMillis;
     @Nullable
     private OnErrorListener onErrorListener;
+    @Nullable
+    private AttributeSet attrs = null;
+    private Arguments args = new Arguments();
 
     public FullscreenVideoView(@NonNull Context context) {
         super(context);
@@ -90,6 +101,7 @@ public class FullscreenVideoView extends FrameLayout {
 
     public FullscreenVideoView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        this.attrs = attrs;
         init(attrs);
     }
 
@@ -97,6 +109,7 @@ public class FullscreenVideoView extends FrameLayout {
                                @Nullable AttributeSet attrs,
                                int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        this.attrs = attrs;
         init(attrs);
     }
 
@@ -176,14 +189,367 @@ public class FullscreenVideoView extends FrameLayout {
         });
     }
 
-    public Builder videoFile(File videoFile) {
-        return new Builder(this, controller, orientationManager, videoMediaPlayer)
-                .videoFile(videoFile);
+    public FullscreenVideoView videoFile(File videoFile) {
+        setupMediaPlayer(videoFile.getPath());
+        return this;
     }
 
-    public Builder videoUrl(String videoUrl) {
-        return new Builder(this, controller, orientationManager, videoMediaPlayer)
-                .videoUrl(videoUrl);
+    public FullscreenVideoView videoUrl(String videoUrl) {
+        setupMediaPlayer(videoUrl);
+        return this;
+    }
+
+    /**
+     * When called the video will start automatically when it's loaded and ready to be played.
+     *
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView enableAutoStart() {
+        if (videoMediaPlayer != null) {
+            videoMediaPlayer.enableAutoStart();
+            args.autoStartEnabled = true;
+        }
+
+        return this;
+    }
+
+    /**
+     * Changes the enter fullscreen drawable.
+     *
+     * @param drawable the drawable which will replace the default one
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView enterFullscreenDrawable(@NonNull Drawable drawable) {
+        controller.setEnterFullscreenDrawable(drawable);
+        args.enterFullscreenDrawable = drawable;
+        return this;
+    }
+
+    /**
+     * Changes the enter fullscreen drawable.
+     *
+     * @param drawableResId the resource id of the drawable which will replace the default one
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView enterFullscreenDrawable(@DrawableRes int drawableResId) {
+        return enterFullscreenDrawable(getDrawable(drawableResId));
+    }
+
+    /**
+     * Changes the exit fullscreen drawable.
+     *
+     * @param drawable the drawable which will replace the default one
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView exitFullscreenDrawable(@NonNull Drawable drawable) {
+        controller.setExitFullscreenDrawable(drawable);
+        args.exitFullscreenDrawable = drawable;
+        return this;
+    }
+
+    /**
+     * Changes the exit fullscreen drawable
+     *
+     * @param drawableResId the resource id of the drawable which will replace the default one
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView exitFullscreenDrawable(@DrawableRes int drawableResId) {
+        return exitFullscreenDrawable(getDrawable(drawableResId));
+    }
+
+    /**
+     * Changes the play drawable.
+     *
+     * @param drawable the drawable which will replace the default one
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView playDrawable(@NonNull Drawable drawable) {
+        controller.setPlayDrawable(drawable);
+        args.playDrawable = drawable;
+        return this;
+    }
+
+    /**
+     * Changes the play drawable.
+     *
+     * @param drawableResId the resource id of the drawable which will replace the default one
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView playDrawable(@DrawableRes int drawableResId) {
+        return playDrawable(getDrawable(drawableResId));
+    }
+
+    /**
+     * Changes the pause drawable.
+     *
+     * @param drawable the drawable which will replace the default one
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView pauseDrawable(@NonNull Drawable drawable) {
+        controller.setPauseDrawable(drawable);
+        args.pauseDrawable = drawable;
+        return this;
+    }
+
+    /**
+     * Changes the pause drawable.
+     *
+     * @param drawableResId the resource id of the drawable which will replace the default one
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView pauseDrawable(@DrawableRes int drawableResId) {
+        return pauseDrawable(getDrawable(drawableResId));
+    }
+
+    /**
+     * Changes the fast forward drawable.
+     *
+     * @param drawable the drawable which will replace the default one
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView fastForwardDrawable(@NonNull Drawable drawable) {
+        controller.setFastForwardDrawable(drawable);
+        args.fastForwardDrawable = drawable;
+        return this;
+    }
+
+    /**
+     * Changes the fast forward drawable.
+     *
+     * @param drawableResId the resource id of the drawable which will replace the default one
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView fastForwardDrawable(@DrawableRes int drawableResId) {
+        return fastForwardDrawable(getDrawable(drawableResId));
+    }
+
+    /**
+     * Changes the rewind drawable.
+     *
+     * @param drawable the drawable which will replace the default one
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView rewindDrawable(@NonNull Drawable drawable) {
+        controller.setRewindDrawable(drawable);
+        args.rewindDrawable = drawable;
+        return this;
+    }
+
+    /**
+     * Changes the rewind drawable.
+     *
+     * @param drawableResId the resource id of the drawable which will replace the default one
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView rewindDrawable(@DrawableRes int drawableResId) {
+        return rewindDrawable(getDrawable(drawableResId));
+    }
+
+    /**
+     * Changes the progress bar color.
+     *
+     * @param progressBarColor the progress bar color which will replace the default one
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView progressBarColor(int progressBarColor) {
+        controller.setProgressBarColor(progressBarColor);
+        args.progressBarColor = progressBarColor;
+        return this;
+    }
+
+    /**
+     * Changes the fast forward duration in seconds.
+     *
+     * @param fastForwardSeconds the fast forward duration in seconds
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView fastForwardSeconds(int fastForwardSeconds) {
+        controller.setFastForwardDuration(fastForwardSeconds);
+        args.fastForwardSeconds = fastForwardSeconds;
+        return this;
+    }
+
+    /**
+     * Changes the rewind duration in seconds.
+     *
+     * @param rewindSeconds the rewind duration in seconds
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView rewindSeconds(int rewindSeconds) {
+        controller.setRewindDuration(rewindSeconds);
+        args.rewindSeconds = rewindSeconds;
+        return this;
+    }
+
+    /**
+     * Sets the landscape orientation of the view.
+     *
+     * @param landscapeOrientation the preferred orientation in landscape
+     * @return the fullscreenVideoView instance
+     * @see LandscapeOrientation#SENSOR
+     * @see LandscapeOrientation#DEFAULT
+     * @see LandscapeOrientation#REVERSE
+     * @see LandscapeOrientation#USER
+     */
+    public FullscreenVideoView landscapeOrientation(LandscapeOrientation landscapeOrientation) {
+        orientationManager.setLandscapeOrientation(landscapeOrientation);
+        args.landscapeOrientation = landscapeOrientation;
+        return this;
+    }
+
+    /**
+     * Sets the portrait orientation of the view.
+     *
+     * @param portraitOrientation the preferred orientation in portrait
+     * @return the fullscreenVideoView instance
+     * @see PortraitOrientation#SENSOR
+     * @see PortraitOrientation#DEFAULT
+     * @see PortraitOrientation#REVERSE
+     * @see PortraitOrientation#USER
+     */
+    public FullscreenVideoView portraitOrientation(PortraitOrientation portraitOrientation) {
+        orientationManager.setPortraitOrientation(portraitOrientation);
+        args.portraitOrientation = portraitOrientation;
+        return this;
+    }
+
+    /**
+     * Disables the pause of the video.
+     *
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView disablePause() {
+        videoMediaPlayer.disablePause();
+        args.disablePause = true;
+        return this;
+    }
+
+    /**
+     * Adds a seek forward button.
+     *
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView addSeekForwardButton() {
+        videoMediaPlayer.addSeekForwardButton();
+        args.addSeekForwardButton = true;
+        return this;
+    }
+
+    /**
+     * Adds a seek backward button.
+     *
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView addSeekBackwardButton() {
+        videoMediaPlayer.addSeekBackwardButton();
+        args.addSeekBackwardButton = true;
+        return this;
+    }
+
+    /**
+     * Adds a playback speed button.
+     * <p>
+     * Supports devices with Android API version 23 and above.
+     *
+     * @return the fullscreenVideoView instance
+     */
+    @RequiresApi(Build.VERSION_CODES.M)
+    public FullscreenVideoView addPlaybackSpeedButton() {
+        videoMediaPlayer.addPlaybackSpeedButton();
+        args.addPlaybackSpeedButton = true;
+        return this;
+    }
+
+    /**
+     * Changes the playback speed options.
+     *
+     * @param playbackSpeedOptions the playback speed options which will replace the default ones
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView playbackSpeedOptions(PlaybackSpeedOptions playbackSpeedOptions) {
+        controller.setPlaybackSpeedOptions(playbackSpeedOptions);
+        args.playbackSpeedOptions = playbackSpeedOptions;
+        return this;
+    }
+
+    /**
+     * Adds a thumbnail to the video.
+     *
+     * @param thumbnailResId the thumbnail image resource id
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView thumbnail(int thumbnailResId) {
+        if (thumbnailImageView != null) {
+            Bitmap thumbnail = BitmapScaler.scaleImage(getResources(), thumbnailResId);
+            thumbnailImageView.setImageBitmap(thumbnail);
+            args.thumbnailResId = thumbnailResId;
+        }
+        return this;
+    }
+
+    /**
+     * Hides all progress related views.
+     *
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView hideProgress() {
+        controller.hideProgress();
+        args.hideProgress = true;
+        return this;
+    }
+
+    /**
+     * Hides the fullscreen button.
+     *
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView hideFullscreenButton() {
+        controller.hideFullscreenButton();
+        args.hideFullscreenButton = true;
+        return this;
+    }
+
+    /**
+     * Adds an error listener which is called when an error occurs.
+     *
+     * @param onErrorListener listener for errors
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView addOnErrorListener(OnErrorListener onErrorListener) {
+        this.onErrorListener = onErrorListener;
+        return this;
+    }
+
+    /**
+     * Adds a listener for media controller events.
+     *
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView mediaControllerListener(MediaControllerListener mediaControllerListener) {
+        controller.setOnMediaControllerListener(mediaControllerListener);
+        return this;
+    }
+
+    /**
+     * Seeks to a specified point of the video.
+     *
+     * @param timeMillis the value for the seek position
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView setSeekToTimeMillis(int timeMillis) {
+        this.seekToTimeMillis = timeMillis;
+        args.seekToTimeMillis = timeMillis;
+        return this;
+    }
+
+    /**
+     * Gets a drawable by it's resource id.
+     *
+     * @param drawableResId the drawable resource id
+     * @return the fullscreenVideoView instance
+     */
+    private Drawable getDrawable(int drawableResId) {
+        return ContextCompat.getDrawable(getContext(), drawableResId);
     }
 
     @Override
@@ -237,38 +603,41 @@ public class FullscreenVideoView extends FrameLayout {
     private void handleOnDetach() {
         if (controller != null) {
             controller.onDetach();
+            controller = null;
         }
 
-        // Disable and null the OrientationEventListener
         if (orientationManager != null) {
             orientationManager.disable();
+            orientationManager = null;
         }
 
         if (videoMediaPlayer != null) {
             videoMediaPlayer.onDetach();
+            videoMediaPlayer = null;
         }
 
         if (surfaceHolder != null) {
             surfaceHolder.removeCallback(surfaceHolderCallback);
             surfaceHolder.getSurface().release();
+            surfaceHolder = null;
         }
 
         if (surfaceView != null) {
             surfaceView.invalidate();
             surfaceView.destroyDrawingCache();
+            surfaceView = null;
         }
 
-        controller = null;
-        orientationManager = null;
-        videoMediaPlayer = null;
-        surfaceHolder = null;
-        surfaceView = null;
         progressBar = null;
+        surfaceHolderCallback = null;
+        attrs = null;
 
         setOnKeyListener(null);
         setOnTouchListener(null);
 
         onErrorListener = null;
+
+        detachAllViewsFromParent();
     }
 
     public void setupMediaPlayer(String videoPath) {
@@ -316,6 +685,7 @@ public class FullscreenVideoView extends FrameLayout {
                         return false;
                     }
                 });
+
                 videoMediaPlayer.prepareAsync();
             }
         } catch (IOException exception) {
@@ -435,12 +805,6 @@ public class FullscreenVideoView extends FrameLayout {
         }
     }
 
-    public void enableAutoStart() {
-        if (videoMediaPlayer != null) {
-            videoMediaPlayer.enableAutoStart();
-        }
-    }
-
     public void onOrientationChanged() {
         // Update the fullscreen button drawable
         if (controller != null) {
@@ -449,13 +813,6 @@ public class FullscreenVideoView extends FrameLayout {
         if (surfaceView != null && videoMediaPlayer != null) {
             surfaceView.updateLayoutParams(videoMediaPlayer.getVideoWidth(),
                     videoMediaPlayer.getVideoHeight());
-        }
-    }
-
-    public void setVideoThumbnail(int thumbnailResId) {
-        if (thumbnailImageView != null) {
-            Bitmap scaledBitmap = BitmapScaler.scaleImage(getResources(), thumbnailResId);
-            thumbnailImageView.setImageBitmap(scaledBitmap);
         }
     }
 
@@ -472,27 +829,111 @@ public class FullscreenVideoView extends FrameLayout {
         }
     }
 
-    /**
-     * Hides the progress views - the current time TextView, the ProgressBar and
-     * the end time TextView.
-     */
-    public void hideProgress() {
-        if (controller != null) {
-            controller.hideProgress();
+    public void changeUrl(@NonNull final String url) {
+        handleOnDetach();
+
+        init(attrs);
+        // TODO: Add save the selected Builder attributes from the user
+        setupMediaPlayer(url);
+
+        if (args.autoStartEnabled) {
+            enableAutoStart();
         }
-    }
 
-    public void hideFullscreenButton() {
-        if (controller != null) {
-            controller.hideFullscreenButton();
+        Drawable enterFullscreenDrawable = args.enterFullscreenDrawable;
+        if (enterFullscreenDrawable != null) {
+            enterFullscreenDrawable(enterFullscreenDrawable);
         }
-    }
 
-    public void addOnErrorListener(OnErrorListener onErrorListener) {
-        this.onErrorListener = onErrorListener;
-    }
+        Drawable exitFullscreenDrawable = args.exitFullscreenDrawable;
+        if (exitFullscreenDrawable != null) {
+            exitFullscreenDrawable(exitFullscreenDrawable);
+        }
 
-    public void setSeekToTimeMillis(int seekToTimeMillis) {
-        this.seekToTimeMillis = seekToTimeMillis;
+        Drawable playDrawable = args.playDrawable;
+        if (playDrawable != null) {
+            playDrawable(playDrawable);
+        }
+
+        Drawable pauseDrawable = args.pauseDrawable;
+        if (pauseDrawable != null) {
+            pauseDrawable(pauseDrawable);
+        }
+
+        Drawable fastForwardDrawable = args.fastForwardDrawable;
+        if (fastForwardDrawable != null) {
+            fastForwardDrawable(fastForwardDrawable);
+        }
+
+        Drawable rewindDrawable = args.rewindDrawable;
+        if (rewindDrawable != null) {
+            rewindDrawable(rewindDrawable);
+        }
+
+        int progressBarColor = args.progressBarColor;
+        if (progressBarColor != -1) {
+            progressBarColor(progressBarColor);
+        }
+
+        int fastForwardSeconds = args.fastForwardSeconds;
+        if (fastForwardSeconds != -1) {
+            fastForwardSeconds(fastForwardSeconds);
+        }
+
+        int rewindSeconds = args.rewindSeconds;
+        if (rewindSeconds != -1) {
+            rewindSeconds(rewindSeconds);
+        }
+
+        LandscapeOrientation landscapeOrientation = args.landscapeOrientation;
+        if (landscapeOrientation != null) {
+            landscapeOrientation(landscapeOrientation);
+        }
+
+        PortraitOrientation portraitOrientation = args.portraitOrientation;
+        if (portraitOrientation != null) {
+            portraitOrientation(portraitOrientation);
+        }
+
+        if (args.disablePause) {
+            disablePause();
+        }
+
+        if (args.addSeekForwardButton) {
+            addSeekForwardButton();
+        }
+
+        if (args.addSeekBackwardButton) {
+            addSeekBackwardButton();
+        }
+
+        if (args.addPlaybackSpeedButton) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                addPlaybackSpeedButton();
+            }
+        }
+
+        PlaybackSpeedOptions playbackSpeedOptions = args.playbackSpeedOptions;
+        if (playbackSpeedOptions != null) {
+            playbackSpeedOptions(playbackSpeedOptions);
+        }
+
+        int thumbnailResId = args.thumbnailResId;
+        if (thumbnailResId != -1) {
+            thumbnail(thumbnailResId);
+        }
+
+        if (args.hideProgress) {
+            hideProgress();
+        }
+
+        if (args.hideFullscreenButton) {
+            hideFullscreenButton();
+        }
+
+        int timeMillis = args.seekToTimeMillis;
+        if (args.seekToTimeMillis != -1) {
+            setSeekToTimeMillis(timeMillis);
+        }
     }
 }
