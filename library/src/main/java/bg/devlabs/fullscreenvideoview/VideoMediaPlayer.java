@@ -84,7 +84,9 @@ class VideoMediaPlayer extends MediaPlayer {
     public void onDetach() {
         fullscreenVideoView = null;
         setOnPreparedListener(null);
-        stop();
+        if (isPlaying()) {
+            stop();
+        }
         release();
     }
 
