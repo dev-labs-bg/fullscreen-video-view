@@ -46,6 +46,7 @@ import java.util.Objects;
 
 import bg.devlabs.fullscreenvideoview.listener.FullscreenVideoViewException;
 import bg.devlabs.fullscreenvideoview.listener.OnErrorListener;
+import bg.devlabs.fullscreenvideoview.listener.OnVideoCompletedListener;
 import bg.devlabs.fullscreenvideoview.listener.mediacontroller.MediaControllerListener;
 import bg.devlabs.fullscreenvideoview.orientation.LandscapeOrientation;
 import bg.devlabs.fullscreenvideoview.orientation.OrientationManager;
@@ -93,6 +94,8 @@ public class FullscreenVideoView extends FrameLayout {
     @Nullable
     private AttributeSet attrs = null;
     private Arguments args = new Arguments();
+    @Nullable
+    private OnVideoCompletedListener onVideoCompletedListener;
 
     public FullscreenVideoView(@NonNull Context context) {
         super(context);
@@ -521,6 +524,17 @@ public class FullscreenVideoView extends FrameLayout {
     }
 
     /**
+     * Adds a listener which is called when the video playback is completed.
+     *
+     * @param listener the listener for video completion
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView addOnVideoCompletedListener(OnVideoCompletedListener listener) {
+        this.onVideoCompletedListener = listener;
+        return this;
+    }
+
+    /**
      * Adds a listener for media controller events.
      *
      * @return the fullscreenVideoView instance
@@ -683,6 +697,15 @@ public class FullscreenVideoView extends FrameLayout {
                     public boolean onError(MediaPlayer mp, int what, int extra) {
                         handleMediaPlayerError(what);
                         return false;
+                    }
+                });
+
+                videoMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mediaPlayer) {
+                        if (onVideoCompletedListener == null) return;
+
+                        onVideoCompletedListener.onFinished();
                     }
                 });
 
