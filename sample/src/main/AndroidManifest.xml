@@ -34,6 +34,7 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
@@ -49,8 +50,9 @@
             android:name=".NoActionBarActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/NoActionBarAppTheme" />
-        <activity android:name=".RegularActivity"
-            android:configChanges="orientation|screenSize"/>
+        <activity
+            android:name=".RegularActivity"
+            android:configChanges="orientation|screenSize" />
     </application>
 
 </manifest>
