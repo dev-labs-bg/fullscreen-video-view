@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package bg.devlabs.fullscreenvideoview;
+package bg.devlabs.fullscreenvideoview.playbackspeed;
 
 import android.content.Context;
-import androidx.appcompat.widget.PopupMenu;
 import android.view.View;
 import android.widget.TextView;
 
-import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedPopupMenuListener;
-import bg.devlabs.fullscreenvideoview.playbackspeed.OnPlaybackSpeedSelectedListener;
-import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedOptions;
-import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedPopupMenu;
+import androidx.appcompat.widget.PopupMenu;
 
 import static android.view.View.INVISIBLE;
 
@@ -38,13 +34,13 @@ public class PlaybackSpeedManager {
     private TextView playbackSpeedButton;
     private PlaybackSpeedPopupMenu popupMenu;
 
-    PlaybackSpeedManager(Context context, TextView playbackSpeedButton) {
+    public PlaybackSpeedManager(Context context, TextView playbackSpeedButton) {
         this.playbackSpeedButton = playbackSpeedButton;
         // Initialize the PopupMenu
         popupMenu = new PlaybackSpeedPopupMenu(context, playbackSpeedButton);
     }
 
-    void setPlaybackSpeedButtonOnClickListener(
+    public void setPlaybackSpeedButtonOnClickListener(
             final PlaybackSpeedPopupMenuListener playbackSpeedPopupMenuListener
     ) {
         playbackSpeedButton.setOnClickListener(new View.OnClickListener() {
