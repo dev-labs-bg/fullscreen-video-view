@@ -8,7 +8,7 @@ android:
     - tools
     - build-tools-28.0.3
     - android-22
-    - android-28
+    - android-29
     - extra-android-support
     - extra-android-m2repository
     - sys-img-armeabi-v7a-android-22
@@ -24,7 +24,7 @@ cache:
     - $HOME/.android/build-cache
 
 before_install:
-  - yes | sdkmanager "platforms;android-28"
+  - yes | sdkmanager "platforms;android-29"
 
 before_script:
   - chmod +x gradlew
