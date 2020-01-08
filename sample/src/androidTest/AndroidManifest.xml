@@ -7,6 +7,7 @@
         android:minSdkVersion="19"
         android:targetSdkVersion="29" />
 
+    <!--suppress AndroidDomInspection -->
     <instrumentation
         android:label="Tests for FullscreenVideoView"
         android:name="androidx.test.runner.AndroidJUnitRunner"
