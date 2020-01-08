@@ -35,6 +35,8 @@ android {
         targetSdkVersion versions.compileSdk
         versionCode versions.publishVersionCode
         versionName versions.publishVersion
+
+        testApplicationId "bg.devlabs.fullscreenvideoviewsample.tests"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     lintOptions {
