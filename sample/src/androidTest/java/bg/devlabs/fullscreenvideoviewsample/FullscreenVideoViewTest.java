@@ -16,9 +16,8 @@
 
 package bg.devlabs.fullscreenvideoviewsample;
 
-import androidx.test.rule.ActivityTestRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.runner.AndroidJUnitRunner;
+import androidx.test.rule.ActivityTestRule;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,7 +44,7 @@ import static org.hamcrest.Matchers.not;
  * Dev Labs
  * slavi@devlabs.bg
  */
-@RunWith(AndroidJUnitRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class FullscreenVideoViewTest {
 
     @Rule
