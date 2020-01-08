@@ -17,14 +17,6 @@
 -->
 
 <resources>
-    <string name="playback_speed_0_25">0.25x</string>
-    <string name="playback_speed_0_5">0.5x</string>
-    <string name="playback_speed_0_75">0.75x</string>
-    <string name="playback_speed_1">1x</string>
-    <string name="playback_speed_1_25">1.25x</string>
-    <string name="playback_speed_1_5">1.5x</string>
-    <string name="playback_speed_2">2x</string>
-
     <string name="media_error_io">File or network related operation errors.</string>
     <string name="media_error_malformed">
         Bitstream is not conforming to the related coding standard or file spec.
