@@ -32,29 +32,29 @@ class BitmapScaler {
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeResource(resources, thumbnailResId, options);
 
-        options.inSampleSize = BitmapScaler.calculateInSampleSize(options, 500, 500);
+        options.inSampleSize = calculateInSampleSize(options);
         options.inJustDecodeBounds = false;
 
         return BitmapFactory.decodeResource(resources, thumbnailResId, options);
     }
 
-    private static int calculateInSampleSize(BitmapFactory.Options options,
-                                            int reqWidth,
-                                            int reqHeight) {
+    private static int calculateInSampleSize(BitmapFactory.Options options) {
         // Raw height and width of image
         final int height = options.outHeight;
         final int width = options.outWidth;
         int inSampleSize = 1;
+        int requiredHeight = 500;
+        int requiredWidth = 500;
 
-        if (height > reqHeight || width > reqWidth) {
+        if (height > requiredHeight || width > requiredWidth) {
 
             final int halfHeight = height / 2;
             final int halfWidth = width / 2;
 
             // Calculate the largest inSampleSize value that is a power of 2 and keeps both
             // height and width larger than the requested height and width.
-            while ((halfHeight / inSampleSize) >= reqHeight
-                    && (halfWidth / inSampleSize) >= reqWidth) {
+            while ((halfHeight / inSampleSize) >= requiredHeight
+                    && (halfWidth / inSampleSize) >= requiredWidth) {
                 inSampleSize *= 2;
             }
         }
