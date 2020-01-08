@@ -48,6 +48,7 @@ import bg.devlabs.fullscreenvideoview.listener.FullscreenVideoViewException;
 import bg.devlabs.fullscreenvideoview.listener.OnErrorListener;
 import bg.devlabs.fullscreenvideoview.listener.OnVideoCompletedListener;
 import bg.devlabs.fullscreenvideoview.listener.mediacontroller.MediaControllerListener;
+import bg.devlabs.fullscreenvideoview.model.Arguments;
 import bg.devlabs.fullscreenvideoview.orientation.LandscapeOrientation;
 import bg.devlabs.fullscreenvideoview.orientation.OrientationManager;
 import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation;
