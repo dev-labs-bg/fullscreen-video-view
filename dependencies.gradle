@@ -24,7 +24,8 @@ ext.versions = [
         bintrayPlugin     : '1.8.4',
         mavenPlugin       : '1.4.1',
 
-        supportLib        : '28.0.0',
+        appcompat         : '1.1.0',
+        material          : '1.0.0',
         constraintLayout  : '1.1.3',
         espresso          : '3.0.1',
         kotlin            : '1.3.61',

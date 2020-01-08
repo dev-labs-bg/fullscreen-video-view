@@ -16,22 +16,23 @@
 
 package bg.devlabs.fullscreenvideoviewsample;
 
-import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.rule.ActivityTestRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.runner.AndroidJUnitRunner;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.pressBack;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isClickable;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
-import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.pressBack;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
+import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static bg.devlabs.fullscreenvideoviewsample.CustomChecks.clickNoConstraints;
 import static bg.devlabs.fullscreenvideoviewsample.CustomChecks.isOrientationLandscape;
 import static bg.devlabs.fullscreenvideoviewsample.CustomChecks.isOrientationPortrait;
@@ -44,7 +45,7 @@ import static org.hamcrest.Matchers.not;
  * Dev Labs
  * slavi@devlabs.bg
  */
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnitRunner.class)
 public class FullscreenVideoViewTest {
 
     @Rule

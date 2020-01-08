@@ -20,7 +20,7 @@ import android.annotation.TargetApi;
 import android.media.MediaPlayer;
 import android.media.PlaybackParams;
 import android.os.Build;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Created by Slavi Petrov on 20.10.2017

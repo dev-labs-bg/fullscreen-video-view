@@ -36,9 +36,9 @@ android {
 }
 
 dependencies {
-    implementation "com.android.support:appcompat-v7:$versions.supportLib"
-    implementation "com.android.support:design:$versions.supportLib"
-    implementation "com.android.support.constraint:constraint-layout:$versions.constraintLayout"
+    implementation "androidx.appcompat:appcompat:$versions.appcompat"
+    implementation "com.google.android.material:material:$versions.material"
+    implementation "androidx.constraintlayout:constraintlayout:$versions.constraintLayout"
 }
 
 ext {

@@ -17,7 +17,7 @@
 package bg.devlabs.fullscreenvideoview;
 
 import android.os.Build;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
