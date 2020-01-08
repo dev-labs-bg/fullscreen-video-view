@@ -112,7 +112,7 @@ script:
     fi
 
   - |
-    adb shell am instrument -w -r -e debug false bg.devlabs.fullscreenvideoviewsample.tests/androidx.test.runner.AndroidJUnitRunner |& tee build/adb-test.log
+    adb shell am instrument -w -r -e debug false bg.devlabs.fullscreenvideoviewsample/androidx.test.runner.AndroidJUnitRunner |& tee build/adb-test.log
     retval=$?
     if [ $retval -ne 0 ]; then
       echo "error in adb, exit code: "$retval
