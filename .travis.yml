@@ -53,7 +53,7 @@ before_install:
   - if [ "$FINALIZE_COVERAGE" = "FALSE" ]; then echo 'count=0' > ~/.android/repositories.cfg; fi # avoid harmless sdkmanager warning
   - if [ "$FINALIZE_COVERAGE" = "FALSE" ]; then yes | sdkmanager --licenses >/dev/null; fi # accept all sdkmanager warnings
   - if [ "$FINALIZE_COVERAGE" = "FALSE" ]; then echo y | sdkmanager --no_https "platform-tools" >/dev/null; fi
-  - if [ "$FINALIZE_COVERAGE" = "FALSE" ]; then echo y | sdkmanager --no_https "tools" >dev/null; fi # A second time per Travis docs, gets latest versions
+  - if [ "$FINALIZE_COVERAGE" = "FALSE" ]; then echo y | sdkmanager --no_https "tools" >/dev/null; fi # A second time per Travis docs, gets latest versions
   - if [ "$FINALIZE_COVERAGE" = "FALSE" ]; then echo y | sdkmanager --no_https "build-tools;${ANDROID_BUILD_TOOLS}" >/dev/null; fi # Implicit gradle dependency - gradle drives changes
   - if [ "$FINALIZE_COVERAGE" = "FALSE" ]; then echo y | sdkmanager --no_https "platforms;android-${COMPILE_API}" >/dev/null; fi # We need the API of the current compileSdkVersion from gradle.properties
 
