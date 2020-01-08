@@ -5,6 +5,7 @@ package bg.devlabs.fullscreenvideoview.listener;
  * Dev Labs
  * slavi@devlabs.bg
  */
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class FullscreenVideoViewException {
 
     public int code;
