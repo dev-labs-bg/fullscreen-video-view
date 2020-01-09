@@ -27,4 +27,28 @@ public interface FullscreenVideoViewInteractor {
     void hideThumbnail();
 
     boolean isLandscape();
+
+    boolean isPlaying();
+
+    void seekMediaPlayerTo(int duration);
+
+    void changePlaybackSpeed(float speed);
+
+    boolean canPause();
+
+    boolean showSeekBackwardButton();
+
+    boolean showSeekForwardButton();
+
+    boolean showPlaybackSpeedButton();
+
+    int getMediaPlayerCurrentPosition();
+
+    int getMediaPlayerDuration();
+
+    int getMediaPlayerBufferPercentage();
+
+    void onPauseResume();
+
+    void seekTo(int newPosition);
 }

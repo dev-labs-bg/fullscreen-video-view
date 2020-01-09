@@ -85,8 +85,6 @@ class VideoControllerView extends FrameLayout {
     private static final int FADE_OUT = 1;
     private static final int SHOW_PROGRESS = 2;
 
-    @Nullable
-    private VideoMediaPlayer videoMediaPlayer;
     private TextView endTime;
     private TextView currentTime;
     private boolean isDragging;
@@ -122,7 +120,6 @@ class VideoControllerView extends FrameLayout {
     private FullscreenVideoViewInteractor videoViewInteractor;
 
     private int progressBarColor = Color.WHITE;
-
     private int fastForwardDuration = Constants.FAST_FORWARD_DURATION;
     private int rewindDuration = Constants.REWIND_DURATION;
 
@@ -173,8 +170,8 @@ class VideoControllerView extends FrameLayout {
         startPauseButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (videoMediaPlayer != null && mediaControllerListener != null) {
-                    if (videoMediaPlayer.isPlaying()) {
+                if (mediaControllerListener != null) {
+                    if (videoViewInteractor.isPlaying()) {
                         mediaControllerListener.onPauseClicked();
                     } else {
                         mediaControllerListener.onPlayClicked();
@@ -194,7 +191,7 @@ class VideoControllerView extends FrameLayout {
                 }
 
                 view.setTag(VIEW_TAG_CLICKED);
-                doToggleFullscreen();
+                videoViewInteractor.toggleFullscreen();
                 show(DEFAULT_TIMEOUT);
             }
         });
@@ -202,17 +199,11 @@ class VideoControllerView extends FrameLayout {
         fastForwardButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (videoMediaPlayer == null) {
-                    return;
-                }
-
                 if (mediaControllerListener != null) {
                     mediaControllerListener.onFastForwardClicked();
                 }
 
-                int pos = videoMediaPlayer.getCurrentPosition();
-                pos += fastForwardDuration; // milliseconds
-                videoMediaPlayer.seekTo(pos);
+                videoViewInteractor.seekMediaPlayerTo(fastForwardDuration);
                 setProgress();
 
                 show(DEFAULT_TIMEOUT);
@@ -222,17 +213,11 @@ class VideoControllerView extends FrameLayout {
         rewindButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (videoMediaPlayer == null) {
-                    return;
-                }
-
                 if (mediaControllerListener != null) {
                     mediaControllerListener.onRewindClicked();
                 }
 
-                int pos = videoMediaPlayer.getCurrentPosition();
-                pos -= rewindDuration; // milliseconds
-                videoMediaPlayer.seekTo(pos);
+                videoViewInteractor.seekMediaPlayerTo(rewindDuration);
                 setProgress();
 
                 show(DEFAULT_TIMEOUT);
@@ -246,9 +231,7 @@ class VideoControllerView extends FrameLayout {
                         // Update the Playback Speed Drawable according to the clicked menu item
                         playbackSpeedManager.setPlaybackSpeedText(text);
                         // Change the Playback Speed of the VideoMediaPlayer
-                        if (videoMediaPlayer != null) {
-                            videoMediaPlayer.changePlaybackSpeed(speed);
-                        }
+                        videoViewInteractor.changePlaybackSpeed(speed);
                         // Hide the VideoControllerView
                         hide();
                     }
@@ -317,29 +300,25 @@ class VideoControllerView extends FrameLayout {
     }
 
     /**
-     * Change the buttons visibility according to the flags in {@link #videoMediaPlayer}.
+     * Change the buttons visibility according to the flags in {@link VideoMediaPlayer}.
      */
     private void setupButtonsVisibility() {
-        if (videoMediaPlayer == null) {
-            return;
-        }
-
-        if (startPauseButton != null && !videoMediaPlayer.canPause()) {
+        if (startPauseButton != null && !videoViewInteractor.canPause()) {
             startPauseButton.setEnabled(false);
             startPauseButton.setVisibility(INVISIBLE);
         }
 
-        if (rewindButton != null && !videoMediaPlayer.showSeekBackwardButton()) {
+        if (rewindButton != null && !videoViewInteractor.showSeekBackwardButton()) {
             rewindButton.setEnabled(false);
             rewindButton.setVisibility(INVISIBLE);
         }
 
-        if (fastForwardButton != null && !videoMediaPlayer.showSeekForwardButton()) {
+        if (fastForwardButton != null && !videoViewInteractor.showSeekForwardButton()) {
             fastForwardButton.setEnabled(false);
             fastForwardButton.setVisibility(INVISIBLE);
         }
 
-        playbackSpeedManager.hidePlaybackButton(videoMediaPlayer.showPlaybackSpeedButton());
+        playbackSpeedManager.hidePlaybackButton(videoViewInteractor.showPlaybackSpeedButton());
     }
 
     /**
@@ -357,8 +336,8 @@ class VideoControllerView extends FrameLayout {
             setVisibility(VISIBLE);
         }
 
-        if (startPauseButton != null && videoMediaPlayer != null) {
-            boolean isPlaying = videoMediaPlayer.isPlaying();
+        if (startPauseButton != null) {
+            boolean isPlaying = videoViewInteractor.isPlaying();
             Drawable playPauseDrawable = drawableManager.getPlayPauseDrawable(isPlaying);
             startPauseButton.setImageDrawable(playPauseDrawable);
         }
@@ -411,12 +390,12 @@ class VideoControllerView extends FrameLayout {
     }
 
     private int setProgress() {
-        if (videoMediaPlayer == null || isDragging) {
+        if (isDragging) {
             return 0;
         }
 
-        int position = videoMediaPlayer.getCurrentPosition();
-        int duration = videoMediaPlayer.getDuration();
+        int position = videoViewInteractor.getMediaPlayerCurrentPosition();
+        int duration = videoViewInteractor.getMediaPlayerDuration();
         if (progress != null) {
             if (duration > 0) {
                 // Use long to avoid overflow
@@ -424,7 +403,7 @@ class VideoControllerView extends FrameLayout {
                 progress.setProgress((int) pos);
             }
 
-            int percent = videoMediaPlayer.getBufferPercentage();
+            int percent = videoViewInteractor.getMediaPlayerBufferPercentage();
             progress.setSecondaryProgress(percent * 10);
         }
 
@@ -448,20 +427,9 @@ class VideoControllerView extends FrameLayout {
     }
 
     private void doPauseResume() {
-        if (videoMediaPlayer == null) {
-            return;
-        }
         videoViewInteractor.hideThumbnail();
-        videoMediaPlayer.onPauseResume();
+        videoViewInteractor.onPauseResume();
         updatePausePlay();
-    }
-
-    private void doToggleFullscreen() {
-        if (videoMediaPlayer == null) {
-            return;
-        }
-
-        videoViewInteractor.toggleFullscreen();
     }
 
     @Override
@@ -495,7 +463,7 @@ class VideoControllerView extends FrameLayout {
     public void onDetach() {
         seekListener = null;
         handler = null;
-        videoMediaPlayer = null;
+        videoViewInteractor = null;
         mediaControllerListener = null;
     }
 
@@ -543,14 +511,8 @@ class VideoControllerView extends FrameLayout {
         this.mediaControllerListener = mediaControllerListener;
     }
 
-    public void init(
-            VideoMediaPlayer videoMediaPlayer,
-            AttributeSet attrs,
-            final FullscreenVideoViewInteractor videoViewInteractor
-    ) {
-
+    public void init(AttributeSet attrs, final FullscreenVideoViewInteractor videoViewInteractor) {
         setupXmlAttributes(attrs);
-        this.videoMediaPlayer = videoMediaPlayer;
         this.videoViewInteractor = videoViewInteractor;
 
         updatePausePlay();
@@ -591,8 +553,8 @@ class VideoControllerView extends FrameLayout {
     }
 
     private void updatePausePlay() {
-        if (startPauseButton != null && videoMediaPlayer != null) {
-            boolean isPlaying = videoMediaPlayer.isPlaying();
+        if (startPauseButton != null) {
+            boolean isPlaying = videoViewInteractor.isPlaying();
             Drawable playPauseDrawable = drawableManager.getPlayPauseDrawable(isPlaying);
             startPauseButton.setImageDrawable(playPauseDrawable);
         }
@@ -630,7 +592,7 @@ class VideoControllerView extends FrameLayout {
         @Override
         public void handleMessage(Message msg) {
             VideoControllerView view = this.view.get();
-            if (view == null || view.videoMediaPlayer == null) {
+            if (view == null) {
                 return;
             }
 
@@ -638,7 +600,7 @@ class VideoControllerView extends FrameLayout {
                 view.hide();
             } else { // SHOW_PROGRESS
                 int position = view.setProgress();
-                if (!view.isDragging && view.isShowing() && view.videoMediaPlayer.isPlaying()) {
+                if (!view.isDragging && view.isShowing() && view.videoViewInteractor.isPlaying()) {
                     Message message = obtainMessage(SHOW_PROGRESS);
                     sendMessageDelayed(message, 1000 - (position % 1000));
                 }
@@ -665,19 +627,15 @@ class VideoControllerView extends FrameLayout {
 
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            if (videoMediaPlayer == null) {
-                return;
-            }
-
             if (!fromUser) {
                 // We're not interested in programmatically generated changes to
                 // the progress bar's position.
                 return;
             }
 
-            long duration = videoMediaPlayer.getDuration();
+            long duration = videoViewInteractor.getMediaPlayerDuration();
             long newPosition = (duration * progress) / Constants.ONE_MILLISECOND;
-            videoMediaPlayer.seekTo((int) newPosition);
+            videoViewInteractor.seekTo((int) newPosition);
             if (currentTime != null) {
                 currentTime.setText(stringForTime((int) newPosition));
             }
