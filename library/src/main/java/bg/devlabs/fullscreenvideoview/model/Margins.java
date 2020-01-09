@@ -23,10 +23,10 @@ package bg.devlabs.fullscreenvideoview.model;
  */
 public class Margins {
 
-    private int left;
-    private int top;
-    private int right;
-    private int bottom;
+    private final int left;
+    private final int top;
+    private final int right;
+    private final int bottom;
 
     public Margins(int left, int top, int right, int bottom) {
         this.left = left;

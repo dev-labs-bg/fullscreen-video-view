@@ -24,11 +24,6 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.core.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -40,6 +35,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
@@ -48,6 +49,7 @@ import bg.devlabs.fullscreenvideoview.listener.FullscreenVideoViewException;
 import bg.devlabs.fullscreenvideoview.listener.OnErrorListener;
 import bg.devlabs.fullscreenvideoview.listener.OnVideoCompletedListener;
 import bg.devlabs.fullscreenvideoview.listener.mediacontroller.MediaControllerListener;
+import bg.devlabs.fullscreenvideoview.model.Arguments;
 import bg.devlabs.fullscreenvideoview.orientation.LandscapeOrientation;
 import bg.devlabs.fullscreenvideoview.orientation.OrientationManager;
 import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation;
@@ -223,7 +225,9 @@ public class FullscreenVideoView extends FrameLayout {
      * @return the fullscreenVideoView instance
      */
     public FullscreenVideoView enterFullscreenDrawable(@NonNull Drawable drawable) {
-        controller.setEnterFullscreenDrawable(drawable);
+        if (controller != null) {
+            controller.setEnterFullscreenDrawable(drawable);
+        }
         args.enterFullscreenDrawable = drawable;
         return this;
     }
@@ -245,7 +249,9 @@ public class FullscreenVideoView extends FrameLayout {
      * @return the fullscreenVideoView instance
      */
     public FullscreenVideoView exitFullscreenDrawable(@NonNull Drawable drawable) {
-        controller.setExitFullscreenDrawable(drawable);
+        if (controller != null) {
+            controller.setExitFullscreenDrawable(drawable);
+        }
         args.exitFullscreenDrawable = drawable;
         return this;
     }
@@ -267,7 +273,9 @@ public class FullscreenVideoView extends FrameLayout {
      * @return the fullscreenVideoView instance
      */
     public FullscreenVideoView playDrawable(@NonNull Drawable drawable) {
-        controller.setPlayDrawable(drawable);
+        if (controller != null) {
+            controller.setPlayDrawable(drawable);
+        }
         args.playDrawable = drawable;
         return this;
     }
@@ -289,7 +297,9 @@ public class FullscreenVideoView extends FrameLayout {
      * @return the fullscreenVideoView instance
      */
     public FullscreenVideoView pauseDrawable(@NonNull Drawable drawable) {
-        controller.setPauseDrawable(drawable);
+        if (controller != null) {
+            controller.setPauseDrawable(drawable);
+        }
         args.pauseDrawable = drawable;
         return this;
     }
@@ -311,7 +321,9 @@ public class FullscreenVideoView extends FrameLayout {
      * @return the fullscreenVideoView instance
      */
     public FullscreenVideoView fastForwardDrawable(@NonNull Drawable drawable) {
-        controller.setFastForwardDrawable(drawable);
+        if (controller != null) {
+            controller.setFastForwardDrawable(drawable);
+        }
         args.fastForwardDrawable = drawable;
         return this;
     }
@@ -333,7 +345,9 @@ public class FullscreenVideoView extends FrameLayout {
      * @return the fullscreenVideoView instance
      */
     public FullscreenVideoView rewindDrawable(@NonNull Drawable drawable) {
-        controller.setRewindDrawable(drawable);
+        if (controller != null) {
+            controller.setRewindDrawable(drawable);
+        }
         args.rewindDrawable = drawable;
         return this;
     }
@@ -355,7 +369,9 @@ public class FullscreenVideoView extends FrameLayout {
      * @return the fullscreenVideoView instance
      */
     public FullscreenVideoView progressBarColor(int progressBarColor) {
-        controller.setProgressBarColor(progressBarColor);
+        if (controller != null) {
+            controller.setProgressBarColor(progressBarColor);
+        }
         args.progressBarColor = progressBarColor;
         return this;
     }
@@ -367,7 +383,9 @@ public class FullscreenVideoView extends FrameLayout {
      * @return the fullscreenVideoView instance
      */
     public FullscreenVideoView fastForwardSeconds(int fastForwardSeconds) {
-        controller.setFastForwardDuration(fastForwardSeconds);
+        if (controller != null) {
+            controller.setFastForwardDuration(fastForwardSeconds);
+        }
         args.fastForwardSeconds = fastForwardSeconds;
         return this;
     }
@@ -379,7 +397,9 @@ public class FullscreenVideoView extends FrameLayout {
      * @return the fullscreenVideoView instance
      */
     public FullscreenVideoView rewindSeconds(int rewindSeconds) {
-        controller.setRewindDuration(rewindSeconds);
+        if (controller != null) {
+            controller.setRewindDuration(rewindSeconds);
+        }
         args.rewindSeconds = rewindSeconds;
         return this;
     }
@@ -395,7 +415,9 @@ public class FullscreenVideoView extends FrameLayout {
      * @see LandscapeOrientation#USER
      */
     public FullscreenVideoView landscapeOrientation(LandscapeOrientation landscapeOrientation) {
-        orientationManager.setLandscapeOrientation(landscapeOrientation);
+        if (orientationManager != null) {
+            orientationManager.setLandscapeOrientation(landscapeOrientation);
+        }
         args.landscapeOrientation = landscapeOrientation;
         return this;
     }
@@ -411,7 +433,9 @@ public class FullscreenVideoView extends FrameLayout {
      * @see PortraitOrientation#USER
      */
     public FullscreenVideoView portraitOrientation(PortraitOrientation portraitOrientation) {
-        orientationManager.setPortraitOrientation(portraitOrientation);
+        if (orientationManager != null) {
+            orientationManager.setPortraitOrientation(portraitOrientation);
+        }
         args.portraitOrientation = portraitOrientation;
         return this;
     }
@@ -422,7 +446,9 @@ public class FullscreenVideoView extends FrameLayout {
      * @return the fullscreenVideoView instance
      */
     public FullscreenVideoView disablePause() {
-        videoMediaPlayer.disablePause();
+        if (videoMediaPlayer != null) {
+            videoMediaPlayer.disablePause();
+        }
         args.disablePause = true;
         return this;
     }
@@ -433,7 +459,9 @@ public class FullscreenVideoView extends FrameLayout {
      * @return the fullscreenVideoView instance
      */
     public FullscreenVideoView addSeekForwardButton() {
-        videoMediaPlayer.addSeekForwardButton();
+        if (videoMediaPlayer != null) {
+            videoMediaPlayer.addSeekForwardButton();
+        }
         args.addSeekForwardButton = true;
         return this;
     }
@@ -444,7 +472,9 @@ public class FullscreenVideoView extends FrameLayout {
      * @return the fullscreenVideoView instance
      */
     public FullscreenVideoView addSeekBackwardButton() {
-        videoMediaPlayer.addSeekBackwardButton();
+        if (videoMediaPlayer != null) {
+            videoMediaPlayer.addSeekBackwardButton();
+        }
         args.addSeekBackwardButton = true;
         return this;
     }
@@ -458,7 +488,9 @@ public class FullscreenVideoView extends FrameLayout {
      */
     @RequiresApi(Build.VERSION_CODES.M)
     public FullscreenVideoView addPlaybackSpeedButton() {
-        videoMediaPlayer.addPlaybackSpeedButton();
+        if (videoMediaPlayer != null) {
+            videoMediaPlayer.addPlaybackSpeedButton();
+        }
         args.addPlaybackSpeedButton = true;
         return this;
     }
@@ -470,7 +502,9 @@ public class FullscreenVideoView extends FrameLayout {
      * @return the fullscreenVideoView instance
      */
     public FullscreenVideoView playbackSpeedOptions(PlaybackSpeedOptions playbackSpeedOptions) {
-        controller.setPlaybackSpeedOptions(playbackSpeedOptions);
+        if (controller != null) {
+            controller.setPlaybackSpeedOptions(playbackSpeedOptions);
+        }
         args.playbackSpeedOptions = playbackSpeedOptions;
         return this;
     }
@@ -496,7 +530,9 @@ public class FullscreenVideoView extends FrameLayout {
      * @return the fullscreenVideoView instance
      */
     public FullscreenVideoView hideProgress() {
-        controller.hideProgress();
+        if (controller != null) {
+            controller.hideProgress();
+        }
         args.hideProgress = true;
         return this;
     }
@@ -507,7 +543,9 @@ public class FullscreenVideoView extends FrameLayout {
      * @return the fullscreenVideoView instance
      */
     public FullscreenVideoView hideFullscreenButton() {
-        controller.hideFullscreenButton();
+        if (controller != null) {
+            controller.hideFullscreenButton();
+        }
         args.hideFullscreenButton = true;
         return this;
     }
@@ -539,8 +577,12 @@ public class FullscreenVideoView extends FrameLayout {
      *
      * @return the fullscreenVideoView instance
      */
-    public FullscreenVideoView mediaControllerListener(MediaControllerListener mediaControllerListener) {
-        controller.setOnMediaControllerListener(mediaControllerListener);
+    public FullscreenVideoView mediaControllerListener(
+            MediaControllerListener mediaControllerListener
+    ) {
+        if (controller != null) {
+            controller.setOnMediaControllerListener(mediaControllerListener);
+        }
         return this;
     }
 

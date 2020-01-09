@@ -19,16 +19,18 @@ package bg.devlabs.fullscreenvideoview;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import androidx.core.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+
 import java.lang.ref.WeakReference;
 
-import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedPopupMenuListener;
 import bg.devlabs.fullscreenvideoview.orientation.OrientationManager;
+import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedManager;
 import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedOptions;
+import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedPopupMenuListener;
 
 import static android.view.View.INVISIBLE;
 

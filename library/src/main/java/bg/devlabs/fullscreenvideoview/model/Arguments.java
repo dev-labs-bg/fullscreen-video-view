@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package bg.devlabs.fullscreenvideoview;
+package bg.devlabs.fullscreenvideoview.model;
 
 import android.graphics.drawable.Drawable;
 
