@@ -44,7 +44,6 @@ import java.lang.ref.WeakReference;
 import java.util.Locale;
 
 import bg.devlabs.fullscreenvideoview.listener.mediacontroller.MediaControllerListener;
-import bg.devlabs.fullscreenvideoview.orientation.OrientationManager;
 import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedManager;
 import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedOptions;
 import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedPopupMenuListener;
@@ -119,9 +118,6 @@ class VideoControllerView extends FrameLayout {
 
     private PlaybackSpeedManager playbackSpeedManager;
     private ControllerDrawableManager drawableManager;
-
-    // TODO: Refactor this dependency
-    private OrientationManager orientationManager;
 
     private FullscreenVideoViewInteractor videoViewInteractor;
 
@@ -548,15 +544,13 @@ class VideoControllerView extends FrameLayout {
     }
 
     public void init(
-            final OrientationManager orientationManager,
             VideoMediaPlayer videoMediaPlayer,
             AttributeSet attrs,
-            FullscreenVideoViewInteractor videoViewInteractor
+            final FullscreenVideoViewInteractor videoViewInteractor
     ) {
 
         setupXmlAttributes(attrs);
         this.videoMediaPlayer = videoMediaPlayer;
-        this.orientationManager = orientationManager;
         this.videoViewInteractor = videoViewInteractor;
 
         updatePausePlay();
@@ -569,7 +563,7 @@ class VideoControllerView extends FrameLayout {
         getViewTreeObserver().addOnWindowFocusChangeListener(new ViewTreeObserver.OnWindowFocusChangeListener() {
             @Override
             public void onWindowFocusChanged(boolean hasFocus) {
-                if (orientationManager.isLandscape()) {
+                if (videoViewInteractor.isLandscape()) {
                     ((Activity) getContext())
                             .getWindow()
                             .getDecorView()
@@ -605,8 +599,8 @@ class VideoControllerView extends FrameLayout {
     }
 
     void updateFullScreenDrawable() {
-        if (fullscreenButton != null && orientationManager != null) {
-            boolean isLandscape = orientationManager.isLandscape();
+        if (fullscreenButton != null) {
+            boolean isLandscape = videoViewInteractor.isLandscape();
             Drawable fullscreenDrawable = drawableManager.getFullscreenDrawable(isLandscape);
             fullscreenButton.setImageDrawable(fullscreenDrawable);
         }

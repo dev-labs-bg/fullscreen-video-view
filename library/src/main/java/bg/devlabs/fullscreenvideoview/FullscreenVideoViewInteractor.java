@@ -25,4 +25,6 @@ public interface FullscreenVideoViewInteractor {
     void toggleFullscreen();
 
     void hideThumbnail();
+
+    boolean isLandscape();
 }

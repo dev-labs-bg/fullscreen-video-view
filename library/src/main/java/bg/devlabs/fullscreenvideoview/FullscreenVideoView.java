@@ -129,7 +129,6 @@ public class FullscreenVideoView extends FrameLayout {
         setUpSurfaceHolder();
         if (controller != null) {
             controller.init(
-                    orientationManager,
                     videoMediaPlayer,
                     attrs,
                     new FullscreenVideoViewInteractor() {
@@ -141,6 +140,11 @@ public class FullscreenVideoView extends FrameLayout {
                         @Override
                         public void hideThumbnail() {
                             FullscreenVideoView.this.hideThumbnail();
+                        }
+
+                        @Override
+                        public boolean isLandscape() {
+                            return orientationManager != null && orientationManager.isLandscape();
                         }
                     }
             );
