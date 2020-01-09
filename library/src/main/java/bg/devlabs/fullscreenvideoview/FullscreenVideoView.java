@@ -122,13 +122,28 @@ public class FullscreenVideoView extends FrameLayout {
         findChildViews();
         // Skip this init rows - needed when changing FullscreenVideoView properties in XML
         if (!isInEditMode()) {
-            videoMediaPlayer = new VideoMediaPlayer(this);
+            videoMediaPlayer = new VideoMediaPlayer();
             orientationManager = new OrientationManager(getContext(), this);
             orientationManager.enable();
         }
         setUpSurfaceHolder();
         if (controller != null) {
-            controller.init(orientationManager, videoMediaPlayer, attrs);
+            controller.init(
+                    orientationManager,
+                    videoMediaPlayer,
+                    attrs,
+                    new FullscreenVideoViewInteractor() {
+                        @Override
+                        public void toggleFullscreen() {
+                            FullscreenVideoView.this.toggleFullscreen();
+                        }
+
+                        @Override
+                        public void hideThumbnail() {
+                            FullscreenVideoView.this.hideThumbnail();
+                        }
+                    }
+            );
         }
         setupProgressBarColor();
         setFocusableInTouchMode(true);

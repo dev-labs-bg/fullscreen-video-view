@@ -20,7 +20,6 @@ import android.annotation.TargetApi;
 import android.media.MediaPlayer;
 import android.media.PlaybackParams;
 import android.os.Build;
-import androidx.annotation.Nullable;
 
 /**
  * Created by Slavi Petrov on 20.10.2017
@@ -28,17 +27,11 @@ import androidx.annotation.Nullable;
  * slavi@devlabs.bg
  */
 class VideoMediaPlayer extends MediaPlayer {
-    @Nullable
-    private FullscreenVideoView fullscreenVideoView;
     private boolean isAutoStartEnabled;
     private boolean canPause = true;
     private boolean showSeekBackwardButton = false;
     private boolean showSeekForwardButton = false;
     private boolean showPlaybackSpeedButton = false;
-
-    VideoMediaPlayer(@Nullable FullscreenVideoView fullscreenVideoView) {
-        this.fullscreenVideoView = fullscreenVideoView;
-    }
 
     public int getBufferPercentage() {
         return 0;
@@ -60,29 +53,15 @@ class VideoMediaPlayer extends MediaPlayer {
         return showPlaybackSpeedButton;
     }
 
-    public void toggleFullScreen() {
-        if (fullscreenVideoView != null) {
-            fullscreenVideoView.toggleFullscreen();
-        }
-    }
-
     public void onPauseResume() {
         if (isPlaying()) {
             pause();
         } else {
             start();
-            hideThumbnail();
-        }
-    }
-
-    public void hideThumbnail() {
-        if (fullscreenVideoView != null) {
-            fullscreenVideoView.hideThumbnail();
         }
     }
 
     public void onDetach() {
-        fullscreenVideoView = null;
         setOnPreparedListener(null);
         if (isPlaying()) {
             stop();

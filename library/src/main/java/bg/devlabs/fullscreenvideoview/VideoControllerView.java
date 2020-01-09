@@ -123,6 +123,8 @@ class VideoControllerView extends FrameLayout {
     // TODO: Refactor this dependency
     private OrientationManager orientationManager;
 
+    private FullscreenVideoViewInteractor videoViewInteractor;
+
     private int progressBarColor = Color.WHITE;
 
     private int fastForwardDuration = Constants.FAST_FORWARD_DURATION;
@@ -453,6 +455,7 @@ class VideoControllerView extends FrameLayout {
         if (videoMediaPlayer == null) {
             return;
         }
+        videoViewInteractor.hideThumbnail();
         videoMediaPlayer.onPauseResume();
         updatePausePlay();
     }
@@ -462,7 +465,7 @@ class VideoControllerView extends FrameLayout {
             return;
         }
 
-        videoMediaPlayer.toggleFullScreen();
+        videoViewInteractor.toggleFullscreen();
     }
 
     @Override
@@ -544,13 +547,17 @@ class VideoControllerView extends FrameLayout {
         this.mediaControllerListener = mediaControllerListener;
     }
 
-    public void init(final OrientationManager orientationManager,
-                     VideoMediaPlayer videoMediaPlayer,
-                     AttributeSet attrs) {
+    public void init(
+            final OrientationManager orientationManager,
+            VideoMediaPlayer videoMediaPlayer,
+            AttributeSet attrs,
+            FullscreenVideoViewInteractor videoViewInteractor
+    ) {
 
         setupXmlAttributes(attrs);
         this.videoMediaPlayer = videoMediaPlayer;
         this.orientationManager = orientationManager;
+        this.videoViewInteractor = videoViewInteractor;
 
         updatePausePlay();
         updateFullScreenDrawable();
@@ -568,11 +575,11 @@ class VideoControllerView extends FrameLayout {
                             .getDecorView()
                             .setSystemUiVisibility(
                                     View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-                                    View.SYSTEM_UI_FLAG_FULLSCREEN |
-                                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
-                                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-                                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-                                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                            View.SYSTEM_UI_FLAG_FULLSCREEN |
+                                            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
+                                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                                            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                                            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                             );
                 }
             }
@@ -685,7 +692,7 @@ class VideoControllerView extends FrameLayout {
                 mediaControllerListener.onSeekBarProgressChanged(newPosition);
             }
 
-            videoMediaPlayer.hideThumbnail();
+            videoViewInteractor.hideThumbnail();
         }
 
         @Override
