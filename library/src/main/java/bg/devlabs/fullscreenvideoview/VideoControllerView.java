@@ -119,6 +119,7 @@ class VideoControllerView extends FrameLayout {
 
     private FullscreenVideoViewInteractor videoViewInteractor;
     private VideoMediaPlayerHolder videoMediaPlayerHolder;
+    private OrientationManagerHolder orientationManagerHolder;
 
     private int progressBarColor = Color.WHITE;
     private int fastForwardDuration = Constants.FAST_FORWARD_DURATION;
@@ -218,7 +219,7 @@ class VideoControllerView extends FrameLayout {
                     mediaControllerListener.onRewindClicked();
                 }
 
-                videoMediaPlayerHolder.seekBy(rewindDuration);
+                videoMediaPlayerHolder.seekBy(-rewindDuration);
                 setProgress();
 
                 show(DEFAULT_TIMEOUT);
@@ -514,9 +515,17 @@ class VideoControllerView extends FrameLayout {
         this.mediaControllerListener = mediaControllerListener;
     }
 
-    public void init(AttributeSet attrs, final FullscreenVideoViewInteractor videoViewInteractor) {
+    public void init(
+            AttributeSet attrs,
+            VideoMediaPlayerHolder videoMediaPlayerHolder,
+            final OrientationManagerHolder orientationManagerHolder,
+            FullscreenVideoViewInteractor videoViewInteractor
+    ) {
         setupXmlAttributes(attrs);
+
+        this.videoMediaPlayerHolder = videoMediaPlayerHolder;
         this.videoViewInteractor = videoViewInteractor;
+        this.orientationManagerHolder = orientationManagerHolder;
 
         updatePausePlay();
         updateFullScreenDrawable();
@@ -528,7 +537,7 @@ class VideoControllerView extends FrameLayout {
         getViewTreeObserver().addOnWindowFocusChangeListener(new ViewTreeObserver.OnWindowFocusChangeListener() {
             @Override
             public void onWindowFocusChanged(boolean hasFocus) {
-                if (videoViewInteractor.isLandscape()) {
+                if (orientationManagerHolder.isLandscape()) {
                     ((Activity) getContext())
                             .getWindow()
                             .getDecorView()
@@ -565,7 +574,7 @@ class VideoControllerView extends FrameLayout {
 
     void updateFullScreenDrawable() {
         if (fullscreenButton != null) {
-            boolean isLandscape = videoViewInteractor.isLandscape();
+            boolean isLandscape = orientationManagerHolder.isLandscape();
             Drawable fullscreenDrawable = drawableManager.getFullscreenDrawable(isLandscape);
             fullscreenButton.setImageDrawable(fullscreenDrawable);
         }

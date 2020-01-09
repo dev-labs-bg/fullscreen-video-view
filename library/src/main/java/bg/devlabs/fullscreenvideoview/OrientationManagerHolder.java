@@ -21,8 +21,7 @@ package bg.devlabs.fullscreenvideoview;
  * Dev Labs
  * slavi@devlabs.bg
  */
-public interface FullscreenVideoViewInteractor {
-    void toggleFullscreen();
+public interface OrientationManagerHolder {
 
-    void hideThumbnail();
+    boolean isLandscape();
 }

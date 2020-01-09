@@ -71,7 +71,9 @@ import static bg.devlabs.fullscreenvideoview.Constants.VIEW_TAG_CLICKED;
  * slavi@devlabs.bg
  */
 @SuppressWarnings("unused")
-public class FullscreenVideoView extends FrameLayout implements VideoMediaPlayerHolder {
+public class FullscreenVideoView extends FrameLayout
+        implements VideoMediaPlayerHolder, OrientationManagerHolder {
+
     @Nullable
     private VideoSurfaceView surfaceView;
     @Nullable
@@ -127,8 +129,11 @@ public class FullscreenVideoView extends FrameLayout implements VideoMediaPlayer
         }
         setUpSurfaceHolder();
         if (controller != null) {
+            // TODO: Refactor this, this, this... parameter passing
             controller.init(
                     attrs,
+                    this,
+                    this,
                     new FullscreenVideoViewInteractor() {
                         @Override
                         public void toggleFullscreen() {
@@ -138,11 +143,6 @@ public class FullscreenVideoView extends FrameLayout implements VideoMediaPlayer
                         @Override
                         public void hideThumbnail() {
                             FullscreenVideoView.this.hideThumbnail();
-                        }
-
-                        @Override
-                        public boolean isLandscape() {
-                            return orientationManager != null && orientationManager.isLandscape();
                         }
                     }
             );
@@ -226,6 +226,11 @@ public class FullscreenVideoView extends FrameLayout implements VideoMediaPlayer
     @Override
     public void seekTo(int position) {
         videoMediaPlayer.seekTo(position);
+    }
+
+    @Override
+    public boolean isLandscape() {
+        return orientationManager != null && orientationManager.isLandscape();
     }
 
     private void setUpSurfaceHolder() {
