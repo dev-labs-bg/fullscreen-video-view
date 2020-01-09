@@ -77,10 +77,6 @@ class VideoMediaPlayer extends MediaPlayer {
         isAutoStartEnabled = true;
     }
 
-    public void setPauseEnabled(boolean canPause) {
-        this.canPause = canPause;
-    }
-
     public void disablePause() {
         this.canPause = false;
     }
@@ -95,14 +91,6 @@ class VideoMediaPlayer extends MediaPlayer {
 
     public void addPlaybackSpeedButton() {
         this.showPlaybackSpeedButton = true;
-    }
-
-    void setCanSeekBackward(boolean canSeekBackward) {
-        this.showSeekBackwardButton = canSeekBackward;
-    }
-
-    void setCanSeekForward(boolean canSeekForward) {
-        this.showSeekForwardButton = canSeekForward;
     }
 
     @TargetApi(Build.VERSION_CODES.M)
