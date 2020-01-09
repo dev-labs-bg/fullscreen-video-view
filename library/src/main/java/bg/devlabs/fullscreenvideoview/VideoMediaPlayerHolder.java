@@ -21,10 +21,29 @@ package bg.devlabs.fullscreenvideoview;
  * Dev Labs
  * slavi@devlabs.bg
  */
-public interface FullscreenVideoViewInteractor {
-    void toggleFullscreen();
+public interface VideoMediaPlayerHolder {
 
-    void hideThumbnail();
+    boolean isPlaying();
 
-    boolean isLandscape();
+    void seekBy(int duration);
+
+    void changePlaybackSpeed(float speed);
+
+    boolean canPause();
+
+    boolean shouldShowSeekBackwardButton();
+
+    boolean shouldShowSeekForwardButton();
+
+    boolean shouldShowPlaybackSpeedButton();
+
+    int getCurrentPosition();
+
+    int getDuration();
+
+    int getBufferPercentage();
+
+    void onPauseResume();
+
+    void seekTo(int position);
 }

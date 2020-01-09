@@ -71,7 +71,7 @@ import static bg.devlabs.fullscreenvideoview.Constants.VIEW_TAG_CLICKED;
  * slavi@devlabs.bg
  */
 @SuppressWarnings("unused")
-public class FullscreenVideoView extends FrameLayout {
+public class FullscreenVideoView extends FrameLayout implements VideoMediaPlayerHolder {
     @Nullable
     private VideoSurfaceView surfaceView;
     @Nullable
@@ -144,70 +144,6 @@ public class FullscreenVideoView extends FrameLayout {
                         public boolean isLandscape() {
                             return orientationManager != null && orientationManager.isLandscape();
                         }
-
-                        @Override
-                        public boolean isPlaying() {
-                            return videoMediaPlayer.isPlaying();
-                        }
-
-                        @Override
-                        public void seekMediaPlayerTo(int duration) {
-                            int pos = videoMediaPlayer.getCurrentPosition();
-                            pos += duration; // milliseconds
-                            videoMediaPlayer.seekTo(pos);
-                        }
-
-                        @Override
-                        public void changePlaybackSpeed(float speed) {
-                            if (videoMediaPlayer != null) {
-                                videoMediaPlayer.changePlaybackSpeed(speed);
-                            }
-                        }
-
-                        @Override
-                        public boolean canPause() {
-                            return videoMediaPlayer.canPause();
-                        }
-
-                        @Override
-                        public boolean showSeekBackwardButton() {
-                            return videoMediaPlayer.showSeekBackwardButton();
-                        }
-
-                        @Override
-                        public boolean showSeekForwardButton() {
-                            return videoMediaPlayer.showSeekForwardButton();
-                        }
-
-                        @Override
-                        public boolean showPlaybackSpeedButton() {
-                            return videoMediaPlayer.showPlaybackSpeedButton();
-                        }
-
-                        @Override
-                        public int getMediaPlayerCurrentPosition() {
-                            return videoMediaPlayer.getCurrentPosition();
-                        }
-
-                        @Override
-                        public int getMediaPlayerDuration() {
-                            return videoMediaPlayer.getDuration();
-                        }
-
-                        @Override
-                        public int getMediaPlayerBufferPercentage() {
-                            return videoMediaPlayer.getBufferPercentage();
-                        }
-
-                        @Override
-                        public void onPauseResume() {
-                            videoMediaPlayer.onPauseResume();
-                        }
-
-                        @Override
-                        public void seekTo(int newPosition) {
-                            videoMediaPlayer.seekTo(newPosition);
-                        }
                     }
             );
         }
@@ -226,6 +162,70 @@ public class FullscreenVideoView extends FrameLayout {
                 return false;
             }
         });
+    }
+
+    @Override
+    public boolean isPlaying() {
+        return videoMediaPlayer.isPlaying();
+    }
+
+    @Override
+    public void seekBy(int duration) {
+        int pos = videoMediaPlayer.getCurrentPosition();
+        pos += duration; // milliseconds
+        videoMediaPlayer.seekTo(pos);
+    }
+
+    @Override
+    public void changePlaybackSpeed(float speed) {
+        if (videoMediaPlayer != null) {
+            videoMediaPlayer.changePlaybackSpeed(speed);
+        }
+    }
+
+    @Override
+    public boolean canPause() {
+        return videoMediaPlayer.canPause();
+    }
+
+    @Override
+    public boolean shouldShowSeekBackwardButton() {
+        return videoMediaPlayer.showSeekBackwardButton();
+    }
+
+    @Override
+    public boolean shouldShowSeekForwardButton() {
+        return videoMediaPlayer.showSeekForwardButton();
+    }
+
+    @Override
+    public boolean shouldShowPlaybackSpeedButton() {
+        return videoMediaPlayer.showPlaybackSpeedButton();
+    }
+
+    @Override
+    public int getCurrentPosition() {
+        return videoMediaPlayer.getCurrentPosition();
+    }
+
+    @Override
+    public int getDuration() {
+        return videoMediaPlayer.getDuration();
+    }
+
+    @Override
+    public int getBufferPercentage() {
+        return videoMediaPlayer.getBufferPercentage();
+    }
+
+    @Override
+    public void onPauseResume() {
+        videoMediaPlayer.onPauseResume();
+    }
+
+    @Override
+    public void seekTo(int position) {
+        videoMediaPlayer.seekTo(position);
     }
 
     private void setUpSurfaceHolder() {
