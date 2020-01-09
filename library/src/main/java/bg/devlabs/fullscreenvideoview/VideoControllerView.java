@@ -26,8 +26,6 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,13 +37,17 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 
 import bg.devlabs.fullscreenvideoview.listener.mediacontroller.MediaControllerListener;
-import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedPopupMenuListener;
 import bg.devlabs.fullscreenvideoview.orientation.OrientationManager;
+import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedManager;
 import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedOptions;
+import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedPopupMenuListener;
 
 import static bg.devlabs.fullscreenvideoview.Constants.VIEW_TAG_CLICKED;
 
@@ -109,7 +111,18 @@ class VideoControllerView extends FrameLayout {
     @Nullable
     private MediaControllerListener mediaControllerListener;
 
-    private ButtonManager buttonManager;
+    private ImageButton startPauseButton;
+    private ImageButton fastForwardButton;
+    private ImageButton rewindButton;
+    private ImageButton fullscreenButton;
+    private TextView playbackSpeedButton;
+
+    private PlaybackSpeedManager playbackSpeedManager;
+    private ControllerDrawableManager drawableManager;
+
+    // TODO: Refactor this dependency
+    private OrientationManager orientationManager;
+
     private int progressBarColor = Color.WHITE;
 
     private int fastForwardDuration = Constants.FAST_FORWARD_DURATION;
@@ -136,14 +149,13 @@ class VideoControllerView extends FrameLayout {
             setVisibility(INVISIBLE);
         }
 
-        buttonManager = new ButtonManager(
-                getContext(),
-                (ImageButton) findViewById(R.id.start_pause_media_button),
-                (ImageButton) findViewById(R.id.forward_media_button),
-                (ImageButton) findViewById(R.id.rewind_media_button),
-                (ImageButton) findViewById(R.id.fullscreen_media_button),
-                (TextView) findViewById(R.id.playback_speed_button)
-        );
+        startPauseButton = findViewById(R.id.start_pause_media_button);
+        fastForwardButton = findViewById(R.id.forward_media_button);
+        rewindButton = findViewById(R.id.rewind_media_button);
+        fullscreenButton = findViewById(R.id.fullscreen_media_button);
+        playbackSpeedButton = findViewById(R.id.playback_speed_button);
+
+        playbackSpeedManager = new PlaybackSpeedManager(getContext(), playbackSpeedButton);
 
         setupButtonListeners();
 
@@ -160,7 +172,7 @@ class VideoControllerView extends FrameLayout {
     }
 
     private void setupButtonListeners() {
-        buttonManager.setStartPauseButtonClickListener(new OnClickListener() {
+        startPauseButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (videoMediaPlayer != null && mediaControllerListener != null) {
@@ -176,7 +188,7 @@ class VideoControllerView extends FrameLayout {
             }
         });
 
-        buttonManager.setFullscreenButtonClickListener(new OnClickListener() {
+        fullscreenButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (mediaControllerListener != null) {
@@ -189,7 +201,7 @@ class VideoControllerView extends FrameLayout {
             }
         });
 
-        buttonManager.setFfwdButtonOnClickListener(new OnClickListener() {
+        fastForwardButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (videoMediaPlayer == null) {
@@ -209,7 +221,7 @@ class VideoControllerView extends FrameLayout {
             }
         });
 
-        buttonManager.setRewButtonOnClickListener(new OnClickListener() {
+        rewindButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (videoMediaPlayer == null) {
@@ -229,12 +241,12 @@ class VideoControllerView extends FrameLayout {
             }
         });
 
-        buttonManager.setPlaybackSpeedPopupMenuListener(
+        playbackSpeedManager.setPlaybackSpeedButtonOnClickListener(
                 new PlaybackSpeedPopupMenuListener() {
                     @Override
                     public void onSpeedSelected(float speed, String text) {
                         // Update the Playback Speed Drawable according to the clicked menu item
-                        buttonManager.updatePlaybackSpeedText(text);
+                        playbackSpeedManager.setPlaybackSpeedText(text);
                         // Change the Playback Speed of the VideoMediaPlayer
                         if (videoMediaPlayer != null) {
                             videoMediaPlayer.changePlaybackSpeed(speed);
@@ -258,16 +270,34 @@ class VideoControllerView extends FrameLayout {
     }
 
     private void setupXmlAttributes(AttributeSet attrs) {
-        TypedArray typedArray = getContext().obtainStyledAttributes(
+        TypedArray styledAttrs = getContext().obtainStyledAttributes(
                 attrs,
                 R.styleable.VideoControllerView,
                 0,
                 0
         );
-        buttonManager.setupDrawables(typedArray);
-        setupProgressBar(typedArray);
-        // Recycle the TypedArray
-        typedArray.recycle();
+
+        drawableManager = new ControllerDrawableManager(getContext(), styledAttrs);
+
+        setupDrawables();
+        setupProgressBar(styledAttrs);
+        // Recycle the attributes
+        styledAttrs.recycle();
+    }
+
+    private void setupDrawables() {
+        // StartPause Button
+        Drawable playDrawable = drawableManager.getPlayDrawable();
+        startPauseButton.setImageDrawable(playDrawable);
+        // Fullscreen Button
+        Drawable enterFullscreenDrawable = drawableManager.getEnterFullscreenDrawable();
+        fullscreenButton.setImageDrawable(enterFullscreenDrawable);
+        // Rewind Button
+        Drawable rewindDrawable = drawableManager.getRewindDrawable();
+        rewindButton.setImageDrawable(rewindDrawable);
+        // FastForward Button
+        Drawable fastForwardDrawable = drawableManager.getFastForwardDrawable();
+        fastForwardButton.setImageDrawable(fastForwardDrawable);
     }
 
     private void setupProgressBar(TypedArray a) {
@@ -296,7 +326,22 @@ class VideoControllerView extends FrameLayout {
             return;
         }
 
-        buttonManager.setupButtonsVisibility();
+        if (startPauseButton != null && !videoMediaPlayer.canPause()) {
+            startPauseButton.setEnabled(false);
+            startPauseButton.setVisibility(INVISIBLE);
+        }
+
+        if (rewindButton != null && !videoMediaPlayer.showSeekBackwardButton()) {
+            rewindButton.setEnabled(false);
+            rewindButton.setVisibility(INVISIBLE);
+        }
+
+        if (fastForwardButton != null && !videoMediaPlayer.showSeekForwardButton()) {
+            fastForwardButton.setEnabled(false);
+            fastForwardButton.setVisibility(INVISIBLE);
+        }
+
+        playbackSpeedManager.hidePlaybackButton(videoMediaPlayer.showPlaybackSpeedButton());
     }
 
     /**
@@ -308,14 +353,20 @@ class VideoControllerView extends FrameLayout {
      */
     private void show(int timeout) {
         if (!isShowing()) {
-            buttonManager.requestStartPauseButtonFocus();
+            startPauseButton.requestFocus();
             setProgress();
             setupButtonsVisibility();
             setVisibility(VISIBLE);
         }
 
-        buttonManager.updatePausePlay();
-        buttonManager.updateFullScreenDrawable();
+        if (startPauseButton != null && videoMediaPlayer != null) {
+            boolean isPlaying = videoMediaPlayer.isPlaying();
+            Drawable playPauseDrawable = drawableManager.getPlayPauseDrawable(isPlaying);
+            startPauseButton.setImageDrawable(playPauseDrawable);
+        }
+
+        updatePausePlay();
+        updateFullScreenDrawable();
 
         // Cause the progress bar to be updated even if it's showing.
         // This happens, for example, if we're
@@ -333,10 +384,6 @@ class VideoControllerView extends FrameLayout {
         } else {
             handler.removeMessages(FADE_OUT);
         }
-    }
-
-    public void updateFullScreenDrawable() {
-        buttonManager.updateFullScreenDrawable();
     }
 
     private boolean isShowing() {
@@ -407,7 +454,7 @@ class VideoControllerView extends FrameLayout {
             return;
         }
         videoMediaPlayer.onPauseResume();
-        buttonManager.updatePausePlay();
+        updatePausePlay();
     }
 
     private void doToggleFullscreen() {
@@ -420,13 +467,30 @@ class VideoControllerView extends FrameLayout {
 
     @Override
     public void setEnabled(boolean enabled) {
-        buttonManager.setButtonsEnabled(enabled);
+        setButtonsEnabled(enabled);
+
         if (progress != null) {
             progress.setEnabled(enabled);
         }
 
         setupButtonsVisibility();
         super.setEnabled(enabled);
+    }
+
+    private void setButtonsEnabled(boolean isEnabled) {
+        if (startPauseButton != null) {
+            startPauseButton.setEnabled(isEnabled);
+        }
+
+        if (fastForwardButton != null) {
+            fastForwardButton.setEnabled(isEnabled);
+        }
+
+        if (rewindButton != null) {
+            rewindButton.setEnabled(isEnabled);
+        }
+
+        playbackSpeedManager.setPlaybackSpeedButtonEnabled(isEnabled);
     }
 
     public void onDetach() {
@@ -437,11 +501,11 @@ class VideoControllerView extends FrameLayout {
     }
 
     public void setEnterFullscreenDrawable(Drawable enterFullscreenDrawable) {
-        buttonManager.setEnterFullscreenDrawable(enterFullscreenDrawable);
+        drawableManager.setEnterFullscreenDrawable(enterFullscreenDrawable);
     }
 
     public void setExitFullscreenDrawable(Drawable exitFullscreenDrawable) {
-        buttonManager.setExitFullscreenDrawable(exitFullscreenDrawable);
+        drawableManager.setExitFullscreenDrawable(exitFullscreenDrawable);
     }
 
     public void setProgressBarColor(int progressBarColor) {
@@ -449,11 +513,11 @@ class VideoControllerView extends FrameLayout {
     }
 
     public void setPlayDrawable(Drawable playDrawable) {
-        buttonManager.setPlayDrawable(playDrawable);
+        drawableManager.setPlayDrawable(playDrawable);
     }
 
     public void setPauseDrawable(Drawable pauseDrawable) {
-        buttonManager.setPauseDrawable(pauseDrawable);
+        drawableManager.setPauseDrawable(pauseDrawable);
     }
 
     public void setFastForwardDuration(int fastForwardDuration) {
@@ -465,15 +529,15 @@ class VideoControllerView extends FrameLayout {
     }
 
     public void setFastForwardDrawable(Drawable fastForwardDrawable) {
-        buttonManager.setFastForwardDrawable(fastForwardDrawable);
+        drawableManager.setFastForwardDrawable(fastForwardDrawable);
     }
 
     public void setRewindDrawable(Drawable rewindDrawable) {
-        buttonManager.setRewindDrawable(rewindDrawable);
+        drawableManager.setRewindDrawable(rewindDrawable);
     }
 
     public void setPlaybackSpeedOptions(PlaybackSpeedOptions playbackSpeedOptions) {
-        buttonManager.setPlaybackSpeedOptions(playbackSpeedOptions);
+        playbackSpeedManager.setPlaybackSpeedOptions(playbackSpeedOptions);
     }
 
     public void setOnMediaControllerListener(MediaControllerListener mediaControllerListener) {
@@ -486,13 +550,12 @@ class VideoControllerView extends FrameLayout {
 
         setupXmlAttributes(attrs);
         this.videoMediaPlayer = videoMediaPlayer;
+        this.orientationManager = orientationManager;
 
-        buttonManager.setOrientationHelper(orientationManager);
-        buttonManager.setVideoMediaPlayer(videoMediaPlayer);
-        buttonManager.updatePausePlay();
-        buttonManager.updateFullScreenDrawable();
-        buttonManager.updateFastForwardDrawable();
-        buttonManager.updateRewindDrawable();
+        updatePausePlay();
+        updateFullScreenDrawable();
+        updateFastForwardDrawable();
+        updateRewindDrawable();
 
         handler = new VideoControllerView.MessageHandler(this);
 
@@ -500,8 +563,11 @@ class VideoControllerView extends FrameLayout {
             @Override
             public void onWindowFocusChanged(boolean hasFocus) {
                 if (orientationManager.isLandscape()) {
-                    ((Activity) getContext()).getWindow().getDecorView()
-                            .setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                    ((Activity) getContext())
+                            .getWindow()
+                            .getDecorView()
+                            .setSystemUiVisibility(
+                                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
                                     View.SYSTEM_UI_FLAG_FULLSCREEN |
                                     View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
                                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
@@ -520,7 +586,37 @@ class VideoControllerView extends FrameLayout {
     }
 
     public void hideFullscreenButton() {
-        buttonManager.hideFullscreenButton();
+        fullscreenButton.setVisibility(View.GONE);
+    }
+
+    private void updatePausePlay() {
+        if (startPauseButton != null && videoMediaPlayer != null) {
+            boolean isPlaying = videoMediaPlayer.isPlaying();
+            Drawable playPauseDrawable = drawableManager.getPlayPauseDrawable(isPlaying);
+            startPauseButton.setImageDrawable(playPauseDrawable);
+        }
+    }
+
+    void updateFullScreenDrawable() {
+        if (fullscreenButton != null && orientationManager != null) {
+            boolean isLandscape = orientationManager.isLandscape();
+            Drawable fullscreenDrawable = drawableManager.getFullscreenDrawable(isLandscape);
+            fullscreenButton.setImageDrawable(fullscreenDrawable);
+        }
+    }
+
+    private void updateFastForwardDrawable() {
+        if (fastForwardButton != null) {
+            Drawable fastForwardDrawable = drawableManager.getFastForwardDrawable();
+            fastForwardButton.setImageDrawable(fastForwardDrawable);
+        }
+    }
+
+    private void updateRewindDrawable() {
+        if (rewindButton != null) {
+            Drawable rewindDrawable = drawableManager.getRewindDrawable();
+            rewindButton.setImageDrawable(rewindDrawable);
+        }
     }
 
     private static class MessageHandler extends Handler {
@@ -596,7 +692,7 @@ class VideoControllerView extends FrameLayout {
         public void onStopTrackingTouch(SeekBar seekBar) {
             isDragging = false;
             setProgress();
-            buttonManager.updatePausePlay();
+            updatePausePlay();
             show(DEFAULT_TIMEOUT);
 
             // Ensure that progress is properly updated in the future,
