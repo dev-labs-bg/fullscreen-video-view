@@ -45,7 +45,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
-import bg.devlabs.fullscreenvideoview.listener.FullscreenVideoViewException;
 import bg.devlabs.fullscreenvideoview.listener.OnErrorListener;
 import bg.devlabs.fullscreenvideoview.listener.OnVideoCompletedListener;
 import bg.devlabs.fullscreenvideoview.listener.mediacontroller.MediaControllerListener;
@@ -92,8 +91,7 @@ public class FullscreenVideoView extends FrameLayout
     private boolean isPaused;
     private int previousOrientation;
     private int seekToTimeMillis;
-    @Nullable
-    private OnErrorListener onErrorListener;
+    private ErrorHandler errorHandler = new ErrorHandler();
     @Nullable
     private AttributeSet attrs = null;
     private Arguments args = new Arguments();
@@ -644,7 +642,7 @@ public class FullscreenVideoView extends FrameLayout
      * @return the fullscreenVideoView instance
      */
     public FullscreenVideoView addOnErrorListener(OnErrorListener onErrorListener) {
-        this.onErrorListener = onErrorListener;
+        errorHandler.setOnErrorListener(onErrorListener);
         return this;
     }
 
@@ -778,7 +776,7 @@ public class FullscreenVideoView extends FrameLayout
         setOnKeyListener(null);
         setOnTouchListener(null);
 
-        onErrorListener = null;
+        errorHandler.onDestroy();
 
         detachAllViewsFromParent();
     }
@@ -841,87 +839,80 @@ public class FullscreenVideoView extends FrameLayout
                 videoMediaPlayer.prepareAsync();
             }
         } catch (IOException exception) {
-            if (onErrorListener != null) {
-                FullscreenVideoViewException fullscreenVideoViewException =
-                        new FullscreenVideoViewException(exception.getLocalizedMessage());
-
-                onErrorListener.onError(fullscreenVideoViewException);
-            }
+            errorHandler.onError(exception.getLocalizedMessage());
         }
     }
 
     private void handleMediaPlayerError(int what) {
-        if (onErrorListener == null) return;
-
         switch (what) {
             case MEDIA_ERROR_IO: {
-                onErrorListener.onError(new FullscreenVideoViewException(
+                errorHandler.onError(
                         MEDIA_ERROR_IO,
                         getContext().getString(R.string.media_error_io)
-                ));
+                );
 
                 break;
             }
 
             case MEDIA_ERROR_MALFORMED: {
-                onErrorListener.onError(new FullscreenVideoViewException(
+                errorHandler.onError(
                         MEDIA_ERROR_MALFORMED,
                         getContext().getString(R.string.media_error_malformed)
-                ));
+                );
 
                 break;
             }
 
             case MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK: {
-                onErrorListener.onError(new FullscreenVideoViewException(
+                errorHandler.onError(
                         MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK,
                         getContext().getString(R.string.media_error_not_valid_for_progressive_playback)
-                ));
+                );
 
                 break;
             }
 
             case MEDIA_ERROR_SERVER_DIED: {
-                onErrorListener.onError(new FullscreenVideoViewException(
+                errorHandler.onError(
                         MEDIA_ERROR_SERVER_DIED,
                         getContext().getString(R.string.media_error_server_died)
-                ));
+                );
 
                 break;
             }
 
             case MEDIA_ERROR_TIMED_OUT: {
-                onErrorListener.onError(new FullscreenVideoViewException(
+                errorHandler.onError(
                         MEDIA_ERROR_TIMED_OUT,
                         getContext().getString(R.string.media_error_timed_out)
-                ));
+                );
 
                 break;
             }
 
             case MEDIA_ERROR_UNKNOWN: {
-                onErrorListener.onError(new FullscreenVideoViewException(
+                errorHandler.onError(
                         MEDIA_ERROR_UNKNOWN,
                         getContext().getString(R.string.media_error_unknown)
-                ));
+                );
 
                 break;
             }
 
             case MEDIA_ERROR_UNSUPPORTED: {
-                onErrorListener.onError(new FullscreenVideoViewException(
+                errorHandler.onError(
                         MEDIA_ERROR_UNSUPPORTED,
                         getContext().getString(R.string.media_error_unsupported)
-                ));
+                );
 
                 break;
             }
 
             default: {
-                onErrorListener.onError(new FullscreenVideoViewException(
+                errorHandler.onError(
                         MEDIA_ERROR_GENERAL,
                         getContext().getString(R.string.media_error_general)
-                ));
+                );
             }
         }
     }
