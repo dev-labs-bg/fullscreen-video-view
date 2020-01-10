@@ -193,7 +193,7 @@ class VideoControllerView extends FrameLayout {
                 }
 
                 view.setTag(VIEW_TAG_CLICKED);
-                videoViewInteractor.toggleFullscreen();
+                orientationManagerHolder.toggleFullscreen();
                 show(DEFAULT_TIMEOUT);
             }
         });
@@ -515,17 +515,8 @@ class VideoControllerView extends FrameLayout {
         this.mediaControllerListener = mediaControllerListener;
     }
 
-    public void init(
-            AttributeSet attrs,
-            VideoMediaPlayerHolder videoMediaPlayerHolder,
-            final OrientationManagerHolder orientationManagerHolder,
-            FullscreenVideoViewInteractor videoViewInteractor
-    ) {
+    public void init(AttributeSet attrs) {
         setupXmlAttributes(attrs);
-
-        this.videoMediaPlayerHolder = videoMediaPlayerHolder;
-        this.videoViewInteractor = videoViewInteractor;
-        this.orientationManagerHolder = orientationManagerHolder;
 
         updatePausePlay();
         updateFullScreenDrawable();
@@ -533,25 +524,39 @@ class VideoControllerView extends FrameLayout {
         updateRewindDrawable();
 
         handler = new VideoControllerView.MessageHandler(this);
+    }
 
-        getViewTreeObserver().addOnWindowFocusChangeListener(new ViewTreeObserver.OnWindowFocusChangeListener() {
-            @Override
-            public void onWindowFocusChanged(boolean hasFocus) {
-                if (orientationManagerHolder.isLandscape()) {
-                    ((Activity) getContext())
-                            .getWindow()
-                            .getDecorView()
-                            .setSystemUiVisibility(
-                                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-                                            View.SYSTEM_UI_FLAG_FULLSCREEN |
-                                            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
-                                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-                                            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-                                            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            );
+    public void setVideoMediaPlayerHolder(VideoMediaPlayerHolder videoMediaPlayerHolder) {
+        this.videoMediaPlayerHolder = videoMediaPlayerHolder;
+    }
+
+    public void setOrientationManagerHolder(OrientationManagerHolder orientationManagerHolder) {
+        this.orientationManagerHolder = orientationManagerHolder;
+
+        getViewTreeObserver().addOnWindowFocusChangeListener(
+                new ViewTreeObserver.OnWindowFocusChangeListener() {
+                    @Override
+                    public void onWindowFocusChanged(boolean hasFocus) {
+                        if (VideoControllerView.this.orientationManagerHolder.isLandscape()) {
+                            ((Activity) getContext())
+                                    .getWindow()
+                                    .getDecorView()
+                                    .setSystemUiVisibility(
+                                            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                                                    View.SYSTEM_UI_FLAG_FULLSCREEN |
+                                                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
+                                                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                                                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                                                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                    );
+                        }
+                    }
                 }
-            }
-        });
+        );
+    }
+
+    public void setVideoViewInteractor(FullscreenVideoViewInteractor videoViewInteractor) {
+        this.videoViewInteractor = videoViewInteractor;
     }
 
     public void hideProgress() {

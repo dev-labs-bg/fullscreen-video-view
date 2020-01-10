@@ -72,7 +72,7 @@ import static bg.devlabs.fullscreenvideoview.Constants.VIEW_TAG_CLICKED;
  */
 @SuppressWarnings("unused")
 public class FullscreenVideoView extends FrameLayout
-        implements VideoMediaPlayerHolder, OrientationManagerHolder {
+        implements VideoMediaPlayerHolder, OrientationManagerHolder, FullscreenVideoViewInteractor {
 
     @Nullable
     private VideoSurfaceView surfaceView;
@@ -129,23 +129,10 @@ public class FullscreenVideoView extends FrameLayout
         }
         setUpSurfaceHolder();
         if (controller != null) {
-            // TODO: Refactor this, this, this... parameter passing
-            controller.init(
-                    attrs,
-                    this,
-                    this,
-                    new FullscreenVideoViewInteractor() {
-                        @Override
-                        public void toggleFullscreen() {
-                            FullscreenVideoView.this.toggleFullscreen();
-                        }
-
-                        @Override
-                        public void hideThumbnail() {
-                            FullscreenVideoView.this.hideThumbnail();
-                        }
-                    }
-            );
+            controller.setVideoMediaPlayerHolder(this);
+            controller.setOrientationManagerHolder(this);
+            controller.setVideoViewInteractor(this);
+            controller.init(attrs);
         }
         setupProgressBarColor();
         setFocusableInTouchMode(true);
@@ -231,6 +218,20 @@ public class FullscreenVideoView extends FrameLayout
     @Override
     public boolean isLandscape() {
         return orientationManager != null && orientationManager.isLandscape();
+    }
+
+    @Override
+    public void toggleFullscreen() {
+        if (orientationManager != null) {
+            orientationManager.toggleFullscreen();
+        }
+    }
+
+    @Override
+    public void hideThumbnail() {
+        if (thumbnailImageView != null && thumbnailImageView.getVisibility() == View.VISIBLE) {
+            thumbnailImageView.setVisibility(GONE);
+        }
     }
 
     private void setUpSurfaceHolder() {
@@ -925,12 +926,6 @@ public class FullscreenVideoView extends FrameLayout
         }
     }
 
-    void hideThumbnail() {
-        if (thumbnailImageView != null && thumbnailImageView.getVisibility() == View.VISIBLE) {
-            thumbnailImageView.setVisibility(GONE);
-        }
-    }
-
     private void setupProgressBarColor() {
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
         if (progressBar != null) {
@@ -947,12 +942,6 @@ public class FullscreenVideoView extends FrameLayout
     private void showProgress() {
         if (progressBar != null) {
             progressBar.setVisibility(View.VISIBLE);
-        }
-    }
-
-    public void toggleFullscreen() {
-        if (orientationManager != null) {
-            orientationManager.toggleFullscreen();
         }
     }
 

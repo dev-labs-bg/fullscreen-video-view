@@ -22,7 +22,5 @@ package bg.devlabs.fullscreenvideoview;
  * slavi@devlabs.bg
  */
 public interface FullscreenVideoViewInteractor {
-    void toggleFullscreen();
-
     void hideThumbnail();
 }

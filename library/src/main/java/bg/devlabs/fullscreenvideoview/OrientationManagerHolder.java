@@ -24,4 +24,6 @@ package bg.devlabs.fullscreenvideoview;
 public interface OrientationManagerHolder {
 
     boolean isLandscape();
+
+    void toggleFullscreen();
 }
