@@ -984,7 +984,7 @@ public class FullscreenVideoView extends FrameLayout
         handleOnDetach();
 
         init(attrs);
-        // TODO: Add save the selected Builder attributes from the user
+
         setupMediaPlayer(url);
 
         if (args.autoStartEnabled) {
