@@ -45,6 +45,7 @@ import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedManager;
 import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedOptions;
 import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedPopupMenuListener;
 
+import static bg.devlabs.fullscreenvideoview.Constants.DEFAULT_CONTROLLER_TIMEOUT;
 import static bg.devlabs.fullscreenvideoview.Constants.VIEW_TAG_CLICKED;
 
 /**
@@ -78,7 +79,6 @@ import static bg.devlabs.fullscreenvideoview.Constants.VIEW_TAG_CLICKED;
 @SuppressWarnings("unused")
 class VideoControllerView extends FrameLayout implements VideoControllerViewInteractor {
     private static final String TAG = "VideoControllerView";
-    private static final int DEFAULT_TIMEOUT = 3000;
 
     private TextView endTime;
     private TextView currentTime;
@@ -98,7 +98,7 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
     // case there WON'T BE onStartTrackingTouch/onStopTrackingTouch notifications,
     // we will simply apply the updated position without suspending regular updates.
     @Nullable
-    private SeekBar.OnSeekBarChangeListener seekListener = new OnSeekChangeListener();
+    private OnSeekChangeListener seekListener = new OnSeekChangeListener(this);
 
     @Nullable
     private MediaControllerListener mediaControllerListener;
@@ -186,7 +186,7 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
                 }
 
                 doPauseResume();
-                show(DEFAULT_TIMEOUT);
+                show(DEFAULT_CONTROLLER_TIMEOUT);
             }
         });
 
@@ -199,7 +199,7 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
 
                 view.setTag(VIEW_TAG_CLICKED);
                 orientationManagerHolder.toggleFullscreen();
-                show(DEFAULT_TIMEOUT);
+                show(DEFAULT_CONTROLLER_TIMEOUT);
             }
         });
 
@@ -213,7 +213,7 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
                 videoMediaPlayerHolder.seekBy(fastForwardDuration);
                 setProgress();
 
-                show(DEFAULT_TIMEOUT);
+                show(DEFAULT_CONTROLLER_TIMEOUT);
             }
         });
 
@@ -227,7 +227,7 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
                 videoMediaPlayerHolder.seekBy(-rewindDuration);
                 setProgress();
 
-                show(DEFAULT_TIMEOUT);
+                show(DEFAULT_CONTROLLER_TIMEOUT);
             }
         });
 
@@ -303,7 +303,7 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
      * automatically after 3 seconds of inactivity.
      */
     public void show() {
-        show(DEFAULT_TIMEOUT);
+        show(DEFAULT_CONTROLLER_TIMEOUT);
     }
 
     /**
@@ -337,7 +337,8 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
      * @param timeout The timeout in milliseconds. Use 0 to show
      *                the controller until hide() is called.
      */
-    private void show(int timeout) {
+    @Override
+    public void show(int timeout) {
         if (!isShowing()) {
             startPauseButton.requestFocus();
             setProgress();
@@ -399,7 +400,7 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
         }
 
         int position = videoMediaPlayerHolder.getCurrentPosition();
-        int duration = videoMediaPlayerHolder.getDuration();
+        int duration = getDuration();
         if (progress != null) {
             if (duration > 0) {
                 // Use long to avoid overflow
@@ -426,7 +427,7 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         performClick();
-        show(DEFAULT_TIMEOUT);
+        show(DEFAULT_CONTROLLER_TIMEOUT);
         return true;
     }
 
@@ -573,7 +574,8 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
         fullscreenButton.setVisibility(View.GONE);
     }
 
-    private void updatePausePlay() {
+    @Override
+    public void updatePausePlay() {
         if (startPauseButton != null) {
             boolean isPlaying = videoMediaPlayerHolder.isPlaying();
             Drawable playPauseDrawable = drawableManager.getPlayPauseDrawable(isPlaying);
@@ -603,59 +605,44 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
         }
     }
 
-    private class OnSeekChangeListener implements SeekBar.OnSeekBarChangeListener {
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-            show(Constants.ONE_HOUR_MILLISECONDS);
+    @Override
+    public void setIsDragging(boolean isDragging) {
+        this.isDragging = isDragging;
+    }
 
-            isDragging = true;
-
-            // By removing these pending progress messages we make sure
-            // that a) we won't update the progress while the user adjusts
-            // the seekbar and b) once the user is done dragging the thumb
-            // we will post one of these messages to the queue again and
-            // this ensures that there will be exactly one message queued up.
-            if (handler != null) {
-                handler.hide();
-            }
+    @Override
+    public void refreshProgress() {
+        if (handler != null) {
+            handler.refresh();
         }
+    }
 
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            if (!fromUser) {
-                // We're not interested in programmatically generated changes to
-                // the progress bar's position.
-                return;
-            }
+    @Override
+    public int getDuration() {
+        return videoMediaPlayerHolder.getDuration();
+    }
 
-            long duration = videoMediaPlayerHolder.getDuration();
-            long newPosition = (duration * progress) / Constants.ONE_MILLISECOND;
-            Log.d("ProgressBar", "newPosition = " + (int) newPosition);
-            videoMediaPlayerHolder.seekTo((int) newPosition);
-            if (currentTime != null) {
-                currentTime.setText(stringForTime((int) newPosition));
-            }
+    @Override
+    public void seekTo(int position) {
+        videoMediaPlayerHolder.seekTo(position);
+    }
 
-            if (mediaControllerListener != null) {
-                mediaControllerListener.onSeekBarProgressChanged(newPosition);
-            }
-
-            videoViewInteractor.hideThumbnail();
+    @Override
+    public void setCurrentTime(int position) {
+        if (currentTime != null) {
+            currentTime.setText(stringForTime(position));
         }
+    }
 
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-            isDragging = false;
-            setProgress();
-            updatePausePlay();
-            show(DEFAULT_TIMEOUT);
-
-            // Ensure that progress is properly updated in the future,
-            // the call to show() does not guarantee this because it is a
-            // no-op if we are already showing.
-            if (handler != null) {
-                handler.refresh();
-            }
+    @Override
+    public void updateSeekBarProgress(long position) {
+        if (mediaControllerListener != null) {
+            mediaControllerListener.onSeekBarProgressChanged(position);
         }
+    }
+
+    @Override
+    public void hideThumbnail() {
+        videoViewInteractor.hideThumbnail();
     }
 }
