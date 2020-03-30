@@ -164,6 +164,17 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
         currentTime = findViewById(R.id.time_current);
     }
 
+    public void init(AttributeSet attrs) {
+        setupXmlAttributes(attrs);
+
+        updatePausePlay();
+        updateFullScreenDrawable();
+        updateFastForwardDrawable();
+        updateRewindDrawable();
+
+        handler = new MessageHandler(this);
+    }
+
     @Override
     public boolean isDragging() {
         return isDragging;
@@ -172,6 +183,177 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
     @Override
     public boolean isPlaying() {
         return videoMediaPlayerHolder.isPlaying();
+    }
+
+    /**
+     * Show the controller on screen. It will go away
+     * automatically after 'timeout' milliseconds of inactivity.
+     *
+     * @param timeout The timeout in milliseconds. Use 0 to show
+     *                the controller until hide() is called.
+     */
+    @Override
+    public void show(int timeout) {
+        if (!isShowing()) {
+            startPauseButton.requestFocus();
+            setProgress();
+            setupButtonsVisibility();
+            setVisibility(VISIBLE);
+        }
+
+        if (startPauseButton != null) {
+            boolean isPlaying = videoMediaPlayerHolder.isPlaying();
+            Drawable playPauseDrawable = drawableManager.getPlayPauseDrawable(isPlaying);
+            startPauseButton.setImageDrawable(playPauseDrawable);
+        }
+
+        updatePausePlay();
+        updateFullScreenDrawable();
+
+        // Cause the progress bar to be updated even if it's showing.
+        // This happens, for example, if we're
+        // paused with the progress bar showing the user hits play.
+        if (handler == null) {
+            return;
+        }
+
+        handler.show(timeout);
+    }
+
+    @Override
+    public boolean isShowing() {
+        return getVisibility() == VISIBLE;
+    }
+
+    /**
+     * Remove the controller from the screen.
+     */
+    @Override
+    public void hide() {
+        try {
+            setVisibility(INVISIBLE);
+            if (handler != null) {
+                handler.hide();
+            }
+        } catch (IllegalArgumentException ignored) {
+            Log.w("MediaController", "already removed");
+        }
+    }
+
+    @Override
+    public int setProgress() {
+        if (isDragging) {
+            return 0;
+        }
+
+        int position = videoMediaPlayerHolder.getCurrentPosition();
+        int duration = getDuration();
+        if (progress != null) {
+            if (duration > 0) {
+                // Use long to avoid overflow
+                long pos = Constants.ONE_MILLISECOND * position / duration;
+                progress.setProgress((int) pos);
+            }
+
+            int percent = videoMediaPlayerHolder.getBufferPercentage();
+            progress.setSecondaryProgress(percent * 10);
+        }
+
+        if (endTime != null) {
+            endTime.setText(stringForTime(duration));
+        }
+
+        if (currentTime != null) {
+            currentTime.setText(stringForTime(position));
+        }
+
+        return position;
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        performClick();
+        show(DEFAULT_CONTROLLER_TIMEOUT);
+        return true;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        setButtonsEnabled(enabled);
+
+        if (progress != null) {
+            progress.setEnabled(enabled);
+        }
+
+        setupButtonsVisibility();
+        super.setEnabled(enabled);
+    }
+
+    private void setButtonsEnabled(boolean isEnabled) {
+        if (startPauseButton != null) {
+            startPauseButton.setEnabled(isEnabled);
+        }
+
+        if (fastForwardButton != null) {
+            fastForwardButton.setEnabled(isEnabled);
+        }
+
+        if (rewindButton != null) {
+            rewindButton.setEnabled(isEnabled);
+        }
+
+        playbackSpeedManager.setPlaybackSpeedButtonEnabled(isEnabled);
+    }
+
+    @Override
+    public void updatePausePlay() {
+        if (startPauseButton != null) {
+            boolean isPlaying = videoMediaPlayerHolder.isPlaying();
+            Drawable playPauseDrawable = drawableManager.getPlayPauseDrawable(isPlaying);
+            startPauseButton.setImageDrawable(playPauseDrawable);
+        }
+    }
+
+    @Override
+    public void setIsDragging(boolean isDragging) {
+        this.isDragging = isDragging;
+    }
+
+    @Override
+    public void refreshProgress() {
+        if (handler != null) {
+            handler.refresh();
+        }
+    }
+
+    @Override
+    public int getDuration() {
+        return videoMediaPlayerHolder.getDuration();
+    }
+
+    @Override
+    public void seekTo(int position) {
+        videoMediaPlayerHolder.seekTo(position);
+    }
+
+    @Override
+    public void setCurrentTime(int position) {
+        if (currentTime != null) {
+            currentTime.setText(stringForTime(position));
+        }
+    }
+
+    @Override
+    public void updateSeekBarProgress(long position) {
+        if (mediaControllerListener != null) {
+            mediaControllerListener.onSeekBarProgressChanged(position);
+        }
+    }
+
+    @Override
+    public void hideThumbnail() {
+        videoViewInteractor.hideThumbnail();
     }
 
     private void setupButtonListeners() {
@@ -339,61 +521,6 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
         );
     }
 
-    /**
-     * Show the controller on screen. It will go away
-     * automatically after 'timeout' milliseconds of inactivity.
-     *
-     * @param timeout The timeout in milliseconds. Use 0 to show
-     *                the controller until hide() is called.
-     */
-    @Override
-    public void show(int timeout) {
-        if (!isShowing()) {
-            startPauseButton.requestFocus();
-            setProgress();
-            setupButtonsVisibility();
-            setVisibility(VISIBLE);
-        }
-
-        if (startPauseButton != null) {
-            boolean isPlaying = videoMediaPlayerHolder.isPlaying();
-            Drawable playPauseDrawable = drawableManager.getPlayPauseDrawable(isPlaying);
-            startPauseButton.setImageDrawable(playPauseDrawable);
-        }
-
-        updatePausePlay();
-        updateFullScreenDrawable();
-
-        // Cause the progress bar to be updated even if it's showing.
-        // This happens, for example, if we're
-        // paused with the progress bar showing the user hits play.
-        if (handler == null) {
-            return;
-        }
-
-        handler.show(timeout);
-    }
-
-    @Override
-    public boolean isShowing() {
-        return getVisibility() == VISIBLE;
-    }
-
-    /**
-     * Remove the controller from the screen.
-     */
-    @Override
-    public void hide() {
-        try {
-            setVisibility(INVISIBLE);
-            if (handler != null) {
-                handler.hide();
-            }
-        } catch (IllegalArgumentException ignored) {
-            Log.w("MediaController", "already removed");
-        }
-    }
-
     private static CharSequence stringForTime(int timeMs) {
         int totalSeconds = timeMs / Constants.ONE_SECOND_MILLISECONDS;
         int seconds = totalSeconds % Constants.ONE_MINUTE_SECONDS;
@@ -402,76 +529,10 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
         return String.format(Locale.getDefault(), "%d:%02d:%02d", hours, minutes, seconds);
     }
 
-    @Override
-    public int setProgress() {
-        if (isDragging) {
-            return 0;
-        }
-
-        int position = videoMediaPlayerHolder.getCurrentPosition();
-        int duration = getDuration();
-        if (progress != null) {
-            if (duration > 0) {
-                // Use long to avoid overflow
-                long pos = Constants.ONE_MILLISECOND * position / duration;
-                progress.setProgress((int) pos);
-            }
-
-            int percent = videoMediaPlayerHolder.getBufferPercentage();
-            progress.setSecondaryProgress(percent * 10);
-        }
-
-        if (endTime != null) {
-            endTime.setText(stringForTime(duration));
-        }
-
-        if (currentTime != null) {
-            currentTime.setText(stringForTime(position));
-        }
-
-        return position;
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        performClick();
-        show(DEFAULT_CONTROLLER_TIMEOUT);
-        return true;
-    }
-
     private void doPauseResume() {
         videoViewInteractor.hideThumbnail();
         videoMediaPlayerHolder.onPauseResume();
         updatePausePlay();
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        setButtonsEnabled(enabled);
-
-        if (progress != null) {
-            progress.setEnabled(enabled);
-        }
-
-        setupButtonsVisibility();
-        super.setEnabled(enabled);
-    }
-
-    private void setButtonsEnabled(boolean isEnabled) {
-        if (startPauseButton != null) {
-            startPauseButton.setEnabled(isEnabled);
-        }
-
-        if (fastForwardButton != null) {
-            fastForwardButton.setEnabled(isEnabled);
-        }
-
-        if (rewindButton != null) {
-            rewindButton.setEnabled(isEnabled);
-        }
-
-        playbackSpeedManager.setPlaybackSpeedButtonEnabled(isEnabled);
     }
 
     public void onDetach() {
@@ -529,17 +590,6 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
         this.mediaControllerListener = mediaControllerListener;
     }
 
-    public void init(AttributeSet attrs) {
-        setupXmlAttributes(attrs);
-
-        updatePausePlay();
-        updateFullScreenDrawable();
-        updateFastForwardDrawable();
-        updateRewindDrawable();
-
-        handler = new MessageHandler(this);
-    }
-
     public void setVideoMediaPlayerHolder(VideoMediaPlayerHolder videoMediaPlayerHolder) {
         this.videoMediaPlayerHolder = videoMediaPlayerHolder;
     }
@@ -583,15 +633,6 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
         fullscreenButton.setVisibility(View.GONE);
     }
 
-    @Override
-    public void updatePausePlay() {
-        if (startPauseButton != null) {
-            boolean isPlaying = videoMediaPlayerHolder.isPlaying();
-            Drawable playPauseDrawable = drawableManager.getPlayPauseDrawable(isPlaying);
-            startPauseButton.setImageDrawable(playPauseDrawable);
-        }
-    }
-
     void updateFullScreenDrawable() {
         if (fullscreenButton != null) {
             boolean isLandscape = orientationManagerHolder.isLandscape();
@@ -612,46 +653,5 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
             Drawable rewindDrawable = drawableManager.getRewindDrawable();
             rewindButton.setImageDrawable(rewindDrawable);
         }
-    }
-
-    @Override
-    public void setIsDragging(boolean isDragging) {
-        this.isDragging = isDragging;
-    }
-
-    @Override
-    public void refreshProgress() {
-        if (handler != null) {
-            handler.refresh();
-        }
-    }
-
-    @Override
-    public int getDuration() {
-        return videoMediaPlayerHolder.getDuration();
-    }
-
-    @Override
-    public void seekTo(int position) {
-        videoMediaPlayerHolder.seekTo(position);
-    }
-
-    @Override
-    public void setCurrentTime(int position) {
-        if (currentTime != null) {
-            currentTime.setText(stringForTime(position));
-        }
-    }
-
-    @Override
-    public void updateSeekBarProgress(long position) {
-        if (mediaControllerListener != null) {
-            mediaControllerListener.onSeekBarProgressChanged(position);
-        }
-    }
-
-    @Override
-    public void hideThumbnail() {
-        videoViewInteractor.hideThumbnail();
     }
 }
