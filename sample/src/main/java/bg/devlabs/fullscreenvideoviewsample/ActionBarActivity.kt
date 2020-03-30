@@ -47,7 +47,7 @@ class ActionBarActivity : AppCompatActivity() {
 
         // Change the ActionBar title
         supportActionBar?.title = getString(R.string.action_bar_activity)
-        val videoPath = "https://clips.vorwaerts-gmbh.de/VfE_html5.mp4"
+        val videoPath = "https://bit.ly/3dEGUuj"
 
         fullscreenVideoView.videoUrl(videoPath)
                 .progressBarColor(R.color.colorAccent)

@@ -33,7 +33,7 @@ class ToolbarActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_toolbar)
-        val videoPath = "https://clips.vorwaerts-gmbh.de/VfE_html5.mp4"
+        val videoPath = "https://bit.ly/3dEGUuj"
         fullscreenVideoView.videoUrl(videoPath)
                 .thumbnail(R.drawable.video_thumbnail)
     }
