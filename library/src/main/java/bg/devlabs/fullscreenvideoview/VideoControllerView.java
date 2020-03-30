@@ -21,8 +21,9 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.BlendMode;
+import android.graphics.BlendModeColorFilter;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -35,6 +36,7 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
@@ -153,8 +155,7 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
 
         progress = findViewById(R.id.progress_seek_bar);
         if (progress != null) {
-            progress.getProgressDrawable().setColorFilter(progressBarColor, PorterDuff.Mode.SRC_IN);
-            progress.getThumb().setColorFilter(progressBarColor, PorterDuff.Mode.SRC_IN);
+            setProgressBarDrawablesColors();
             progress.setOnSeekBarChangeListener(seekListener);
             progress.setMax(1000);
         }
@@ -294,8 +295,16 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
             // Set the default color
             progressBarColor = color;
         }
-        progress.getProgressDrawable().setColorFilter(progressBarColor, PorterDuff.Mode.SRC_IN);
-        progress.getThumb().setColorFilter(progressBarColor, PorterDuff.Mode.SRC_IN);
+        setProgressBarDrawablesColors();
+    }
+
+    private void setProgressBarDrawablesColors() {
+        setColorFilter(progress.getProgressDrawable(), progressBarColor);
+        setColorFilter(progress.getThumb(), progressBarColor);
+    }
+
+    private void setColorFilter(@NonNull Drawable drawable, int color) {
+        drawable.setColorFilter(new BlendModeColorFilter(color, BlendMode.SRC_ATOP));
     }
 
     /**
