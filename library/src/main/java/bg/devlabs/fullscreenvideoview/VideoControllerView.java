@@ -24,8 +24,6 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.os.Handler;
-import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -40,7 +38,6 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
-import java.lang.ref.WeakReference;
 import java.util.Locale;
 
 import bg.devlabs.fullscreenvideoview.listener.mediacontroller.MediaControllerListener;
@@ -79,17 +76,15 @@ import static bg.devlabs.fullscreenvideoview.Constants.VIEW_TAG_CLICKED;
  * </ul>
  */
 @SuppressWarnings("unused")
-class VideoControllerView extends FrameLayout {
+class VideoControllerView extends FrameLayout implements VideoControllerViewInteractor {
     private static final String TAG = "VideoControllerView";
     private static final int DEFAULT_TIMEOUT = 3000;
-    private static final int FADE_OUT = 1;
-    private static final int SHOW_PROGRESS = 2;
 
     private TextView endTime;
     private TextView currentTime;
     private boolean isDragging;
     @Nullable
-    private Handler handler;
+    private MessageHandler handler;
     private SeekBar progress;
     // There are two scenarios that can trigger the SeekBar listener to trigger:
     //
@@ -166,6 +161,16 @@ class VideoControllerView extends FrameLayout {
 
         endTime = findViewById(R.id.time);
         currentTime = findViewById(R.id.time_current);
+    }
+
+    @Override
+    public boolean isDragging() {
+        return isDragging;
+    }
+
+    @Override
+    public boolean isPlaying() {
+        return videoMediaPlayerHolder.isPlaying();
     }
 
     private void setupButtonListeners() {
@@ -356,29 +361,23 @@ class VideoControllerView extends FrameLayout {
             return;
         }
 
-        handler.sendEmptyMessage(SHOW_PROGRESS);
-
-        Message msg = handler.obtainMessage(FADE_OUT);
-        if (timeout != 0) {
-            handler.removeMessages(FADE_OUT);
-            handler.sendMessageDelayed(msg, timeout);
-        } else {
-            handler.removeMessages(FADE_OUT);
-        }
+        handler.show(timeout);
     }
 
-    private boolean isShowing() {
+    @Override
+    public boolean isShowing() {
         return getVisibility() == VISIBLE;
     }
 
     /**
      * Remove the controller from the screen.
      */
-    private void hide() {
+    @Override
+    public void hide() {
         try {
             setVisibility(INVISIBLE);
             if (handler != null) {
-                handler.removeMessages(SHOW_PROGRESS);
+                handler.hide();
             }
         } catch (IllegalArgumentException ignored) {
             Log.w("MediaController", "already removed");
@@ -393,7 +392,8 @@ class VideoControllerView extends FrameLayout {
         return String.format(Locale.getDefault(), "%d:%02d:%02d", hours, minutes, seconds);
     }
 
-    private int setProgress() {
+    @Override
+    public int setProgress() {
         if (isDragging) {
             return 0;
         }
@@ -465,8 +465,12 @@ class VideoControllerView extends FrameLayout {
     }
 
     public void onDetach() {
+        if (handler != null) {
+            handler.onDestroy();
+            handler = null;
+        }
+
         seekListener = null;
-        handler = null;
         videoViewInteractor = null;
         mediaControllerListener = null;
     }
@@ -523,7 +527,7 @@ class VideoControllerView extends FrameLayout {
         updateFastForwardDrawable();
         updateRewindDrawable();
 
-        handler = new VideoControllerView.MessageHandler(this);
+        handler = new MessageHandler(this);
     }
 
     public void setVideoMediaPlayerHolder(VideoMediaPlayerHolder videoMediaPlayerHolder) {
@@ -599,32 +603,6 @@ class VideoControllerView extends FrameLayout {
         }
     }
 
-    private static class MessageHandler extends Handler {
-        private final WeakReference<VideoControllerView> view;
-
-        MessageHandler(VideoControllerView view) {
-            this.view = new WeakReference<>(view);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            VideoControllerView view = this.view.get();
-            if (view == null) {
-                return;
-            }
-
-            if (msg.what == FADE_OUT) {
-                view.hide();
-            } else { // SHOW_PROGRESS
-                int position = view.setProgress();
-                if (!view.isDragging && view.isShowing() && view.videoMediaPlayerHolder.isPlaying()) {
-                    Message message = obtainMessage(SHOW_PROGRESS);
-                    sendMessageDelayed(message, 1000 - (position % 1000));
-                }
-            }
-        }
-    }
-
     private class OnSeekChangeListener implements SeekBar.OnSeekBarChangeListener {
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
@@ -638,7 +616,7 @@ class VideoControllerView extends FrameLayout {
             // we will post one of these messages to the queue again and
             // this ensures that there will be exactly one message queued up.
             if (handler != null) {
-                handler.removeMessages(SHOW_PROGRESS);
+                handler.hide();
             }
         }
 
@@ -652,6 +630,7 @@ class VideoControllerView extends FrameLayout {
 
             long duration = videoMediaPlayerHolder.getDuration();
             long newPosition = (duration * progress) / Constants.ONE_MILLISECOND;
+            Log.d("ProgressBar", "newPosition = " + (int) newPosition);
             videoMediaPlayerHolder.seekTo((int) newPosition);
             if (currentTime != null) {
                 currentTime.setText(stringForTime((int) newPosition));
@@ -675,7 +654,7 @@ class VideoControllerView extends FrameLayout {
             // the call to show() does not guarantee this because it is a
             // no-op if we are already showing.
             if (handler != null) {
-                handler.sendEmptyMessage(SHOW_PROGRESS);
+                handler.refresh();
             }
         }
     }
