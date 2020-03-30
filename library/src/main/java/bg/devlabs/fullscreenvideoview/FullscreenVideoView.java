@@ -54,14 +54,6 @@ import bg.devlabs.fullscreenvideoview.orientation.OrientationManager;
 import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation;
 import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedOptions;
 
-import static android.media.MediaPlayer.MEDIA_ERROR_IO;
-import static android.media.MediaPlayer.MEDIA_ERROR_MALFORMED;
-import static android.media.MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK;
-import static android.media.MediaPlayer.MEDIA_ERROR_SERVER_DIED;
-import static android.media.MediaPlayer.MEDIA_ERROR_TIMED_OUT;
-import static android.media.MediaPlayer.MEDIA_ERROR_UNKNOWN;
-import static android.media.MediaPlayer.MEDIA_ERROR_UNSUPPORTED;
-import static bg.devlabs.fullscreenvideoview.Constants.MEDIA_ERROR_GENERAL;
 import static bg.devlabs.fullscreenvideoview.Constants.VIEW_TAG_CLICKED;
 
 /**
@@ -822,7 +814,7 @@ public class FullscreenVideoView extends FrameLayout
                 videoMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                     @Override
                     public boolean onError(MediaPlayer mp, int what, int extra) {
-                        handleMediaPlayerError(what);
+                        errorHandler.handle(getContext(), what);
                         return false;
                     }
                 });
@@ -840,80 +832,6 @@ public class FullscreenVideoView extends FrameLayout
             }
         } catch (IOException exception) {
             errorHandler.onError(exception.getLocalizedMessage());
-        }
-    }
-
-    private void handleMediaPlayerError(int what) {
-        switch (what) {
-            case MEDIA_ERROR_IO: {
-                errorHandler.onError(
-                        MEDIA_ERROR_IO,
-                        getContext().getString(R.string.media_error_io)
-                );
-
-                break;
-            }
-
-            case MEDIA_ERROR_MALFORMED: {
-                errorHandler.onError(
-                        MEDIA_ERROR_MALFORMED,
-                        getContext().getString(R.string.media_error_malformed)
-                );
-
-                break;
-            }
-
-            case MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK: {
-                errorHandler.onError(
-                        MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK,
-                        getContext().getString(R.string.media_error_not_valid_for_progressive_playback)
-                );
-
-                break;
-            }
-
-            case MEDIA_ERROR_SERVER_DIED: {
-                errorHandler.onError(
-                        MEDIA_ERROR_SERVER_DIED,
-                        getContext().getString(R.string.media_error_server_died)
-                );
-
-                break;
-            }
-
-            case MEDIA_ERROR_TIMED_OUT: {
-                errorHandler.onError(
-                        MEDIA_ERROR_TIMED_OUT,
-                        getContext().getString(R.string.media_error_timed_out)
-                );
-
-                break;
-            }
-
-            case MEDIA_ERROR_UNKNOWN: {
-                errorHandler.onError(
-                        MEDIA_ERROR_UNKNOWN,
-                        getContext().getString(R.string.media_error_unknown)
-                );
-
-                break;
-            }
-
-            case MEDIA_ERROR_UNSUPPORTED: {
-                errorHandler.onError(
-                        MEDIA_ERROR_UNSUPPORTED,
-                        getContext().getString(R.string.media_error_unsupported)
-                );
-
-                break;
-            }
-
-            default: {
-                errorHandler.onError(
-                        MEDIA_ERROR_GENERAL,
-                        getContext().getString(R.string.media_error_general)
-                );
-            }
         }
     }
 
