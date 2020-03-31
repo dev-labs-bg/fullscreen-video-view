@@ -16,14 +16,44 @@
 
 package bg.devlabs.fullscreenvideoview;
 
+import android.view.ViewGroup;
+
 /**
- * Created by Slavi Petrov on 09.01.2020
- * Dev Labs
- * slavi@devlabs.bg
+ *
  */
-public interface OrientationManagerHolder {
+public interface VideoView extends VideoMediaPlayer {
+
+    void hideThumbnail();
 
     boolean isLandscape();
 
     void toggleFullscreen();
+
+    void onOrientationChanged();
+
+    void onFullscreenActivated();
+
+    void onFullscreenExited();
+
+    ViewGroup getParentLayout();
+
+    void toggleSystemUiVisibility();
+
+    void toggleToolbarVisibility(boolean isVisible);
+
+    void changeOrientation(int orientation);
+
+    void focus();
+
+    void clearTag();
+
+    void changePlaybackSpeed(float speed);
+
+    boolean shouldShowSeekBackwardButton();
+
+    boolean shouldShowSeekForwardButton();
+
+    boolean shouldShowPlaybackSpeedButton();
+
+    void onPauseResume();
 }

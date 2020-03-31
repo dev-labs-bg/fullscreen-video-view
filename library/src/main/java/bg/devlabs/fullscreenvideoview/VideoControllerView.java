@@ -114,9 +114,7 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
     private PlaybackSpeedManager playbackSpeedManager;
     private ControllerDrawableManager drawableManager;
 
-    private FullscreenVideoViewInteractor videoViewInteractor;
-    private VideoMediaPlayerHolder videoMediaPlayerHolder;
-    private OrientationManagerHolder orientationManagerHolder;
+    private VideoView videoView;
 
     private int progressBarColor = Color.WHITE;
     private int fastForwardDuration = Constants.FAST_FORWARD_DURATION;
@@ -173,6 +171,28 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
         updateRewindDrawable();
 
         handler = new MessageHandler(this);
+
+        // TODO: Move this to another method
+        getViewTreeObserver().addOnWindowFocusChangeListener(
+                new ViewTreeObserver.OnWindowFocusChangeListener() {
+                    @Override
+                    public void onWindowFocusChanged(boolean hasFocus) {
+                        if (VideoControllerView.this.videoView.isLandscape()) {
+                            ((Activity) getContext())
+                                    .getWindow()
+                                    .getDecorView()
+                                    .setSystemUiVisibility(
+                                            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                                                    View.SYSTEM_UI_FLAG_FULLSCREEN |
+                                                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
+                                                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                                                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                                                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                    );
+                        }
+                    }
+                }
+        );
     }
 
     @Override
@@ -182,7 +202,7 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
 
     @Override
     public boolean isPlaying() {
-        return videoMediaPlayerHolder.isPlaying();
+        return videoView.isPlaying();
     }
 
     /**
@@ -202,7 +222,7 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
         }
 
         if (startPauseButton != null) {
-            boolean isPlaying = videoMediaPlayerHolder.isPlaying();
+            boolean isPlaying = videoView.isPlaying();
             Drawable playPauseDrawable = drawableManager.getPlayPauseDrawable(isPlaying);
             startPauseButton.setImageDrawable(playPauseDrawable);
         }
@@ -246,7 +266,7 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
             return 0;
         }
 
-        int position = videoMediaPlayerHolder.getCurrentPosition();
+        int position = videoView.getCurrentPosition();
         int duration = getDuration();
         if (progress != null) {
             if (duration > 0) {
@@ -255,7 +275,7 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
                 progress.setProgress((int) pos);
             }
 
-            int percent = videoMediaPlayerHolder.getBufferPercentage();
+            int percent = videoView.getBufferPercentage();
             progress.setSecondaryProgress(percent * 10);
         }
 
@@ -309,7 +329,7 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
     @Override
     public void updatePausePlay() {
         if (startPauseButton != null) {
-            boolean isPlaying = videoMediaPlayerHolder.isPlaying();
+            boolean isPlaying = videoView.isPlaying();
             Drawable playPauseDrawable = drawableManager.getPlayPauseDrawable(isPlaying);
             startPauseButton.setImageDrawable(playPauseDrawable);
         }
@@ -329,12 +349,12 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
 
     @Override
     public int getDuration() {
-        return videoMediaPlayerHolder.getDuration();
+        return videoView.getDuration();
     }
 
     @Override
     public void seekTo(int position) {
-        videoMediaPlayerHolder.seekTo(position);
+        videoView.seekTo(position);
     }
 
     @Override
@@ -353,7 +373,7 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
 
     @Override
     public void hideThumbnail() {
-        videoViewInteractor.hideThumbnail();
+        videoView.hideThumbnail();
     }
 
     private void setupButtonListeners() {
@@ -361,7 +381,7 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
             @Override
             public void onClick(View v) {
                 if (mediaControllerListener != null) {
-                    if (videoMediaPlayerHolder.isPlaying()) {
+                    if (videoView.isPlaying()) {
                         mediaControllerListener.onPauseClicked();
                     } else {
                         mediaControllerListener.onPlayClicked();
@@ -381,7 +401,7 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
                 }
 
                 view.setTag(VIEW_TAG_CLICKED);
-                orientationManagerHolder.toggleFullscreen();
+                videoView.toggleFullscreen();
                 show(DEFAULT_CONTROLLER_TIMEOUT);
             }
         });
@@ -393,7 +413,7 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
                     mediaControllerListener.onFastForwardClicked();
                 }
 
-                videoMediaPlayerHolder.seekBy(fastForwardDuration);
+                videoView.seekBy(fastForwardDuration);
                 setProgress();
 
                 show(DEFAULT_CONTROLLER_TIMEOUT);
@@ -407,7 +427,7 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
                     mediaControllerListener.onRewindClicked();
                 }
 
-                videoMediaPlayerHolder.seekBy(-rewindDuration);
+                videoView.seekBy(-rewindDuration);
                 setProgress();
 
                 show(DEFAULT_CONTROLLER_TIMEOUT);
@@ -421,7 +441,7 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
                         // Update the Playback Speed Drawable according to the clicked menu item
                         playbackSpeedManager.setPlaybackSpeedText(text);
                         // Change the Playback Speed of the VideoMediaPlayer
-                        videoMediaPlayerHolder.changePlaybackSpeed(speed);
+                        videoView.changePlaybackSpeed(speed);
                         // Hide the VideoControllerView
                         hide();
                     }
@@ -498,26 +518,26 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
     }
 
     /**
-     * Change the buttons visibility according to the flags in {@link VideoMediaPlayer}.
+     * Change the buttons visibility according to the flags in {@link FullscreenVideoMediaPlayer}.
      */
     private void setupButtonsVisibility() {
-        if (startPauseButton != null && !videoMediaPlayerHolder.canPause()) {
+        if (startPauseButton != null && !videoView.canPause()) {
             startPauseButton.setEnabled(false);
             startPauseButton.setVisibility(INVISIBLE);
         }
 
-        if (rewindButton != null && !videoMediaPlayerHolder.shouldShowSeekBackwardButton()) {
+        if (rewindButton != null && !videoView.shouldShowSeekBackwardButton()) {
             rewindButton.setEnabled(false);
             rewindButton.setVisibility(INVISIBLE);
         }
 
-        if (fastForwardButton != null && !videoMediaPlayerHolder.shouldShowSeekForwardButton()) {
+        if (fastForwardButton != null && !videoView.shouldShowSeekForwardButton()) {
             fastForwardButton.setEnabled(false);
             fastForwardButton.setVisibility(INVISIBLE);
         }
 
         playbackSpeedManager.hidePlaybackButton(
-                videoMediaPlayerHolder.shouldShowPlaybackSpeedButton()
+                videoView.shouldShowPlaybackSpeedButton()
         );
     }
 
@@ -530,8 +550,8 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
     }
 
     private void doPauseResume() {
-        videoViewInteractor.hideThumbnail();
-        videoMediaPlayerHolder.onPauseResume();
+        videoView.hideThumbnail();
+        videoView.onPauseResume();
         updatePausePlay();
     }
 
@@ -542,7 +562,7 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
         }
 
         seekListener = null;
-        videoViewInteractor = null;
+        videoView = null;
         mediaControllerListener = null;
     }
 
@@ -590,37 +610,8 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
         this.mediaControllerListener = mediaControllerListener;
     }
 
-    public void setVideoMediaPlayerHolder(VideoMediaPlayerHolder videoMediaPlayerHolder) {
-        this.videoMediaPlayerHolder = videoMediaPlayerHolder;
-    }
-
-    public void setOrientationManagerHolder(OrientationManagerHolder orientationManagerHolder) {
-        this.orientationManagerHolder = orientationManagerHolder;
-
-        getViewTreeObserver().addOnWindowFocusChangeListener(
-                new ViewTreeObserver.OnWindowFocusChangeListener() {
-                    @Override
-                    public void onWindowFocusChanged(boolean hasFocus) {
-                        if (VideoControllerView.this.orientationManagerHolder.isLandscape()) {
-                            ((Activity) getContext())
-                                    .getWindow()
-                                    .getDecorView()
-                                    .setSystemUiVisibility(
-                                            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-                                                    View.SYSTEM_UI_FLAG_FULLSCREEN |
-                                                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
-                                                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-                                                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-                                                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                                    );
-                        }
-                    }
-                }
-        );
-    }
-
-    public void setVideoViewInteractor(FullscreenVideoViewInteractor videoViewInteractor) {
-        this.videoViewInteractor = videoViewInteractor;
+    public void setVideoView(VideoView videoView) {
+        this.videoView = videoView;
     }
 
     public void hideProgress() {
@@ -635,7 +626,7 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
 
     void updateFullScreenDrawable() {
         if (fullscreenButton != null) {
-            boolean isLandscape = orientationManagerHolder.isLandscape();
+            boolean isLandscape = videoView.isLandscape();
             Drawable fullscreenDrawable = drawableManager.getFullscreenDrawable(isLandscape);
             fullscreenButton.setImageDrawable(fullscreenDrawable);
         }
