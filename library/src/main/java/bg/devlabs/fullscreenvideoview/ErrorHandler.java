@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 
 import bg.devlabs.fullscreenvideoview.listener.FullscreenVideoViewException;
 import bg.devlabs.fullscreenvideoview.listener.OnErrorListener;
+import bg.devlabs.fullscreenvideoview.model.MediaPlayerError;
 
 import static android.media.MediaPlayer.MEDIA_ERROR_IO;
 import static android.media.MediaPlayer.MEDIA_ERROR_MALFORMED;
@@ -49,21 +50,26 @@ class ErrorHandler {
         onErrorListener = null;
     }
 
-    void onError(String message) {
+    void handle(Context context, MediaPlayerError error) {
+        switch(error.getType()) {
+            case DATA_SOURCE_READ: {
+                onError(error.getMessage());
+            }
+
+            case ASYNC_OPERATION: {
+                handleAsyncOperationError(context, error.getCode());
+            }
+        }
+    }
+
+    private void onError(String message) {
         if (onErrorListener != null) {
             FullscreenVideoViewException exception = new FullscreenVideoViewException(message);
             onErrorListener.onError(exception);
         }
     }
 
-    private void onError(int code, String message) {
-        if (onErrorListener != null) {
-            FullscreenVideoViewException exception = new FullscreenVideoViewException(code, message);
-            onErrorListener.onError(exception);
-        }
-    }
-
-    void handle(Context context, int errorCode) {
+    private void handleAsyncOperationError(Context context, int errorCode) {
         switch (errorCode) {
             case MEDIA_ERROR_IO: {
                 onError(
@@ -134,6 +140,13 @@ class ErrorHandler {
                         context.getString(R.string.media_error_general)
                 );
             }
+        }
+    }
+
+    private void onError(int code, String message) {
+        if (onErrorListener != null) {
+            FullscreenVideoViewException exception = new FullscreenVideoViewException(code, message);
+            onErrorListener.onError(exception);
         }
     }
 }

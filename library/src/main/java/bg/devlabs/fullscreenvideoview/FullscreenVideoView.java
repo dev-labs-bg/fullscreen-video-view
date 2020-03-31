@@ -20,8 +20,6 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -42,13 +40,13 @@ import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Objects;
 
 import bg.devlabs.fullscreenvideoview.listener.OnErrorListener;
 import bg.devlabs.fullscreenvideoview.listener.OnVideoCompletedListener;
 import bg.devlabs.fullscreenvideoview.listener.mediacontroller.MediaControllerListener;
 import bg.devlabs.fullscreenvideoview.model.Arguments;
+import bg.devlabs.fullscreenvideoview.model.MediaPlayerError;
 import bg.devlabs.fullscreenvideoview.orientation.LandscapeOrientation;
 import bg.devlabs.fullscreenvideoview.orientation.OrientationManager;
 import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation;
@@ -113,7 +111,7 @@ public class FullscreenVideoView extends FrameLayout
         findChildViews();
         // Skip this init rows - needed when changing FullscreenVideoView properties in XML
         if (!isInEditMode()) {
-            videoMediaPlayer = new VideoMediaPlayer();
+            videoMediaPlayer = new VideoMediaPlayer(this);
             orientationManager = new OrientationManager(getContext(), this);
             orientationManager.enable();
         }
@@ -221,6 +219,43 @@ public class FullscreenVideoView extends FrameLayout
     public void hideThumbnail() {
         if (thumbnailImageView != null && thumbnailImageView.getVisibility() == View.VISIBLE) {
             thumbnailImageView.setVisibility(GONE);
+        }
+    }
+
+    @Override
+    public void onMediaPlayerPrepared(
+            MediaPlayer mediaPlayer,
+            int videoWidth,
+            int videoHeight,
+            boolean isAutoStartEnabled
+    ) {
+        hideProgressBar();
+
+        if (surfaceView != null) {
+            surfaceView.updateLayoutParams(videoWidth, videoHeight);
+        }
+
+        if (!isPaused) {
+            isMediaPlayerPrepared = true;
+            // Start media player if auto start is enabled
+            if (isAutoStartEnabled) {
+                mediaPlayer.start();
+                hideThumbnail();
+            }
+        }
+        // Seek to a specific time
+        seekTo(seekToTimeMillis);
+    }
+
+    @Override
+    public void onMediaPlayerError(MediaPlayerError error) {
+        errorHandler.handle(getContext(), error);
+    }
+
+    @Override
+    public void onMediaPlayerCompletion() {
+        if (onVideoCompletedListener != null) {
+            onVideoCompletedListener.onFinished();
         }
     }
 
@@ -775,63 +810,10 @@ public class FullscreenVideoView extends FrameLayout
 
     public void setupMediaPlayer(String videoPath) {
         showProgress();
-        try {
-            if (videoMediaPlayer != null) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                            .setUsage(AudioAttributes.USAGE_MEDIA)
-                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                            .setLegacyStreamType(AudioManager.STREAM_MUSIC)
-                            .build();
-                    videoMediaPlayer.setAudioAttributes(audioAttributes);
-                } else {
-                    videoMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                }
 
-                videoMediaPlayer.setDataSource(videoPath);
-                videoMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                    @Override
-                    public void onPrepared(MediaPlayer mediaPlayer) {
-                        hideProgressBar();
-                        // Get the dimensions of the video
-                        int videoWidth = videoMediaPlayer.getVideoWidth();
-                        int videoHeight = videoMediaPlayer.getVideoHeight();
-                        if (surfaceView != null) {
-                            surfaceView.updateLayoutParams(videoWidth, videoHeight);
-                        }
-                        if (!isPaused) {
-                            isMediaPlayerPrepared = true;
-                            // Start media player if auto start is enabled
-                            if (mediaPlayer != null && videoMediaPlayer.isAutoStartEnabled()) {
-                                mediaPlayer.start();
-                                hideThumbnail();
-                            }
-                        }
-                        // Seek to a specific time
-                        videoMediaPlayer.seekTo(seekToTimeMillis);
-                    }
-                });
-                videoMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                    @Override
-                    public boolean onError(MediaPlayer mp, int what, int extra) {
-                        errorHandler.handle(getContext(), what);
-                        return false;
-                    }
-                });
-
-                videoMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mediaPlayer) {
-                        if (onVideoCompletedListener == null) return;
-
-                        onVideoCompletedListener.onFinished();
-                    }
-                });
-
-                videoMediaPlayer.prepareAsync();
-            }
-        } catch (IOException exception) {
-            errorHandler.onError(exception.getLocalizedMessage());
+        if (videoMediaPlayer != null) {
+            videoMediaPlayer.init(videoPath);
+            videoMediaPlayer.prepareAsync();
         }
     }
 

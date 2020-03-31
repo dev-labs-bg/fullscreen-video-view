@@ -16,6 +16,10 @@
 
 package bg.devlabs.fullscreenvideoview;
 
+import android.media.MediaPlayer;
+
+import bg.devlabs.fullscreenvideoview.model.MediaPlayerError;
+
 /**
  * Created by Slavi Petrov on 09.01.2020
  * Dev Labs
@@ -46,4 +50,15 @@ public interface VideoMediaPlayerHolder {
     void onPauseResume();
 
     void seekTo(int position);
+
+    void onMediaPlayerPrepared(
+            MediaPlayer mediaPlayer,
+            int videoWidth,
+            int videoHeight,
+            boolean isAutoStartEnabled
+    );
+
+    void onMediaPlayerError(MediaPlayerError error);
+
+    void onMediaPlayerCompletion();
 }
