@@ -41,7 +41,7 @@ public class OnSeekChangeListener implements SeekBar.OnSeekBarChangeListener {
         // the seekbar and b) once the user is done dragging the thumb
         // we will post one of these messages to the queue again and
         // this ensures that there will be exactly one message queued up.
-        interactor.hide();
+        interactor.refreshProgress();
     }
 
     @Override
