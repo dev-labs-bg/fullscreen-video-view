@@ -855,7 +855,7 @@ public class FullscreenVideoView extends FrameLayout
     }
 
     @Override
-    public void onFullscreenExited() {
+    public void onFullscreenDeactivated() {
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) getLayoutParams();
         params.width = originalWidth;
         params.height = originalHeight;
@@ -903,7 +903,7 @@ public class FullscreenVideoView extends FrameLayout
     }
 
     @Override
-    public void clearTag() {
+    public void clearFullscreenButtonTag() {
         if (fullscreenButton != null) {
             fullscreenButton.setTag(null);
         }

@@ -91,7 +91,7 @@ public class OrientationManager extends OrientationEventListener {
 
         visibilityManager.showHiddenViews();
 
-        videoView.onFullscreenExited();
+        videoView.onFullscreenDeactivated();
 
         // Show the toolbar
         videoView.toggleToolbarVisibility(true);
@@ -190,8 +190,7 @@ public class OrientationManager extends OrientationEventListener {
             videoView.focus();
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             exitFullscreen();
-            // Clear the Clicked tag in the fullscreen button
-            videoView.clearTag();
+            videoView.clearFullscreenButtonTag();
         }
     }
 }

@@ -171,7 +171,7 @@ class VideoControllerView extends FrameLayout
                 new ViewTreeObserver.OnWindowFocusChangeListener() {
                     @Override
                     public void onWindowFocusChanged(boolean hasFocus) {
-                        if (VideoControllerView.this.videoView.isLandscape()) {
+                        if (videoView.isLandscape()) {
                             ((Activity) getContext())
                                     .getWindow()
                                     .getDecorView()
