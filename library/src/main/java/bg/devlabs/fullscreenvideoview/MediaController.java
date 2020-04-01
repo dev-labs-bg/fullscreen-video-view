@@ -19,7 +19,7 @@ package bg.devlabs.fullscreenvideoview;
 /**
  * Manages interactions between the VideoControllerView and other classes.
  */
-interface VideoControllerViewInteractor {
+interface MediaController {
 
     /**
      * Removes the controller from the screen.

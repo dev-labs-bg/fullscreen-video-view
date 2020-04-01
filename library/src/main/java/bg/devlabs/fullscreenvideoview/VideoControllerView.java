@@ -80,7 +80,7 @@ import static bg.devlabs.fullscreenvideoview.Constants.VIEW_TAG_CLICKED;
  */
 @SuppressWarnings("unused")
 class VideoControllerView extends FrameLayout
-        implements VideoControllerViewInteractor, SeekBar.OnSeekBarChangeListener {
+        implements MediaController, SeekBar.OnSeekBarChangeListener {
     private static final String TAG = "VideoControllerView";
 
     @Nullable
