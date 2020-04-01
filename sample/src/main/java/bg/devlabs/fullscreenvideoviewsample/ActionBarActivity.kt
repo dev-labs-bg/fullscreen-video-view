@@ -27,12 +27,6 @@ import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedOptions
 import kotlinx.android.synthetic.main.activity_action_bar.*
 import java.io.File
 
-
-/**
- * Created by Slavi Petrov on 13.10.2017
- * Dev Labs
- * slavi@devlabs.bg
- */
 class ActionBarActivity : AppCompatActivity() {
     companion object {
         fun start(context: Context) {

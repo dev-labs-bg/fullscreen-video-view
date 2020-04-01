@@ -17,9 +17,7 @@
 package bg.devlabs.fullscreenvideoview.model;
 
 /**
- * Created by Slavi Petrov on 18.11.2019
- * Dev Labs
- * slavi@devlabs.bg
+ * Margins model class to store margins.
  */
 public class Margins {
 

@@ -17,9 +17,7 @@
 package bg.devlabs.fullscreenvideoview;
 
 /**
- * Created by Slavi Petrov on 25.10.2017
- * Dev Labs
- * slavi@devlabs.bg
+ * Contains constants used across the application.
  */
 class Constants {
     // Time values

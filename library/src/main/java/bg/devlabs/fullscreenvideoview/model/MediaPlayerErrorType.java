@@ -17,8 +17,17 @@
 package bg.devlabs.fullscreenvideoview.model;
 
 /**
- *
+ * Error type of media player.
  */
 public enum MediaPlayerErrorType {
-    DATA_SOURCE_READ, ASYNC_OPERATION
+
+    /**
+     * Occurs when reading the media player data source.
+     */
+    DATA_SOURCE_READ,
+
+    /**
+     * Occurs when there is an error while playing the video.
+     */
+    ASYNC_OPERATION
 }

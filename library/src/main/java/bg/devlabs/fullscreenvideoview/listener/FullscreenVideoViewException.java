@@ -17,9 +17,7 @@
 package bg.devlabs.fullscreenvideoview.listener;
 
 /**
- * Created by Slavi Petrov on 28.06.2019
- * Dev Labs
- * slavi@devlabs.bg
+ * Exception model class which contains code and message.
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class FullscreenVideoViewException {

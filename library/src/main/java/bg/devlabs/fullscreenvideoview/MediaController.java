@@ -16,9 +16,6 @@
 
 package bg.devlabs.fullscreenvideoview;
 
-/**
- * .
- */
 interface MediaController {
 
     /**

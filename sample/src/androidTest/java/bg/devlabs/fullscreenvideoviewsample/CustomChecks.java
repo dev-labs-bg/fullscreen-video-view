@@ -20,11 +20,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.pm.ActivityInfo;
+import android.view.View;
+import android.view.ViewGroup;
+
 import androidx.annotation.Nullable;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
-import android.view.View;
-import android.view.ViewGroup;
 
 import org.hamcrest.Matcher;
 
@@ -34,11 +35,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static bg.devlabs.fullscreenvideoviewsample.CustomChecks.OrientationViewAction.OrientationType.LANDSCAPE;
 import static bg.devlabs.fullscreenvideoviewsample.CustomChecks.OrientationViewAction.OrientationType.PORTRAIT;
 
-/**
- * Created by Slavi Petrov on 27.10.2017
- * Dev Labs
- * slavi@devlabs.bg
- */
 class CustomChecks {
     private CustomChecks() {
     }

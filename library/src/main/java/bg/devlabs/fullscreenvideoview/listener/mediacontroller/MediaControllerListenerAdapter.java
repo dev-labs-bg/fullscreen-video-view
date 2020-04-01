@@ -17,10 +17,6 @@
 package bg.devlabs.fullscreenvideoview.listener.mediacontroller;
 
 /**
- * Created by Slavi Petrov on 14.08.2019
- * Dev Labs
- * slavi@devlabs.bg
- *
  * This adapter class provides empty implementations of the methods
  * from [{@link MediaControllerListener}]. Any custom listener that cares only about a subset of
  * the methods of this listener can simply subclass this adapter class instead of implementing

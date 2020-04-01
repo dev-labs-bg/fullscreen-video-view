@@ -17,10 +17,6 @@
 package bg.devlabs.fullscreenvideoview.listener;
 
 /**
- * Created by Slavi Petrov on 28.06.2019
- * Dev Labs
- * slavi@devlabs.bg
- *
  * Listener for error events.
  */
 public interface OnErrorListener {

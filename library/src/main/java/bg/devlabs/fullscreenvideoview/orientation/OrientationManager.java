@@ -29,11 +29,7 @@ import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
 
 /**
- * Created by Slavi Petrov on 24.10.2017
- * Dev Labs
- * slavi@devlabs.bg
- * <p>
- * Handles orientation changes. Updates the VideoView layout params. Hides/shows the toolbar.
+ * Handles orientation change.
  */
 public class OrientationManager extends OrientationEventListener {
     private static final int LEFT_LANDSCAPE = 90;

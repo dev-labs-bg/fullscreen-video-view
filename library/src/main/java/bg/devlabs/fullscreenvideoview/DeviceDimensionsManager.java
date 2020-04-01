@@ -24,11 +24,8 @@ import android.view.Display;
 import android.view.WindowManager;
 
 /**
- * Created by Slavi Petrov on 29.05.2019
- * Dev Labs
- * slavi@devlabs.bg
+ * Operates with device dimensions.
  */
-
 public class DeviceDimensionsManager {
 
     private static volatile DeviceDimensionsManager INSTANCE;

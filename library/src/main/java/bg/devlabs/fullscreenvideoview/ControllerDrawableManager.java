@@ -23,9 +23,7 @@ import android.graphics.drawable.Drawable;
 import androidx.core.content.ContextCompat;
 
 /**
- * Created by Slavi Petrov on 09.01.2020
- * Dev Labs
- * slavi@devlabs.bg
+ * Contains the drawables for the video controller and operates with them.
  */
 public class ControllerDrawableManager {
     // Drawables for the buttons of the controller

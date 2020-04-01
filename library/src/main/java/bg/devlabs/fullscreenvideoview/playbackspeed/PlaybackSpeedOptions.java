@@ -21,9 +21,7 @@ import java.util.Collections;
 import java.util.HashSet;
 
 /**
- * Created by Slavi Petrov on 27.08.2018
- * Dev Labs
- * slavi@devlabs.bg
+ * Contains the speeds for the playback.
  */
 public class PlaybackSpeedOptions {
 

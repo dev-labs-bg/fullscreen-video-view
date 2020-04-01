@@ -19,11 +19,6 @@ package bg.devlabs.fullscreenvideoview;
 import android.os.Handler;
 import android.os.Message;
 
-/**
- * Created by Slavi Petrov on 30.03.2020
- * Dev Labs
- * slavi@devlabs.bg
- */
 class MessageHandler extends Handler {
     private static final int FADE_OUT = 1;
     private static final int SHOW_PROGRESS = 2;

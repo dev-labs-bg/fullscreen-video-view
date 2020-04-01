@@ -28,11 +28,6 @@ import java.io.IOException;
 import bg.devlabs.fullscreenvideoview.model.MediaPlayerError;
 import bg.devlabs.fullscreenvideoview.model.MediaPlayerErrorType;
 
-/**
- * Created by Slavi Petrov on 20.10.2017
- * Dev Labs
- * slavi@devlabs.bg
- */
 class FullscreenVideoMediaPlayer extends MediaPlayer {
 
     private VideoMediaPlayerListener listener;

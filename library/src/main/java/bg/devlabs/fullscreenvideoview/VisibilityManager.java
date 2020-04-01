@@ -17,10 +17,11 @@
 package bg.devlabs.fullscreenvideoview;
 
 import android.os.Build;
-import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+
+import androidx.appcompat.widget.Toolbar;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,11 +32,6 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static bg.devlabs.fullscreenvideoview.Constants.VIEW_TAG_CLICKED;
 
-/**
- * Created by Slavi Petrov on 19.10.2017
- * Dev Labs
- * slavi@devlabs.bg
- */
 public class VisibilityManager {
 
     private ArrayList<View> hiddenViews = new ArrayList<>();

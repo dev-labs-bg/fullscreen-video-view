@@ -17,10 +17,6 @@
 package bg.devlabs.fullscreenvideoview.listener;
 
 /**
- * Created by Slavi Petrov on 11.12.2019
- * Dev Labs
- * slavi@devlabs.bg
- *
  * Listener for when the video is completed.
  */
 public interface OnVideoCompletedListener {

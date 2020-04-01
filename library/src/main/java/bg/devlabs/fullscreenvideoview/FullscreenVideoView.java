@@ -60,11 +60,6 @@ import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedOptions;
 
 import static bg.devlabs.fullscreenvideoview.Constants.VIEW_TAG_CLICKED;
 
-/**
- * Created by Slavi Petrov on 05.10.2017
- * Dev Labs
- * slavi@devlabs.bg
- */
 @SuppressWarnings("unused")
 public class FullscreenVideoView extends FrameLayout
         implements VideoView, VideoMediaPlayerListener {

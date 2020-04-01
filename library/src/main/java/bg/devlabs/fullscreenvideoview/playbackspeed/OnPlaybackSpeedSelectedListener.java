@@ -17,10 +17,15 @@
 package bg.devlabs.fullscreenvideoview.playbackspeed;
 
 /**
- * Created by Slavi Petrov on 18.06.2019
- * Dev Labs
- * slavi@devlabs.bg
+ * Playback speed selected listener.
  */
 public interface OnPlaybackSpeedSelectedListener {
+
+    /**
+     * Called when a speed is selected from the popup menu.
+     *
+     * @param speed The speed value represented as float.
+     * @param text The speed text.
+     */
     void onSpeedSelected(float speed, String text);
 }

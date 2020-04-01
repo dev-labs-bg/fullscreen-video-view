@@ -22,9 +22,8 @@ import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT;
 
 /**
- * Created by Slavi Petrov on 24.10.2017
- * Dev Labs
- * slavi@devlabs.bg
+ * Landscape orientation model class to abstract the integer system landscape orientation
+ * values from ActivityInfo class.
  */
 @SuppressWarnings("unused")
 public enum PortraitOrientation {
