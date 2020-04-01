@@ -172,21 +172,6 @@ public class FullscreenVideoView extends FrameLayout implements VideoView {
     }
 
     @Override
-    public boolean shouldShowSeekBackwardButton() {
-        return fullscreenVideoMediaPlayer.showSeekBackwardButton();
-    }
-
-    @Override
-    public boolean shouldShowSeekForwardButton() {
-        return fullscreenVideoMediaPlayer.showSeekForwardButton();
-    }
-
-    @Override
-    public boolean shouldShowPlaybackSpeedButton() {
-        return fullscreenVideoMediaPlayer.showPlaybackSpeedButton();
-    }
-
-    @Override
     public int getCurrentPosition() {
         return fullscreenVideoMediaPlayer.getCurrentPosition();
     }
@@ -586,8 +571,8 @@ public class FullscreenVideoView extends FrameLayout implements VideoView {
      * @return the fullscreenVideoView instance
      */
     public FullscreenVideoView addSeekForwardButton() {
-        if (fullscreenVideoMediaPlayer != null) {
-            fullscreenVideoMediaPlayer.addSeekForwardButton();
+        if (controller != null) {
+            controller.setSeekForwardButtonVisible(true);
         }
         args.addSeekForwardButton = true;
         return this;
@@ -599,8 +584,8 @@ public class FullscreenVideoView extends FrameLayout implements VideoView {
      * @return the fullscreenVideoView instance
      */
     public FullscreenVideoView addSeekBackwardButton() {
-        if (fullscreenVideoMediaPlayer != null) {
-            fullscreenVideoMediaPlayer.addSeekBackwardButton();
+        if (controller != null) {
+            controller.setSeekBackwardButtonVisible(true);
         }
         args.addSeekBackwardButton = true;
         return this;
@@ -615,8 +600,8 @@ public class FullscreenVideoView extends FrameLayout implements VideoView {
      */
     @RequiresApi(Build.VERSION_CODES.M)
     public FullscreenVideoView addPlaybackSpeedButton() {
-        if (fullscreenVideoMediaPlayer != null) {
-            fullscreenVideoMediaPlayer.addPlaybackSpeedButton();
+        if (controller != null) {
+            controller.setPlaybackSpeedButtonVisible(true);
         }
         args.addPlaybackSpeedButton = true;
         return this;

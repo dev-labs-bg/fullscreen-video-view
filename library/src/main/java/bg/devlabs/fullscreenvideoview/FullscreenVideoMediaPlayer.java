@@ -39,9 +39,6 @@ class FullscreenVideoMediaPlayer extends MediaPlayer {
 
     private boolean isAutoStartEnabled;
     private boolean canPause = true;
-    private boolean showSeekBackwardButton = false;
-    private boolean showSeekForwardButton = false;
-    private boolean showPlaybackSpeedButton = false;
 
     FullscreenVideoMediaPlayer(VideoMediaPlayer videoMediaPlayer) {
         this.videoMediaPlayer = videoMediaPlayer;
@@ -120,18 +117,6 @@ class FullscreenVideoMediaPlayer extends MediaPlayer {
         return canPause;
     }
 
-    public boolean showSeekForwardButton() {
-        return showSeekForwardButton;
-    }
-
-    public boolean showSeekBackwardButton() {
-        return showSeekBackwardButton;
-    }
-
-    public boolean showPlaybackSpeedButton() {
-        return showPlaybackSpeedButton;
-    }
-
     public void onPauseResume() {
         if (isPlaying()) {
             pause();
@@ -148,28 +133,12 @@ class FullscreenVideoMediaPlayer extends MediaPlayer {
         release();
     }
 
-    public boolean isAutoStartEnabled() {
-        return isAutoStartEnabled;
-    }
-
     public void enableAutoStart() {
         isAutoStartEnabled = true;
     }
 
     public void disablePause() {
         this.canPause = false;
-    }
-
-    public void addSeekForwardButton() {
-        this.showSeekForwardButton = true;
-    }
-
-    public void addSeekBackwardButton() {
-        this.showSeekBackwardButton = true;
-    }
-
-    public void addPlaybackSpeedButton() {
-        this.showPlaybackSpeedButton = true;
     }
 
     @TargetApi(Build.VERSION_CODES.M)

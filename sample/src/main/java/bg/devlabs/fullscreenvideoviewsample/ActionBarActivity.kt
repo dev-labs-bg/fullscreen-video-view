@@ -50,16 +50,17 @@ class ActionBarActivity : AppCompatActivity() {
         val videoPath = "https://bit.ly/3dEGUuj"
 
         fullscreenVideoView.videoUrl(videoPath)
-                .progressBarColor(R.color.colorAccent)
-                .landscapeOrientation(LandscapeOrientation.SENSOR)
-                .portraitOrientation(PortraitOrientation.DEFAULT)
-                .thumbnail(R.drawable.video_thumbnail)
-                .addSeekForwardButton()
-                .addSeekBackwardButton()
-                .addPlaybackSpeedButton()
-                .playbackSpeedOptions(
-                        PlaybackSpeedOptions()
-                                .addSpeeds(arrayListOf(0.25f, 0.5f, 0.75f, 1f))
-                )
+            .progressBarColor(R.color.colorAccent)
+            .landscapeOrientation(LandscapeOrientation.SENSOR)
+            .portraitOrientation(PortraitOrientation.DEFAULT)
+            .thumbnail(R.drawable.video_thumbnail)
+            .addSeekForwardButton()
+            .enableAutoStart()
+            .addSeekBackwardButton()
+            .addPlaybackSpeedButton()
+            .playbackSpeedOptions(
+                PlaybackSpeedOptions()
+                    .addSpeeds(arrayListOf(0.25f, 0.5f, 0.75f, 1f))
+            )
     }
 }

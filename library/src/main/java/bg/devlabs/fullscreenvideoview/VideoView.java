@@ -49,11 +49,5 @@ public interface VideoView extends VideoMediaPlayer {
 
     void changePlaybackSpeed(float speed);
 
-    boolean shouldShowSeekBackwardButton();
-
-    boolean shouldShowSeekForwardButton();
-
-    boolean shouldShowPlaybackSpeedButton();
-
     void onPauseResume();
 }

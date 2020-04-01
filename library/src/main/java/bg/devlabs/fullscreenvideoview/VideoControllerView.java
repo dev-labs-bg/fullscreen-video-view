@@ -82,12 +82,18 @@ import static bg.devlabs.fullscreenvideoview.Constants.VIEW_TAG_CLICKED;
 class VideoControllerView extends FrameLayout implements VideoControllerViewInteractor {
     private static final String TAG = "VideoControllerView";
 
-    private TextView endTime;
-    private TextView currentTime;
-    private boolean isDragging;
     @Nullable
     private MessageHandler handler;
+
+    // Views
+    private TextView endTime;
+    private TextView currentTime;
     private SeekBar progress;
+    private ImageButton startPauseButton;
+    private ImageButton fastForwardButton;
+    private ImageButton rewindButton;
+    private ImageButton fullscreenButton;
+    private TextView playbackSpeedButton;
     // There are two scenarios that can trigger the SeekBar listener to trigger:
     //
     // The first is the user using the TouchPad to adjust the position of the
@@ -105,11 +111,11 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
     @Nullable
     private MediaControllerListener mediaControllerListener;
 
-    private ImageButton startPauseButton;
-    private ImageButton fastForwardButton;
-    private ImageButton rewindButton;
-    private ImageButton fullscreenButton;
-    private TextView playbackSpeedButton;
+    // Flags
+    private boolean isDragging;
+    private boolean seekBackwardButtonVisible = false;
+    private boolean seekForwardButtonVisible = false;
+    private boolean playbackSpeedButtonVisible = false;
 
     private PlaybackSpeedManager playbackSpeedManager;
     private ControllerDrawableManager drawableManager;
@@ -526,19 +532,17 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
             startPauseButton.setVisibility(INVISIBLE);
         }
 
-        if (rewindButton != null && !videoView.shouldShowSeekBackwardButton()) {
+        if (rewindButton != null && !seekBackwardButtonVisible) {
             rewindButton.setEnabled(false);
             rewindButton.setVisibility(INVISIBLE);
         }
 
-        if (fastForwardButton != null && !videoView.shouldShowSeekForwardButton()) {
+        if (fastForwardButton != null && !seekForwardButtonVisible) {
             fastForwardButton.setEnabled(false);
             fastForwardButton.setVisibility(INVISIBLE);
         }
 
-        playbackSpeedManager.hidePlaybackButton(
-                videoView.shouldShowPlaybackSpeedButton()
-        );
+        playbackSpeedManager.hidePlaybackButton(playbackSpeedButtonVisible);
     }
 
     private static CharSequence stringForTime(int timeMs) {
@@ -644,5 +648,29 @@ class VideoControllerView extends FrameLayout implements VideoControllerViewInte
             Drawable rewindDrawable = drawableManager.getRewindDrawable();
             rewindButton.setImageDrawable(rewindDrawable);
         }
+    }
+
+    public boolean isSeekForwardButtonVisible() {
+        return seekForwardButtonVisible;
+    }
+
+    public void setSeekForwardButtonVisible(boolean seekForwardButtonVisible) {
+        this.seekForwardButtonVisible = seekForwardButtonVisible;
+    }
+
+    public boolean isSeekBackwardButtonVisible() {
+        return seekBackwardButtonVisible;
+    }
+
+    public void setSeekBackwardButtonVisible(boolean seekBackwardButtonVisible) {
+        this.seekBackwardButtonVisible = seekBackwardButtonVisible;
+    }
+
+    public boolean isPlaybackSpeedButtonVisible() {
+        return playbackSpeedButtonVisible;
+    }
+
+    public void setPlaybackSpeedButtonVisible(boolean playbackSpeedButtonVisible) {
+        this.playbackSpeedButtonVisible = playbackSpeedButtonVisible;
     }
 }
