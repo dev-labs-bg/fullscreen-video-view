@@ -35,13 +35,13 @@ import bg.devlabs.fullscreenvideoview.model.MediaPlayerErrorType;
  */
 class FullscreenVideoMediaPlayer extends MediaPlayer {
 
-    private VideoMediaPlayer videoMediaPlayer;
+    private VideoMediaPlayerListener listener;
 
     private boolean isAutoStartEnabled;
     private boolean canPause = true;
 
-    FullscreenVideoMediaPlayer(VideoMediaPlayer videoMediaPlayer) {
-        this.videoMediaPlayer = videoMediaPlayer;
+    FullscreenVideoMediaPlayer(VideoMediaPlayerListener listener) {
+        this.listener = listener;
     }
 
     void init(String videoPath) {
@@ -52,7 +52,7 @@ class FullscreenVideoMediaPlayer extends MediaPlayer {
             setupOnErrorListener();
             setupOnCompletionListener();
         } catch (IOException exception) {
-            videoMediaPlayer.onMediaPlayerError(
+            listener.onMediaPlayerError(
                     new MediaPlayerError(
                             MediaPlayerErrorType.DATA_SOURCE_READ,
                             exception.getLocalizedMessage()
@@ -78,7 +78,7 @@ class FullscreenVideoMediaPlayer extends MediaPlayer {
         setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {
-                videoMediaPlayer.onMediaPlayerPrepared(
+                listener.onMediaPlayerPrepared(
                         mediaPlayer,
                         getVideoWidth(),
                         getVideoHeight(),
@@ -92,7 +92,7 @@ class FullscreenVideoMediaPlayer extends MediaPlayer {
         setOnErrorListener(new MediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(MediaPlayer mp, int what, int extra) {
-                videoMediaPlayer.onMediaPlayerError(
+                listener.onMediaPlayerError(
                         new MediaPlayerError(MediaPlayerErrorType.ASYNC_OPERATION, what)
                 );
                 return false;
@@ -104,7 +104,7 @@ class FullscreenVideoMediaPlayer extends MediaPlayer {
         setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-                videoMediaPlayer.onMediaPlayerCompletion();
+                listener.onMediaPlayerCompletion();
             }
         });
     }

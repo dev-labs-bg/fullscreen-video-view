@@ -1,9 +1,5 @@
 package bg.devlabs.fullscreenvideoview;
 
-import android.media.MediaPlayer;
-
-import bg.devlabs.fullscreenvideoview.model.MediaPlayerError;
-
 /**
  *
  */
@@ -23,14 +19,7 @@ public interface VideoMediaPlayer {
 
     void seekTo(int position);
 
-    void onMediaPlayerPrepared(
-            MediaPlayer mediaPlayer,
-            int videoWidth,
-            int videoHeight,
-            boolean isAutoStartEnabled
-    );
+    void changePlaybackSpeed(float speed);
 
-    void onMediaPlayerError(MediaPlayerError error);
-
-    void onMediaPlayerCompletion();
+    void onPauseResume();
 }

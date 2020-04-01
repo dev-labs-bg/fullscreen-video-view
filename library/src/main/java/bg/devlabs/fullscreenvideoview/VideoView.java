@@ -21,21 +21,17 @@ import android.view.ViewGroup;
 /**
  *
  */
-public interface VideoView extends VideoMediaPlayer {
+public interface VideoView extends VideoMediaPlayer, OrientationManager {
+
+    ViewGroup getParentLayout();
 
     void hideThumbnail();
-
-    boolean isLandscape();
-
-    void toggleFullscreen();
 
     void onOrientationChanged();
 
     void onFullscreenActivated();
 
     void onFullscreenExited();
-
-    ViewGroup getParentLayout();
 
     void toggleSystemUiVisibility();
 
@@ -46,8 +42,4 @@ public interface VideoView extends VideoMediaPlayer {
     void focus();
 
     void clearTag();
-
-    void changePlaybackSpeed(float speed);
-
-    void onPauseResume();
 }

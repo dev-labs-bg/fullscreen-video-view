@@ -66,7 +66,8 @@ import static bg.devlabs.fullscreenvideoview.Constants.VIEW_TAG_CLICKED;
  * slavi@devlabs.bg
  */
 @SuppressWarnings("unused")
-public class FullscreenVideoView extends FrameLayout implements VideoView {
+public class FullscreenVideoView extends FrameLayout
+        implements VideoView, VideoMediaPlayerListener {
 
     @Nullable
     private VideoSurfaceView surfaceView;
@@ -85,7 +86,6 @@ public class FullscreenVideoView extends FrameLayout implements VideoView {
     @Nullable
     private OrientationManager orientationManager;
     private SurfaceHolder.Callback surfaceHolderCallback;
-    private boolean isPaused;
     private int seekToTimeMillis;
     private ErrorHandler errorHandler = new ErrorHandler();
     @Nullable
@@ -94,6 +94,7 @@ public class FullscreenVideoView extends FrameLayout implements VideoView {
     @Nullable
     private OnVideoCompletedListener onVideoCompletedListener;
 
+    private boolean isVisible;
     private int originalWidth;
     private int originalHeight;
     private Margins margins;
@@ -228,7 +229,7 @@ public class FullscreenVideoView extends FrameLayout implements VideoView {
             surfaceView.updateLayoutParams(videoWidth, videoHeight);
         }
 
-        if (!isPaused) {
+        if (!isVisible) {
             isMediaPlayerPrepared = true;
             // Start media player if auto start is enabled
             if (isAutoStartEnabled) {
@@ -736,26 +737,6 @@ public class FullscreenVideoView extends FrameLayout implements VideoView {
         }
 
         orientationManager.handleConfigurationChange(newConfig);
-//
-//        // Avoid calling onConfigurationChanged twice
-//        if (previousOrientation == newConfig.orientation) {
-//            return;
-//        }
-//        previousOrientation = newConfig.orientation;
-//
-//        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-//            orientationManager.activateFullscreen();
-//
-//            // Focus the view which is in fullscreen mode, because otherwise the Activity will
-//            // handle the back button
-//            setFocusable(true);
-//            setFocusableInTouchMode(true);
-//            requestFocus();
-//        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-//            orientationManager.exitFullscreen();
-//            // Clear the Clicked tag in the fullscreen button
-//            fullscreenButton.setTag(null);
-//        }
     }
 
     @Override
@@ -767,7 +748,7 @@ public class FullscreenVideoView extends FrameLayout implements VideoView {
     @Override
     protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
-        isPaused = visibility != View.VISIBLE;
+        isVisible = visibility != View.VISIBLE;
     }
 
     private void handleOnDetach() {
