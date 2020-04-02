@@ -21,9 +21,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 /**
- * Created by Slavi Petrov on 29.05.2019
- * Dev Labs
- * slavi@devlabs.bg
+ * Used to scale bitmap images.
  */
 class BitmapScaler {
 

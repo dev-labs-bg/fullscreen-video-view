@@ -39,11 +39,6 @@ import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
 
-/**
- * Created by Slavi Petrov on 27.10.2017
- * Dev Labs
- * slavi@devlabs.bg
- */
 @RunWith(AndroidJUnit4.class)
 public class FullscreenVideoViewTest {
 

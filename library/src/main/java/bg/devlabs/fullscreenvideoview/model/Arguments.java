@@ -23,9 +23,7 @@ import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation;
 import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedOptions;
 
 /**
- * Created by Slavi Petrov on 11.12.2019
- * Dev Labs
- * slavi@devlabs.bg
+ * Arguments model class to store FullscreenVideoView arguments and read from them later.
  */
 public class Arguments {
     public boolean autoStartEnabled = false;

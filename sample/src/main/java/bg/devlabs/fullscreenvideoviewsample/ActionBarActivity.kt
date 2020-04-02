@@ -27,12 +27,6 @@ import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedOptions
 import kotlinx.android.synthetic.main.activity_action_bar.*
 import java.io.File
 
-
-/**
- * Created by Slavi Petrov on 13.10.2017
- * Dev Labs
- * slavi@devlabs.bg
- */
 class ActionBarActivity : AppCompatActivity() {
     companion object {
         fun start(context: Context) {
@@ -47,19 +41,20 @@ class ActionBarActivity : AppCompatActivity() {
 
         // Change the ActionBar title
         supportActionBar?.title = getString(R.string.action_bar_activity)
-        val videoPath = "https://clips.vorwaerts-gmbh.de/VfE_html5.mp4"
+        val videoPath = "https://bit.ly/2wUgyUw"
 
         fullscreenVideoView.videoUrl(videoPath)
-                .progressBarColor(R.color.colorAccent)
-                .landscapeOrientation(LandscapeOrientation.SENSOR)
-                .portraitOrientation(PortraitOrientation.DEFAULT)
-                .thumbnail(R.drawable.video_thumbnail)
-                .addSeekForwardButton()
-                .addSeekBackwardButton()
-                .addPlaybackSpeedButton()
-                .playbackSpeedOptions(
-                        PlaybackSpeedOptions()
-                                .addSpeeds(arrayListOf(0.25f, 0.5f, 0.75f, 1f))
-                )
+            .progressBarColor(R.color.colorAccent)
+            .landscapeOrientation(LandscapeOrientation.SENSOR)
+            .portraitOrientation(PortraitOrientation.DEFAULT)
+            .thumbnail(R.drawable.video_thumbnail)
+            .addSeekForwardButton()
+            .enableAutoStart()
+            .addSeekBackwardButton()
+            .addPlaybackSpeedButton()
+            .playbackSpeedOptions(
+                PlaybackSpeedOptions()
+                    .addSpeeds(arrayListOf(0.25f, 0.5f, 0.75f, 1f))
+            )
     }
 }

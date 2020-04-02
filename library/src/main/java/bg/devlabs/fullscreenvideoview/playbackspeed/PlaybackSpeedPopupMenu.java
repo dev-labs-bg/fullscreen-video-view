@@ -26,9 +26,7 @@ import java.util.Arrays;
 import java.util.Locale;
 
 /**
- * Created by Slavi Petrov on 27.08.2018
- * Dev Labs
- * slavi@devlabs.bg
+ * A custom PopupMenu to show the playback speed options.
  */
 public class PlaybackSpeedPopupMenu extends androidx.appcompat.widget.PopupMenu {
 

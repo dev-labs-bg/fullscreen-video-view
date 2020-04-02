@@ -33,7 +33,7 @@ class NoActionBarActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_no_action_bar)
-        val videoPath = "https://clips.vorwaerts-gmbh.de/VfE_html5.mp4"
+        val videoPath = "https://bit.ly/2wUgyUw"
         fullscreenVideoView.videoUrl(videoPath)
     }
 }

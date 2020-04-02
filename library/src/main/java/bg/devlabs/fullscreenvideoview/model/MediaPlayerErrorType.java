@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package bg.devlabs.fullscreenvideoview.listener;
+package bg.devlabs.fullscreenvideoview.model;
 
 /**
- * Listener for when the video is completed.
+ * Error type of media player.
  */
-public interface OnVideoCompletedListener {
+public enum MediaPlayerErrorType {
 
     /**
-     * Called when the video is completed.
+     * Occurs when reading the media player data source.
      */
-    void onFinished();
+    DATA_SOURCE_READ,
+
+    /**
+     * Occurs when there is an error while playing the video.
+     */
+    ASYNC_OPERATION
 }

@@ -17,10 +17,6 @@
 package bg.devlabs.fullscreenvideoview.listener.mediacontroller;
 
 /**
- * Created by Slavi Petrov on 14.08.2019
- * Dev Labs
- * slavi@devlabs.bg
- *
  * Listener for media controller events.
  */
 public interface MediaControllerListener {

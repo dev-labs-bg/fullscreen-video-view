@@ -23,12 +23,6 @@ import android.view.SurfaceView;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-
-/**
- * Created by Slavi Petrov on 23.10.2017
- * Dev Labs
- * slavi@devlabs.bg
- */
 class VideoSurfaceView extends SurfaceView {
     private int previousHeight;
     private int previousWidth;
