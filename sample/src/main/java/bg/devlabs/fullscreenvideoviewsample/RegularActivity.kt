@@ -33,7 +33,7 @@ class RegularActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_regular)
-        val videoPath = "https://bit.ly/3dEGUuj"
+        val videoPath = "https://bit.ly/2wUgyUw"
         fullscreenVideoView.videoUrl(videoPath)
     }
 }
