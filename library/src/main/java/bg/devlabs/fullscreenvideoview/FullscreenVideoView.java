@@ -707,6 +707,55 @@ public class FullscreenVideoView extends FrameLayout
     }
 
     /**
+     * Pauses the video at runtime.
+     *
+     * This method is not part of the building pattern and because of that it's not returning
+     * an instance of FullscreenVideoView.
+     */
+    public void pause() {
+        if (fullscreenVideoMediaPlayer != null) {
+            fullscreenVideoMediaPlayer.pause();
+        }
+    }
+
+    /**
+     * Plays the video at runtime.
+     *
+     * This method is not part of the building pattern and because of that it's not returning
+     * an instance of FullscreenVideoView.
+     */
+    public void play() {
+        if (fullscreenVideoMediaPlayer != null) {
+            fullscreenVideoMediaPlayer.start();
+            hideThumbnail();
+        }
+    }
+
+    /**
+     * Changes the video URL at runtime.
+     *
+     * This method is not part of the building pattern and because of that it's not returning
+     * an instance of FullscreenVideoView.
+     *
+     * @param url The new video URL.
+     */
+    public void changeUrl(@NonNull String url) {
+        changeSource(url);
+    }
+
+    /**
+     * Changes the video file at runtime.
+     *
+     * This method is not part of the building pattern and because of that it's not returning
+     * an instance of FullscreenVideoView.
+     *
+     * @param videoFile The new video file.
+     */
+    public void changeVideoFile(@NonNull File videoFile) {
+        changeSource(videoFile.getPath());
+    }
+
+    /**
      * Gets a drawable by it's resource id.
      *
      * @param drawableResId the drawable resource id
@@ -940,25 +989,12 @@ public class FullscreenVideoView extends FrameLayout
         setLayoutParams(params);
     }
 
-    public void pause() {
-        if (fullscreenVideoMediaPlayer != null) {
-            fullscreenVideoMediaPlayer.pause();
-        }
-    }
-
-    public void play() {
-        if (fullscreenVideoMediaPlayer != null) {
-            fullscreenVideoMediaPlayer.start();
-            hideThumbnail();
-        }
-    }
-
-    public void changeUrl(@NonNull final String url) {
+    private void changeSource(String videoPath) {
         handleOnDetach();
 
         init(attrs);
 
-        setupMediaPlayer(url);
+        setupMediaPlayer(videoPath);
 
         if (args.autoStartEnabled) {
             enableAutoStart();
@@ -1040,11 +1076,6 @@ public class FullscreenVideoView extends FrameLayout
         PlaybackSpeedOptions playbackSpeedOptions = args.playbackSpeedOptions;
         if (playbackSpeedOptions != null) {
             playbackSpeedOptions(playbackSpeedOptions);
-        }
-
-        int thumbnailResId = args.thumbnailResId;
-        if (thumbnailResId != -1) {
-            thumbnail(thumbnailResId);
         }
 
         if (args.hideProgress) {

@@ -114,6 +114,26 @@ class VideoControllerView extends FrameLayout
     private int fastForwardDuration = Constants.FAST_FORWARD_DURATION;
     private int rewindDuration = Constants.REWIND_DURATION;
 
+    private ViewTreeObserver.OnWindowFocusChangeListener onWindowFocusChangeListener =
+            new ViewTreeObserver.OnWindowFocusChangeListener() {
+                @Override
+                public void onWindowFocusChanged(boolean hasFocus) {
+                    if (videoView.isLandscape()) {
+                        ((Activity) getContext())
+                                .getWindow()
+                                .getDecorView()
+                                .setSystemUiVisibility(
+                                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                                                View.SYSTEM_UI_FLAG_FULLSCREEN |
+                                                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
+                                                View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                                                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                                                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                );
+                    }
+                }
+            };
+
     public VideoControllerView(Context context) {
         super(context);
         LayoutInflater layoutInflater = LayoutInflater.from(context);
@@ -166,27 +186,7 @@ class VideoControllerView extends FrameLayout
 
         handler = new MessageHandler(this);
 
-        // TODO: Move this to another method
-        getViewTreeObserver().addOnWindowFocusChangeListener(
-                new ViewTreeObserver.OnWindowFocusChangeListener() {
-                    @Override
-                    public void onWindowFocusChanged(boolean hasFocus) {
-                        if (videoView.isLandscape()) {
-                            ((Activity) getContext())
-                                    .getWindow()
-                                    .getDecorView()
-                                    .setSystemUiVisibility(
-                                            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-                                                    View.SYSTEM_UI_FLAG_FULLSCREEN |
-                                                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
-                                                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-                                                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-                                                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                                    );
-                        }
-                    }
-                }
-        );
+        getViewTreeObserver().addOnWindowFocusChangeListener(onWindowFocusChangeListener);
     }
 
     @Override
@@ -623,6 +623,7 @@ class VideoControllerView extends FrameLayout
 
         videoView = null;
         mediaControllerListener = null;
+        getViewTreeObserver().removeOnWindowFocusChangeListener(onWindowFocusChangeListener);
     }
 
     public void setEnterFullscreenDrawable(Drawable enterFullscreenDrawable) {
