@@ -1078,11 +1078,6 @@ public class FullscreenVideoView extends FrameLayout
             playbackSpeedOptions(playbackSpeedOptions);
         }
 
-        int thumbnailResId = args.thumbnailResId;
-        if (thumbnailResId != -1) {
-            thumbnail(thumbnailResId);
-        }
-
         if (args.hideProgress) {
             hideProgress();
         }
