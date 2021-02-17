@@ -44,7 +44,7 @@ class ActionBarActivity : AppCompatActivity() {
         val videoPath = "https://bit.ly/2wUgyUw"
 
         fullscreenVideoView.videoUrl(videoPath)
-            .progressBarColor(R.color.colorAccent)
+//            .progressBarColor(R.color.colorAccent)
             .landscapeOrientation(LandscapeOrientation.SENSOR)
             .portraitOrientation(PortraitOrientation.DEFAULT)
             .thumbnail(R.drawable.video_thumbnail)
