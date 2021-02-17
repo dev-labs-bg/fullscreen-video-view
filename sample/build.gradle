@@ -54,7 +54,6 @@ dependencies {
     implementation project(':library')
     implementation "androidx.appcompat:appcompat:$versions.appcompat"
     implementation "com.google.android.material:material:$versions.material"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin"
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$versions.leakCanary"
 
     androidTestImplementation "androidx.test:rules:1.2.0"

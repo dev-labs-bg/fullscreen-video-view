@@ -29,6 +29,6 @@ ext.versions = [
         material          : '1.3.0',
         constraintLayout  : '1.1.3',
         espresso          : '3.0.1',
-        kotlin            : '1.3.61',
+        kotlin            : '1.4.30',
         leakCanary        : '2.0'
 ]
