@@ -21,8 +21,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.BlendMode;
-import android.graphics.BlendModeColorFilter;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -39,6 +37,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.BlendModeColorFilterCompat;
+import androidx.core.graphics.BlendModeCompat;
 
 import java.util.Locale;
 
@@ -568,7 +568,16 @@ class VideoControllerView extends FrameLayout
     }
 
     private void setColorFilter(@NonNull Drawable drawable, int color) {
-        drawable.setColorFilter(new BlendModeColorFilter(color, BlendMode.SRC_ATOP));
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            drawable.setColorFilter(
+                    BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                            color, BlendModeCompat.SRC_ATOP
+                    )
+            );
+//        } else {
+//            //noinspection deprecation
+//            drawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+//        }
     }
 
     /**
