@@ -109,7 +109,7 @@ publishing {
             // This is an arbitrary name, you may also use "mavencentral" or
             // any other name that's descriptive for you
             name = "sonatype"
-            url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
             credentials {
                 username ossrhUsername
                 password ossrhPassword
