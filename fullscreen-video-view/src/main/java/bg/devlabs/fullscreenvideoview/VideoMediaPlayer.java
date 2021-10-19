@@ -25,7 +25,7 @@ public interface VideoMediaPlayer {
      * @param duration The duration used for the seek. A positive integer when seeking forward and
      *                 a negative one when seeking backwards.
      */
-    void seekBy(int duration);
+//    void seekBy(int duration);
 
     /**
      * Checks if the pause of the video is enabled.

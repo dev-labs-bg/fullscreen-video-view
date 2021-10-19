@@ -18,7 +18,6 @@ package bg.devlabs.fullscreenvideoview;
 
 import static bg.devlabs.fullscreenvideoview.Constants.VIEW_TAG_CLICKED;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -32,7 +31,6 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -42,8 +40,6 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import java.io.File;
@@ -56,6 +52,7 @@ import bg.devlabs.fullscreenvideoview.model.Arguments;
 import bg.devlabs.fullscreenvideoview.model.Margins;
 import bg.devlabs.fullscreenvideoview.model.MediaPlayerError;
 import bg.devlabs.fullscreenvideoview.orientation.LandscapeOrientation;
+import bg.devlabs.fullscreenvideoview.orientation.OrientationListener;
 import bg.devlabs.fullscreenvideoview.orientation.OrientationManager;
 import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation;
 import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedOptions;
@@ -89,6 +86,7 @@ public class FullscreenVideoView extends FrameLayout
     @Nullable
     private OnVideoCompletedListener onVideoCompletedListener;
     private VideoMediaPlayerListener videoMediaPlayerListener;
+    private OrientationListener orientationListener;
 
     private boolean isVisible;
     private int originalWidth;
@@ -120,12 +118,15 @@ public class FullscreenVideoView extends FrameLayout
         if (!isInEditMode()) {
             initVideoMediaPlayerListener();
             fullscreenVideoMediaPlayer = new FullscreenVideoMediaPlayer(videoMediaPlayerListener);
-            orientationManager = new OrientationManager(getContext(), this);
+            initOrientationListener();
+            orientationManager = new OrientationManager(getContext(), orientationListener);
             orientationManager.enable();
         }
         setUpSurfaceHolder();
         if (controller != null) {
-            controller.setVideoView(this);
+            controller.setOrientationManager(orientationManager);
+            controller.setVideoMediaPlayer(fullscreenVideoMediaPlayer);
+//            controller.setVideoView(this);
             controller.init(attrs);
         }
         setupProgressBarColor();
@@ -148,13 +149,6 @@ public class FullscreenVideoView extends FrameLayout
     @Override
     public boolean isPlaying() {
         return fullscreenVideoMediaPlayer.isPlaying();
-    }
-
-    @Override
-    public void seekBy(int duration) {
-        int pos = fullscreenVideoMediaPlayer.getCurrentPosition();
-        pos += duration; // milliseconds
-        fullscreenVideoMediaPlayer.seekTo(pos);
     }
 
     @Override
@@ -206,18 +200,10 @@ public class FullscreenVideoView extends FrameLayout
         }
     }
 
-    @Override
-    public void hideThumbnail() {
+    private void hideThumbnail() {
         if (thumbnailImageView != null && thumbnailImageView.getVisibility() == View.VISIBLE) {
             thumbnailImageView.setVisibility(GONE);
         }
-    }
-
-    @Override
-    public ViewGroup getParentLayout() {
-        Window window = ((Activity) getContext()).getWindow();
-        ViewGroup decorView = (ViewGroup) window.getDecorView();
-        return decorView.findViewById(android.R.id.content);
     }
 
     private void setUpSurfaceHolder() {
@@ -298,6 +284,47 @@ public class FullscreenVideoView extends FrameLayout
             public void onMediaPlayerCompletion() {
                 if (onVideoCompletedListener != null) {
                     onVideoCompletedListener.onFinished();
+                }
+            }
+
+            @Override
+            public void onMediaPlayerStarted() {
+                hideThumbnail();
+            }
+        };
+    }
+
+    private void initOrientationListener() {
+        orientationListener = orientation -> {
+            // Update the fullscreen button drawable
+            if (controller != null) {
+                controller.updateFullScreenDrawable();
+            }
+            // Update the layout params
+            if (surfaceView != null && fullscreenVideoMediaPlayer != null) {
+                surfaceView.updateLayoutParams(
+                        fullscreenVideoMediaPlayer.getVideoWidth(),
+                        fullscreenVideoMediaPlayer.getVideoHeight()
+                );
+            }
+
+            switch (orientation) {
+                case PORTRAIT: {
+                    if (fullscreenButton != null) {
+                        fullscreenButton.setTag(null);
+                    }
+                    // Update the layout params for portrait
+                    updateLayoutParamsForPortrait();
+                }
+
+                case LANDSCAPE: {
+                    // Focus the view which is in fullscreen mode, because otherwise the Activity
+                    // will handle the back button
+                    setFocusable(true);
+                    setFocusableInTouchMode(true);
+                    requestFocus();
+                    // Update the layout params for landscape
+                    updateLayoutParamsForLandscape();
                 }
             }
         };
@@ -868,23 +895,7 @@ public class FullscreenVideoView extends FrameLayout
         }
     }
 
-    @Override
-    public void onOrientationChanged() {
-        // Update the fullscreen button drawable
-        if (controller != null) {
-            controller.updateFullScreenDrawable();
-        }
-
-        if (surfaceView != null && fullscreenVideoMediaPlayer != null) {
-            surfaceView.updateLayoutParams(
-                    fullscreenVideoMediaPlayer.getVideoWidth(),
-                    fullscreenVideoMediaPlayer.getVideoHeight()
-            );
-        }
-    }
-
-    @Override
-    public void onFullscreenActivated() {
+    private void updateLayoutParamsForLandscape() {
         // Save the video player original width and height
         originalWidth = getWidth();
         originalHeight = getHeight();
@@ -903,8 +914,7 @@ public class FullscreenVideoView extends FrameLayout
         updateLayoutParams(marginLayoutParams);
     }
 
-    @Override
-    public void onFullscreenDeactivated() {
+    private void updateLayoutParamsForPortrait() {
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) getLayoutParams();
         params.width = originalWidth;
         params.height = originalHeight;
@@ -916,71 +926,6 @@ public class FullscreenVideoView extends FrameLayout
         );
 
         setLayoutParams(params);
-    }
-
-    @Override
-    public void toggleSystemUiVisibility() {
-        Window activityWindow = ((Activity) getContext()).getWindow();
-        View decorView = activityWindow.getDecorView();
-        int newUiOptions = decorView.getSystemUiVisibility();
-        newUiOptions ^= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-        newUiOptions ^= View.SYSTEM_UI_FLAG_FULLSCREEN;
-        newUiOptions ^= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-        decorView.setSystemUiVisibility(newUiOptions);
-    }
-
-    @Override
-    public void toggleToolbarVisibility(boolean isVisible) {
-        if (getContext() instanceof AppCompatActivity) {
-            toggleSupportActionBarVisibility(isVisible);
-        }
-        if (getContext() instanceof Activity) {
-            toggleActionBarVisibility(isVisible);
-        }
-    }
-
-    @Override
-    public void changeOrientation(int orientation) {
-        ((Activity) getContext()).setRequestedOrientation(orientation);
-    }
-
-    @Override
-    public void focus() {
-        setFocusable(true);
-        setFocusableInTouchMode(true);
-        requestFocus();
-    }
-
-    @Override
-    public void clearFullscreenButtonTag() {
-        if (fullscreenButton != null) {
-            fullscreenButton.setTag(null);
-        }
-    }
-
-    private void toggleActionBarVisibility(boolean isVisible) {
-        // Activity action bar
-        android.app.ActionBar actionBar = ((Activity) getContext()).getActionBar();
-        if (actionBar != null) {
-            if (isVisible) {
-                actionBar.show();
-            } else {
-                actionBar.hide();
-            }
-        }
-    }
-
-    private void toggleSupportActionBarVisibility(boolean isVisible) {
-        // AppCompatActivity support action bar
-        ActionBar supportActionBar = ((AppCompatActivity) getContext())
-                .getSupportActionBar();
-        if (supportActionBar != null) {
-            if (isVisible) {
-                supportActionBar.show();
-            } else {
-                supportActionBar.hide();
-            }
-        }
     }
 
     private void updateLayoutParams(ViewGroup.MarginLayoutParams params) {

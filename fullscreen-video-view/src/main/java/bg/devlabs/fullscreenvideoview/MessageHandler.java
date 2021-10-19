@@ -23,25 +23,25 @@ class MessageHandler extends Handler {
     private static final int FADE_OUT = 1;
     private static final int SHOW_PROGRESS = 2;
 
-    private MediaController mediaController;
+    private VideoControllerView videoControllerView;
 
-    MessageHandler(MediaController mediaController) {
-        this.mediaController = mediaController;
+    MessageHandler(VideoControllerView videoControllerView) {
+        this.videoControllerView = videoControllerView;
     }
 
     @Override
     public void handleMessage(Message msg) {
-        if (mediaController == null) {
+        if (videoControllerView == null) {
             return;
         }
 
         if (msg.what == FADE_OUT) {
-            mediaController.hide();
+            videoControllerView.hide();
         } else { // SHOW_PROGRESS
-            int position = mediaController.setProgress();
-            if (!mediaController.isDragging() &&
-                    mediaController.isShowing() &&
-                    mediaController.isPlaying()) {
+            int position = videoControllerView.setProgress();
+            if (!videoControllerView.isDragging() &&
+                    videoControllerView.isShowing() &&
+                    videoControllerView.isPlaying()) {
                 Message message = obtainMessage(SHOW_PROGRESS);
                 sendMessageDelayed(message, 1000 - (position % 1000));
             }
@@ -93,6 +93,6 @@ class MessageHandler extends Handler {
      * Called when a view is detached or destroyed.
      */
     void onDestroy() {
-        mediaController = null;
+        videoControllerView = null;
     }
 }

@@ -117,6 +117,7 @@ class FullscreenVideoMediaPlayer extends MediaPlayer {
             pause();
         } else {
             start();
+            listener.onMediaPlayerStarted();
         }
     }
 
@@ -141,5 +142,11 @@ class FullscreenVideoMediaPlayer extends MediaPlayer {
         PlaybackParams playbackParams = new PlaybackParams();
         playbackParams.setSpeed(speed);
         setPlaybackParams(playbackParams);
+    }
+
+    public void seekBy(int duration) {
+        int position = getCurrentPosition();
+        position += duration; // milliseconds
+        seekTo(position);
     }
 }

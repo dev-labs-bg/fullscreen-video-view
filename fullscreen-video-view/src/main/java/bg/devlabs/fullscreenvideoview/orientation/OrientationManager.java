@@ -16,17 +16,23 @@
 
 package bg.devlabs.fullscreenvideoview.orientation;
 
+import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
+
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.provider.Settings;
 import android.view.OrientationEventListener;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 
-import bg.devlabs.fullscreenvideoview.VideoView;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+
 import bg.devlabs.fullscreenvideoview.VisibilityManager;
-
-import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
 
 /**
  * Handles orientation change.
@@ -37,19 +43,21 @@ public class OrientationManager extends OrientationEventListener {
     private static final int PORTRAIT = 0;
     private static final int ROTATE_THRESHOLD = 10;
 
-    private VideoView videoView;
+    private Context context;
     private boolean isLandscape;
     private final ContentResolver contentResolver;
     private final VisibilityManager visibilityManager;
     // Orientation
+    private OrientationListener listener;
     private LandscapeOrientation landscapeOrientation = LandscapeOrientation.SENSOR;
     private PortraitOrientation portraitOrientation = PortraitOrientation.DEFAULT;
     private boolean shouldEnterPortrait;
     private int previousOrientation;
 
-    public OrientationManager(Context context, VideoView interactor) {
+    public OrientationManager(Context context, OrientationListener listener) {
         super(context);
-        this.videoView = interactor;
+        this.context = context;
+        this.listener = listener;
         contentResolver = context.getContentResolver();
         visibilityManager = new VisibilityManager();
     }
@@ -58,53 +66,101 @@ public class OrientationManager extends OrientationEventListener {
         // Update isLandscape flag
         isLandscape = true;
 
-        // Fullscreen active
-        videoView.onOrientationChanged();
+        // Notify that the fullscreen is activated
+        listener.onOrientationChanged(Orientation.LANDSCAPE);
 
         // Change the screen orientation to SENSOR_LANDSCAPE
         setOrientation(landscapeOrientation.getValue());
 
-        visibilityManager.hideVisibleViews(videoView.getParentLayout());
-
-        videoView.onFullscreenActivated();
+        visibilityManager.hideVisibleViews(getParentLayout());
 
         // Hide the toolbar
-        videoView.toggleToolbarVisibility(false);
+        toggleToolbarVisibility(false);
 
         // Hide the status bar
-        videoView.toggleSystemUiVisibility();
+        toggleSystemUiVisibility();
     }
 
     private void exitFullscreen() {
         // Update isLandscape flag
         isLandscape = false;
 
-        // Update the fullscreen button drawable
-        videoView.onOrientationChanged();
+        // Notify that the fullscreen is deactivated
+        listener.onOrientationChanged(Orientation.PORTRAIT);
 
         // Change the screen orientation to PORTRAIT
         setOrientation(portraitOrientation.getValue());
 
         visibilityManager.showHiddenViews();
 
-        videoView.onFullscreenDeactivated();
-
         // Show the toolbar
-        videoView.toggleToolbarVisibility(true);
+        toggleToolbarVisibility(true);
 
         // Show the status bar
-        videoView.toggleSystemUiVisibility();
+        toggleSystemUiVisibility();
+    }
+
+    private ViewGroup getParentLayout() {
+        Window window = ((Activity) context).getWindow();
+        ViewGroup decorView = (ViewGroup) window.getDecorView();
+        return decorView.findViewById(android.R.id.content);
     }
 
     private void setOrientation(int orientation) {
-        videoView.changeOrientation(orientation);
+        ((Activity) context).setRequestedOrientation(orientation);
+    }
+
+    // TODO: Move to ToolbarController (or SystemUiController)
+    private void toggleToolbarVisibility(boolean isVisible) {
+        if (context instanceof AppCompatActivity) {
+            toggleSupportActionBarVisibility(isVisible);
+        }
+        if (context instanceof Activity) {
+            toggleActionBarVisibility(isVisible);
+        }
+    }
+
+    private void toggleSupportActionBarVisibility(boolean isVisible) {
+        // AppCompatActivity support action bar
+        ActionBar supportActionBar = ((AppCompatActivity) context)
+                .getSupportActionBar();
+        if (supportActionBar != null) {
+            if (isVisible) {
+                supportActionBar.show();
+            } else {
+                supportActionBar.hide();
+            }
+        }
+    }
+
+    private void toggleActionBarVisibility(boolean isVisible) {
+        // Activity action bar
+        android.app.ActionBar actionBar = ((Activity) context).getActionBar();
+        if (actionBar != null) {
+            if (isVisible) {
+                actionBar.show();
+            } else {
+                actionBar.hide();
+            }
+        }
+    }
+
+    // TODO: Maybe move to SystemUiController
+    void toggleSystemUiVisibility() {
+        Window activityWindow = ((Activity) context).getWindow();
+        View decorView = activityWindow.getDecorView();
+        int newUiOptions = decorView.getSystemUiVisibility();
+        newUiOptions ^= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        newUiOptions ^= View.SYSTEM_UI_FLAG_FULLSCREEN;
+        newUiOptions ^= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        decorView.setSystemUiVisibility(newUiOptions);
     }
 
     public boolean shouldHandleOnBackPressed() {
         if (isLandscape) {
             // Locks the screen orientation to portrait
             setOrientation(portraitOrientation.getValue());
-            videoView.onOrientationChanged();
+            listener.onOrientationChanged(Orientation.PORTRAIT);
             return true;
         }
 
@@ -180,13 +236,8 @@ public class OrientationManager extends OrientationEventListener {
 
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             activateFullscreen();
-
-            // Focus the view which is in fullscreen mode, because otherwise the Activity will
-            // handle the back button
-            videoView.focus();
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             exitFullscreen();
-            videoView.clearFullscreenButtonTag();
         }
     }
 }

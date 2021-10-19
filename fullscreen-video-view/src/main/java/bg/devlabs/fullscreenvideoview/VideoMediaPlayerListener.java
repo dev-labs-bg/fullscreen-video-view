@@ -35,4 +35,6 @@ public interface VideoMediaPlayerListener {
      * Called when the video playing has completed.
      */
     void onMediaPlayerCompletion();
+
+    void onMediaPlayerStarted();
 }

@@ -14,33 +14,9 @@
  * limitations under the License.
  */
 
-package bg.devlabs.fullscreenvideoview;
+package bg.devlabs.fullscreenvideoview.orientation;
 
-interface MediaController {
-
-    /**
-     * Removes the controller from the screen.
-     */
-    void hide();
-
-    /**
-     * Sets progress to the SeekBar.
-     *
-     * @return progress current position
-     */
-    int setProgress();
-
-    /**
-     * Checks if the SeekBar is currently being dragged.
-     *
-     * @return true if it's dragging, otherwise false
-     */
-    boolean isDragging();
-
-    /**
-     * Checks if the controller is showing.
-     *
-     * @return true if it's showing, otherwise false
-     */
-    boolean isShowing();
+public enum Orientation {
+    PORTRAIT,
+    LANDSCAPE
 }

@@ -17,6 +17,9 @@
 
 package bg.devlabs.fullscreenvideoview;
 
+import static bg.devlabs.fullscreenvideoview.Constants.DEFAULT_CONTROLLER_TIMEOUT;
+import static bg.devlabs.fullscreenvideoview.Constants.VIEW_TAG_CLICKED;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -43,12 +46,10 @@ import androidx.core.graphics.BlendModeCompat;
 import java.util.Locale;
 
 import bg.devlabs.fullscreenvideoview.listener.mediacontroller.MediaControllerListener;
+import bg.devlabs.fullscreenvideoview.orientation.OrientationManager;
 import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedManager;
 import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedOptions;
 import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedPopupMenuListener;
-
-import static bg.devlabs.fullscreenvideoview.Constants.DEFAULT_CONTROLLER_TIMEOUT;
-import static bg.devlabs.fullscreenvideoview.Constants.VIEW_TAG_CLICKED;
 
 /**
  * A view containing controls for a MediaPlayer. Typically contains the
@@ -108,7 +109,8 @@ class VideoControllerView extends FrameLayout
     private PlaybackSpeedManager playbackSpeedManager;
     private ControllerDrawableManager drawableManager;
 
-    private VideoView videoView;
+    private OrientationManager orientationManager;
+    private FullscreenVideoMediaPlayer videoMediaPlayer;
 
     private int progressBarColor = Color.WHITE;
     private int fastForwardDuration = Constants.FAST_FORWARD_DURATION;
@@ -118,7 +120,7 @@ class VideoControllerView extends FrameLayout
             new ViewTreeObserver.OnWindowFocusChangeListener() {
                 @Override
                 public void onWindowFocusChanged(boolean hasFocus) {
-                    if (videoView.isLandscape()) {
+                    if (orientationManager.isLandscape()) {
                         ((Activity) getContext())
                                 .getWindow()
                                 .getDecorView()
@@ -194,11 +196,6 @@ class VideoControllerView extends FrameLayout
         return isDragging;
     }
 
-    @Override
-    public boolean isPlaying() {
-        return videoView.isPlaying();
-    }
-
     /**
      * Shows the controller on screen. It will go away automatically after 'timeout' milliseconds
      * of inactivity.
@@ -215,7 +212,7 @@ class VideoControllerView extends FrameLayout
         }
 
         if (startPauseButton != null) {
-            boolean isPlaying = videoView.isPlaying();
+            boolean isPlaying = videoMediaPlayer.isPlaying();
             Drawable playPauseDrawable = drawableManager.getPlayPauseDrawable(isPlaying);
             startPauseButton.setImageDrawable(playPauseDrawable);
         }
@@ -259,7 +256,7 @@ class VideoControllerView extends FrameLayout
             return 0;
         }
 
-        int position = videoView.getCurrentPosition();
+        int position = videoMediaPlayer.getCurrentPosition();
         int duration = getDuration();
         if (progress != null) {
             if (duration > 0) {
@@ -268,7 +265,7 @@ class VideoControllerView extends FrameLayout
                 progress.setProgress((int) pos);
             }
 
-            int percent = videoView.getBufferPercentage();
+            int percent = videoMediaPlayer.getBufferPercentage();
             progress.setSecondaryProgress(percent * 10);
         }
 
@@ -324,7 +321,7 @@ class VideoControllerView extends FrameLayout
      */
     public void updatePausePlay() {
         if (startPauseButton != null) {
-            boolean isPlaying = videoView.isPlaying();
+            boolean isPlaying = videoMediaPlayer.isPlaying();
             Drawable playPauseDrawable = drawableManager.getPlayPauseDrawable(isPlaying);
             startPauseButton.setImageDrawable(playPauseDrawable);
         }
@@ -354,7 +351,7 @@ class VideoControllerView extends FrameLayout
      * @return the video duration
      */
     public int getDuration() {
-        return videoView.getDuration();
+        return videoMediaPlayer.getDuration();
     }
 
     /**
@@ -363,7 +360,7 @@ class VideoControllerView extends FrameLayout
      * @param position the selected position
      */
     public void seekTo(int position) {
-        videoView.seekTo(position);
+        videoMediaPlayer.seekTo(position);
     }
 
     /**
@@ -388,69 +385,50 @@ class VideoControllerView extends FrameLayout
         }
     }
 
-    /**
-     * Hides the video thumbnail image.
-     */
-    public void hideThumbnail() {
-        videoView.hideThumbnail();
-    }
-
     private void setupButtonListeners() {
-        startPauseButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mediaControllerListener != null) {
-                    if (videoView.isPlaying()) {
-                        mediaControllerListener.onPauseClicked();
-                    } else {
-                        mediaControllerListener.onPlayClicked();
-                    }
+        startPauseButton.setOnClickListener(view -> {
+            if (mediaControllerListener != null) {
+                if (videoMediaPlayer.isPlaying()) {
+                    mediaControllerListener.onPauseClicked();
+                } else {
+                    mediaControllerListener.onPlayClicked();
                 }
-
-                doPauseResume();
-                show(DEFAULT_CONTROLLER_TIMEOUT);
             }
+
+            doPauseResume();
+            show(DEFAULT_CONTROLLER_TIMEOUT);
         });
 
-        fullscreenButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mediaControllerListener != null) {
-                    mediaControllerListener.onFullscreenClicked();
-                }
-
-                view.setTag(VIEW_TAG_CLICKED);
-                videoView.toggleFullscreen();
-                show(DEFAULT_CONTROLLER_TIMEOUT);
+        fullscreenButton.setOnClickListener(view -> {
+            if (mediaControllerListener != null) {
+                mediaControllerListener.onFullscreenClicked();
             }
+
+            view.setTag(VIEW_TAG_CLICKED);
+            orientationManager.toggleFullscreen();
+            show(DEFAULT_CONTROLLER_TIMEOUT);
         });
 
-        fastForwardButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mediaControllerListener != null) {
-                    mediaControllerListener.onFastForwardClicked();
-                }
-
-                videoView.seekBy(fastForwardDuration);
-                setProgress();
-
-                show(DEFAULT_CONTROLLER_TIMEOUT);
+        fastForwardButton.setOnClickListener(v -> {
+            if (mediaControllerListener != null) {
+                mediaControllerListener.onFastForwardClicked();
             }
+
+            videoMediaPlayer.seekBy(fastForwardDuration);
+            setProgress();
+
+            show(DEFAULT_CONTROLLER_TIMEOUT);
         });
 
-        rewindButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mediaControllerListener != null) {
-                    mediaControllerListener.onRewindClicked();
-                }
-
-                videoView.seekBy(-rewindDuration);
-                setProgress();
-
-                show(DEFAULT_CONTROLLER_TIMEOUT);
+        rewindButton.setOnClickListener(view -> {
+            if (mediaControllerListener != null) {
+                mediaControllerListener.onRewindClicked();
             }
+
+            videoMediaPlayer.seekBy(-rewindDuration);
+            setProgress();
+
+            show(DEFAULT_CONTROLLER_TIMEOUT);
         });
 
         playbackSpeedManager.setPlaybackSpeedButtonOnClickListener(
@@ -460,7 +438,7 @@ class VideoControllerView extends FrameLayout
                         // Update the Playback Speed Drawable according to the clicked menu item
                         playbackSpeedManager.setPlaybackSpeedText(text);
                         // Change the Playback Speed of the VideoMediaPlayer
-                        videoView.changePlaybackSpeed(speed);
+                        videoMediaPlayer.changePlaybackSpeed(speed);
                         // Hide the VideoControllerView
                         hide();
                     }
@@ -506,7 +484,6 @@ class VideoControllerView extends FrameLayout
         seekTo((int) newPosition);
         setCurrentTime((int) newPosition);
         updateSeekBarProgress(newPosition);
-        hideThumbnail();
     }
 
     @Override
@@ -592,7 +569,7 @@ class VideoControllerView extends FrameLayout
      * Change the buttons visibility according to the flags in {@link FullscreenVideoMediaPlayer}.
      */
     private void setupButtonsVisibility() {
-        if (startPauseButton != null && !videoView.canPause()) {
+        if (startPauseButton != null && !videoMediaPlayer.canPause()) {
             startPauseButton.setEnabled(false);
             startPauseButton.setVisibility(INVISIBLE);
         }
@@ -619,8 +596,7 @@ class VideoControllerView extends FrameLayout
     }
 
     private void doPauseResume() {
-        videoView.hideThumbnail();
-        videoView.onPauseResume();
+        videoMediaPlayer.onPauseResume();
         updatePausePlay();
     }
 
@@ -630,7 +606,6 @@ class VideoControllerView extends FrameLayout
             handler = null;
         }
 
-        videoView = null;
         mediaControllerListener = null;
         getViewTreeObserver().removeOnWindowFocusChangeListener(onWindowFocusChangeListener);
     }
@@ -679,8 +654,12 @@ class VideoControllerView extends FrameLayout
         this.mediaControllerListener = mediaControllerListener;
     }
 
-    public void setVideoView(VideoView videoView) {
-        this.videoView = videoView;
+    public void setOrientationManager(OrientationManager orientationManager) {
+        this.orientationManager = orientationManager;
+    }
+
+    public void setVideoMediaPlayer(FullscreenVideoMediaPlayer videoMediaPlayer) {
+        this.videoMediaPlayer = videoMediaPlayer;
     }
 
     public void hideProgress() {
@@ -695,7 +674,7 @@ class VideoControllerView extends FrameLayout
 
     void updateFullScreenDrawable() {
         if (fullscreenButton != null) {
-            boolean isLandscape = videoView.isLandscape();
+            boolean isLandscape = orientationManager.isLandscape();
             Drawable fullscreenDrawable = drawableManager.getFullscreenDrawable(isLandscape);
             fullscreenButton.setImageDrawable(fullscreenDrawable);
         }
@@ -737,5 +716,9 @@ class VideoControllerView extends FrameLayout
 
     public void setPlaybackSpeedButtonVisible(boolean playbackSpeedButtonVisible) {
         this.playbackSpeedButtonVisible = playbackSpeedButtonVisible;
+    }
+
+    public boolean isPlaying() {
+        return videoMediaPlayer.isPlaying();
     }
 }
