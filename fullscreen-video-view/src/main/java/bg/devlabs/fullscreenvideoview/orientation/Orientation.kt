@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package bg.devlabs.fullscreenvideoview.orientation
 
-package bg.devlabs.fullscreenvideoview.orientation;
-
-public enum Orientation {
-    PORTRAIT,
-    LANDSCAPE
+enum class Orientation {
+    PORTRAIT, LANDSCAPE
 }

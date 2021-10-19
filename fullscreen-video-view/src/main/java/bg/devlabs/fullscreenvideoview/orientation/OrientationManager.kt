@@ -13,152 +13,146 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package bg.devlabs.fullscreenvideoview.orientation
 
-package bg.devlabs.fullscreenvideoview.orientation;
-
-import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
-
-import android.app.Activity;
-import android.content.ContentResolver;
-import android.content.Context;
-import android.content.res.Configuration;
-import android.provider.Settings;
-import android.view.OrientationEventListener;
-import android.view.ViewGroup;
-import android.view.Window;
-
-import bg.devlabs.fullscreenvideoview.UIController;
-import bg.devlabs.fullscreenvideoview.VisibilityManager;
+import android.view.OrientationEventListener
+import android.content.ContentResolver
+import bg.devlabs.fullscreenvideoview.VisibilityManager
+import bg.devlabs.fullscreenvideoview.UIController
+import android.content.pm.ActivityInfo
+import android.view.ViewGroup
+import android.app.Activity
+import android.content.Context
+import android.content.res.Configuration
+import android.provider.Settings
 
 /**
  * Handles orientation change.
  */
-public class OrientationManager extends OrientationEventListener {
-    private static final int LEFT_LANDSCAPE = 90;
-    private static final int RIGHT_LANDSCAPE = 270;
-    private static final int PORTRAIT = 0;
-    private static final int ROTATE_THRESHOLD = 10;
+class OrientationManager(
+    private val context: Context,
+    private val listener: OrientationListener
+) : OrientationEventListener(context) {
+    var isLandscape = false
+        private set
 
-    private Context context;
-    private boolean isLandscape;
-    private final ContentResolver contentResolver;
-    private final VisibilityManager visibilityManager;
-    private final UIController uiController;
-    // Orientation
-    private OrientationListener listener;
-    private LandscapeOrientation landscapeOrientation = LandscapeOrientation.SENSOR;
-    private PortraitOrientation portraitOrientation = PortraitOrientation.DEFAULT;
-    private boolean shouldEnterPortrait;
-    private int previousOrientation;
+    private val contentResolver = context.contentResolver
+    private val visibilityManager = VisibilityManager()
+    private val uiController = UIController()
 
-    public OrientationManager(Context context, OrientationListener listener) {
-        super(context);
-        this.context = context;
-        this.listener = listener;
-        contentResolver = context.getContentResolver();
-        visibilityManager = new VisibilityManager();
-        uiController = new UIController();
-    }
+    private var landscapeOrientation = LandscapeOrientation.SENSOR
+    private var portraitOrientation = PortraitOrientation.DEFAULT
+    private var shouldEnterPortrait = false
+    private var previousOrientation = 0
 
-    private void activateFullscreen() {
-        // Update isLandscape flag
-        isLandscape = true;
-
-        // Change the screen orientation to SENSOR_LANDSCAPE
-        setOrientation(landscapeOrientation.getValue());
-
-        visibilityManager.hideVisibleViews(getParentLayout());
-
-        // Hide the toolbar
-        uiController.toggleToolbarVisibility(context, false);
-
-        // Hide the status bar
-        uiController.toggleSystemUiVisibility(context);
-
-        // Notify that the fullscreen is activated
-        listener.onOrientationChanged(Orientation.LANDSCAPE);
-    }
-
-    private void exitFullscreen() {
-        // Update isLandscape flag
-        isLandscape = false;
-
-        // Change the screen orientation to PORTRAIT
-        setOrientation(portraitOrientation.getValue());
-
-        visibilityManager.showHiddenViews();
-
-        // Show the toolbar
-        uiController.toggleToolbarVisibility(context, true);
-
-        // Show the status bar
-        uiController.toggleSystemUiVisibility(context);
-
-        // Notify that the fullscreen is deactivated
-        listener.onOrientationChanged(Orientation.PORTRAIT);
-    }
-
-    private ViewGroup getParentLayout() {
-        Window window = ((Activity) context).getWindow();
-        ViewGroup decorView = (ViewGroup) window.getDecorView();
-        return decorView.findViewById(android.R.id.content);
-    }
-
-    private void setOrientation(int orientation) {
-        ((Activity) context).setRequestedOrientation(orientation);
-    }
-
-    public boolean shouldHandleOnBackPressed() {
-        if (isLandscape) {
-            // Locks the screen orientation to portrait
-            setOrientation(portraitOrientation.getValue());
-            return true;
+    private val parentLayout: ViewGroup
+        get() {
+            val window = (context as Activity).window
+            val decorView = window.decorView as ViewGroup
+            return decorView.findViewById(android.R.id.content)
         }
 
-        return false;
-    }
-
-    public void toggleFullscreen() {
-        isLandscape = !isLandscape;
-        int newOrientation = portraitOrientation.getValue();
-        if (isLandscape) {
-            newOrientation = landscapeOrientation.getValue();
-        }
-        setOrientation(newOrientation);
-    }
-
-    public void setLandscapeOrientation(LandscapeOrientation landscapeOrientation) {
-        this.landscapeOrientation = landscapeOrientation;
-    }
-
-    public void setPortraitOrientation(PortraitOrientation portraitOrientation) {
-        this.portraitOrientation = portraitOrientation;
-    }
-
-    private boolean shouldChangeOrientation(int a, int b) {
-        return a > b - ROTATE_THRESHOLD && a < b + ROTATE_THRESHOLD;
-    }
-
-    @Override
-    public void onOrientationChanged(int orientation) {
+    override fun onOrientationChanged(orientation: Int) {
         // If the device's rotation is not enabled do not proceed further with the logic
         if (!isRotationEnabled(contentResolver)) {
-            return;
+            return
         }
-
         if ((shouldChangeOrientation(orientation, LEFT_LANDSCAPE)
-                || shouldChangeOrientation(orientation, RIGHT_LANDSCAPE))
-                && !shouldEnterPortrait) {
-            shouldEnterPortrait = true;
-            setOrientation(SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+                    || shouldChangeOrientation(orientation, RIGHT_LANDSCAPE))
+            && !shouldEnterPortrait
+        ) {
+            shouldEnterPortrait = true
+            setOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE)
         }
-
         if (shouldChangeOrientation(orientation, PORTRAIT)
-                && shouldEnterPortrait) {
-            shouldEnterPortrait = false;
-            setOrientation(SCREEN_ORIENTATION_PORTRAIT);
+            && shouldEnterPortrait
+        ) {
+            shouldEnterPortrait = false
+            setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
         }
+    }
+
+    fun shouldHandleOnBackPressed(): Boolean {
+        if (isLandscape) {
+            // Locks the screen orientation to portrait
+            setOrientation(portraitOrientation.value)
+            return true
+        }
+        return false
+    }
+
+    fun toggleFullscreen() {
+        isLandscape = !isLandscape
+        var newOrientation = portraitOrientation.value
+        if (isLandscape) {
+            newOrientation = landscapeOrientation.value
+        }
+        setOrientation(newOrientation)
+    }
+
+    fun setLandscapeOrientation(landscapeOrientation: LandscapeOrientation) {
+        this.landscapeOrientation = landscapeOrientation
+    }
+
+    fun setPortraitOrientation(portraitOrientation: PortraitOrientation) {
+        this.portraitOrientation = portraitOrientation
+    }
+
+    fun handleConfigurationChange(newConfig: Configuration) {
+        // Avoid calling onConfigurationChanged twice
+        if (previousOrientation == newConfig.orientation) {
+            return
+        }
+        previousOrientation = newConfig.orientation
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            activateFullscreen()
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            exitFullscreen()
+        }
+    }
+
+    private fun activateFullscreen() {
+        // Update isLandscape flag
+        isLandscape = true
+
+        // Change the screen orientation to SENSOR_LANDSCAPE
+        setOrientation(landscapeOrientation.value)
+        visibilityManager.hideVisibleViews(parentLayout)
+
+        // Hide the toolbar
+        uiController.toggleToolbarVisibility(context, false)
+
+        // Hide the status bar
+        uiController.toggleSystemUiVisibility(context)
+
+        // Notify that the fullscreen is activated
+        listener.onOrientationChanged(Orientation.LANDSCAPE)
+    }
+
+    private fun exitFullscreen() {
+        // Update isLandscape flag
+        isLandscape = false
+
+        // Change the screen orientation to PORTRAIT
+        setOrientation(portraitOrientation.value)
+        visibilityManager.showHiddenViews()
+
+        // Show the toolbar
+        uiController.toggleToolbarVisibility(context, true)
+
+        // Show the status bar
+        uiController.toggleSystemUiVisibility(context)
+
+        // Notify that the fullscreen is deactivated
+        listener.onOrientationChanged(Orientation.PORTRAIT)
+    }
+
+    private fun setOrientation(orientation: Int) {
+        (context as Activity).requestedOrientation = orientation
+    }
+
+    private fun shouldChangeOrientation(a: Int, b: Int): Boolean {
+        return a > b - ROTATE_THRESHOLD && a < b + ROTATE_THRESHOLD
     }
 
     /**
@@ -167,29 +161,18 @@ public class OrientationManager extends OrientationEventListener {
      * @param contentResolver from the app's context
      * @return true or false according to whether the rotation is enabled or disabled
      */
-    private boolean isRotationEnabled(ContentResolver contentResolver) {
+    private fun isRotationEnabled(contentResolver: ContentResolver): Boolean {
         return Settings.System.getInt(
-                contentResolver,
-                Settings.System.ACCELEROMETER_ROTATION,
-                0
-        ) == 1;
+            contentResolver,
+            Settings.System.ACCELEROMETER_ROTATION,
+            0
+        ) == 1
     }
 
-    public boolean isLandscape() {
-        return isLandscape;
-    }
-
-    public void handleConfigurationChange(Configuration newConfig) {
-        // Avoid calling onConfigurationChanged twice
-        if (previousOrientation == newConfig.orientation) {
-            return;
-        }
-        previousOrientation = newConfig.orientation;
-
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            activateFullscreen();
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            exitFullscreen();
-        }
+    companion object {
+        private const val LEFT_LANDSCAPE = 90
+        private const val RIGHT_LANDSCAPE = 270
+        private const val PORTRAIT = 0
+        private const val ROTATE_THRESHOLD = 10
     }
 }
