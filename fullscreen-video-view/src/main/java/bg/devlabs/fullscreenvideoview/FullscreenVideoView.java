@@ -315,6 +315,7 @@ public class FullscreenVideoView extends FrameLayout
                     }
                     // Update the layout params for portrait
                     updateLayoutParamsForPortrait();
+                    break;
                 }
 
                 case LANDSCAPE: {
@@ -325,6 +326,7 @@ public class FullscreenVideoView extends FrameLayout
                     requestFocus();
                     // Update the layout params for landscape
                     updateLayoutParamsForLandscape();
+                    break;
                 }
             }
         };
@@ -901,17 +903,24 @@ public class FullscreenVideoView extends FrameLayout
         originalHeight = getHeight();
 
         // Save the fullscreen video view margins
-        ViewGroup.MarginLayoutParams marginLayoutParams =
+        ViewGroup.MarginLayoutParams params =
                 (ViewGroup.MarginLayoutParams) getLayoutParams();
 
         margins = new Margins(
-                marginLayoutParams.leftMargin,
-                marginLayoutParams.topMargin,
-                marginLayoutParams.rightMargin,
-                marginLayoutParams.bottomMargin
+                params.leftMargin,
+                params.topMargin,
+                params.rightMargin,
+                params.bottomMargin
         );
 
-        updateLayoutParams(marginLayoutParams);
+        Context context = getContext();
+        DeviceDimensionsManager deviceDimensionsManager = DeviceDimensionsManager.getInstance();
+
+        params.width = deviceDimensionsManager.getRealWidth(context);
+        params.height = deviceDimensionsManager.getRealHeight(context);
+        params.setMargins(0, 0, 0, 0);
+
+        setLayoutParams(params);
     }
 
     private void updateLayoutParamsForPortrait() {
@@ -924,17 +933,6 @@ public class FullscreenVideoView extends FrameLayout
                 margins.getRight(),
                 margins.getBottom()
         );
-
-        setLayoutParams(params);
-    }
-
-    private void updateLayoutParams(ViewGroup.MarginLayoutParams params) {
-        Context context = getContext();
-        DeviceDimensionsManager deviceDimensionsManager = DeviceDimensionsManager.getInstance();
-
-        params.width = deviceDimensionsManager.getRealWidth(context);
-        params.height = deviceDimensionsManager.getRealHeight(context);
-        params.setMargins(0, 0, 0, 0);
 
         setLayoutParams(params);
     }

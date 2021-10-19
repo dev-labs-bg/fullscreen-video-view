@@ -66,9 +66,6 @@ public class OrientationManager extends OrientationEventListener {
         // Update isLandscape flag
         isLandscape = true;
 
-        // Notify that the fullscreen is activated
-        listener.onOrientationChanged(Orientation.LANDSCAPE);
-
         // Change the screen orientation to SENSOR_LANDSCAPE
         setOrientation(landscapeOrientation.getValue());
 
@@ -79,14 +76,14 @@ public class OrientationManager extends OrientationEventListener {
 
         // Hide the status bar
         toggleSystemUiVisibility();
+
+        // Notify that the fullscreen is activated
+        listener.onOrientationChanged(Orientation.LANDSCAPE);
     }
 
     private void exitFullscreen() {
         // Update isLandscape flag
         isLandscape = false;
-
-        // Notify that the fullscreen is deactivated
-        listener.onOrientationChanged(Orientation.PORTRAIT);
 
         // Change the screen orientation to PORTRAIT
         setOrientation(portraitOrientation.getValue());
@@ -98,6 +95,9 @@ public class OrientationManager extends OrientationEventListener {
 
         // Show the status bar
         toggleSystemUiVisibility();
+
+        // Notify that the fullscreen is deactivated
+        listener.onOrientationChanged(Orientation.PORTRAIT);
     }
 
     private ViewGroup getParentLayout() {
@@ -160,7 +160,6 @@ public class OrientationManager extends OrientationEventListener {
         if (isLandscape) {
             // Locks the screen orientation to portrait
             setOrientation(portraitOrientation.getValue());
-            listener.onOrientationChanged(Orientation.PORTRAIT);
             return true;
         }
 
