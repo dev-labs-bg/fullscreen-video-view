@@ -25,13 +25,10 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.provider.Settings;
 import android.view.OrientationEventListener;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-
+import bg.devlabs.fullscreenvideoview.UIController;
 import bg.devlabs.fullscreenvideoview.VisibilityManager;
 
 /**
@@ -47,6 +44,7 @@ public class OrientationManager extends OrientationEventListener {
     private boolean isLandscape;
     private final ContentResolver contentResolver;
     private final VisibilityManager visibilityManager;
+    private final UIController uiController;
     // Orientation
     private OrientationListener listener;
     private LandscapeOrientation landscapeOrientation = LandscapeOrientation.SENSOR;
@@ -60,6 +58,7 @@ public class OrientationManager extends OrientationEventListener {
         this.listener = listener;
         contentResolver = context.getContentResolver();
         visibilityManager = new VisibilityManager();
+        uiController = new UIController();
     }
 
     private void activateFullscreen() {
@@ -72,10 +71,10 @@ public class OrientationManager extends OrientationEventListener {
         visibilityManager.hideVisibleViews(getParentLayout());
 
         // Hide the toolbar
-        toggleToolbarVisibility(false);
+        uiController.toggleToolbarVisibility(context, false);
 
         // Hide the status bar
-        toggleSystemUiVisibility();
+        uiController.toggleSystemUiVisibility(context);
 
         // Notify that the fullscreen is activated
         listener.onOrientationChanged(Orientation.LANDSCAPE);
@@ -91,10 +90,10 @@ public class OrientationManager extends OrientationEventListener {
         visibilityManager.showHiddenViews();
 
         // Show the toolbar
-        toggleToolbarVisibility(true);
+        uiController.toggleToolbarVisibility(context, true);
 
         // Show the status bar
-        toggleSystemUiVisibility();
+        uiController.toggleSystemUiVisibility(context);
 
         // Notify that the fullscreen is deactivated
         listener.onOrientationChanged(Orientation.PORTRAIT);
@@ -108,52 +107,6 @@ public class OrientationManager extends OrientationEventListener {
 
     private void setOrientation(int orientation) {
         ((Activity) context).setRequestedOrientation(orientation);
-    }
-
-    // TODO: Move to ToolbarController (or SystemUiController)
-    private void toggleToolbarVisibility(boolean isVisible) {
-        if (context instanceof AppCompatActivity) {
-            toggleSupportActionBarVisibility(isVisible);
-        }
-        if (context instanceof Activity) {
-            toggleActionBarVisibility(isVisible);
-        }
-    }
-
-    private void toggleSupportActionBarVisibility(boolean isVisible) {
-        // AppCompatActivity support action bar
-        ActionBar supportActionBar = ((AppCompatActivity) context)
-                .getSupportActionBar();
-        if (supportActionBar != null) {
-            if (isVisible) {
-                supportActionBar.show();
-            } else {
-                supportActionBar.hide();
-            }
-        }
-    }
-
-    private void toggleActionBarVisibility(boolean isVisible) {
-        // Activity action bar
-        android.app.ActionBar actionBar = ((Activity) context).getActionBar();
-        if (actionBar != null) {
-            if (isVisible) {
-                actionBar.show();
-            } else {
-                actionBar.hide();
-            }
-        }
-    }
-
-    // TODO: Maybe move to SystemUiController
-    void toggleSystemUiVisibility() {
-        Window activityWindow = ((Activity) context).getWindow();
-        View decorView = activityWindow.getDecorView();
-        int newUiOptions = decorView.getSystemUiVisibility();
-        newUiOptions ^= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-        newUiOptions ^= View.SYSTEM_UI_FLAG_FULLSCREEN;
-        newUiOptions ^= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-        decorView.setSystemUiVisibility(newUiOptions);
     }
 
     public boolean shouldHandleOnBackPressed() {
