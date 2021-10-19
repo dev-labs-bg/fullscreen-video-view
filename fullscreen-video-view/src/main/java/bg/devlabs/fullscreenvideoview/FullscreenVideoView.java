@@ -27,7 +27,6 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,8 +57,7 @@ import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation;
 import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedOptions;
 
 @SuppressWarnings("unused")
-public class FullscreenVideoView extends FrameLayout
-        implements VideoView {
+public class FullscreenVideoView extends FrameLayout {
 
     @Nullable
     private VideoSurfaceView surfaceView;
@@ -126,7 +124,6 @@ public class FullscreenVideoView extends FrameLayout
         if (controller != null) {
             controller.setOrientationManager(orientationManager);
             controller.setVideoMediaPlayer(fullscreenVideoMediaPlayer);
-//            controller.setVideoView(this);
             controller.init(attrs);
         }
         setupProgressBarColor();
@@ -134,70 +131,13 @@ public class FullscreenVideoView extends FrameLayout
         requestFocus();
         initOnBackPressedListener();
         // Setup onTouch listener
-        setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent event) {
-                view.performClick();
-                if (controller != null) {
-                    controller.show();
-                }
-                return false;
+        setOnTouchListener((view, event) -> {
+            view.performClick();
+            if (controller != null) {
+                controller.show();
             }
+            return false;
         });
-    }
-
-    @Override
-    public boolean isPlaying() {
-        return fullscreenVideoMediaPlayer.isPlaying();
-    }
-
-    @Override
-    public void changePlaybackSpeed(float speed) {
-        if (fullscreenVideoMediaPlayer != null) {
-            fullscreenVideoMediaPlayer.changePlaybackSpeed(speed);
-        }
-    }
-
-    @Override
-    public boolean canPause() {
-        return fullscreenVideoMediaPlayer.canPause();
-    }
-
-    @Override
-    public int getCurrentPosition() {
-        return fullscreenVideoMediaPlayer.getCurrentPosition();
-    }
-
-    @Override
-    public int getDuration() {
-        return fullscreenVideoMediaPlayer.getDuration();
-    }
-
-    @Override
-    public int getBufferPercentage() {
-        return fullscreenVideoMediaPlayer.getBufferPercentage();
-    }
-
-    @Override
-    public void onPauseResume() {
-        fullscreenVideoMediaPlayer.onPauseResume();
-    }
-
-    @Override
-    public void seekTo(int position) {
-        fullscreenVideoMediaPlayer.seekTo(position);
-    }
-
-    @Override
-    public boolean isLandscape() {
-        return orientationManager != null && orientationManager.isLandscape();
-    }
-
-    @Override
-    public void toggleFullscreen() {
-        if (orientationManager != null) {
-            orientationManager.toggleFullscreen();
-        }
     }
 
     private void hideThumbnail() {
@@ -272,7 +212,7 @@ public class FullscreenVideoView extends FrameLayout
                     }
                 }
                 // Seek to a specific time
-                seekTo(seekToTimeMillis);
+                fullscreenVideoMediaPlayer.seekTo(seekToTimeMillis);
             }
 
             @Override
