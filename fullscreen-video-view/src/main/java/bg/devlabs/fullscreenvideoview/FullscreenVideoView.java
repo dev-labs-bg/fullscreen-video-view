@@ -719,6 +719,19 @@ public class FullscreenVideoView extends FrameLayout {
     }
 
     /**
+     * Gets the current position of the MediaPlayer in milliseconds.
+     *
+     * @return the current position value in milliseconds or -1 if the MediaPlayer is null.
+     */
+    public int getCurrentPosition() {
+        if (fullscreenVideoMediaPlayer != null) {
+            return fullscreenVideoMediaPlayer.getCurrentPosition();
+        } else {
+            return -1;
+        }
+    }
+
+    /**
      * Changes the video URL at runtime.
      * <p>
      * This method is not part of the building pattern and because of that it's not returning
