@@ -1,8 +1,9 @@
 ![logo](https://raw.githubusercontent.com/dev-labs-bg/fullscreen-video-view/master/logo.png)
 ===
-[![Download](https://api.bintray.com/packages/slavipetrov/maven/fullscreen-video-view/images/download.svg) ](https://bintray.com/slavipetrov/maven/fullscreen-video-view/_latestVersion)
+[![Download](https://img.shields.io/maven-central/v/bg.devlabs/fullscreen-video-view?label=download)](https://repo1.maven.org/maven2/bg/devlabs/fullscreen-video-view/)
 [![Build Status](https://travis-ci.org/dev-labs-bg/fullscreen-video-view.svg?branch=master)](https://travis-ci.org/dev-labs-bg/fullscreen-video-view)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/5d2c2572dd7b4a2fb5eeabd6c2e18fbc)](https://www.codacy.com/app/slavipetrov/fullscreen-video-view?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dev-labs-bg/fullscreen-video-view&amp;utm_campaign=Badge_Grade)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 FullscreenVideoView is a custom VideoView Android library which makes loading, setting up and going fullscreen for video views easy.
 
@@ -10,18 +11,11 @@ FullscreenVideoView is a custom VideoView Android library which makes loading, s
 
 Download
 ===
-You can use Gradle:
 ```gradle
-compile 'bg.devlabs.fullscreenvideoview:library:1.1.6'
-```
-or Maven:
-```maven
-<dependency>
-  <groupId>bg.devlabs.fullscreenvideoview</groupId>
-  <artifactId>library</artifactId>
-  <version>1.1.6</version>
-  <type>pom</type>
-</dependency>
+dependencies {
+    ...
+    implementation 'bg.devlabs:fullscreen-video-view:1.2.0'
+}
 ```
 
 How to use FullscreenVideoView?
