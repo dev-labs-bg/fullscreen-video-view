@@ -46,6 +46,7 @@ import java.util.Objects;
 
 import bg.devlabs.fullscreenvideoview.listener.OnErrorListener;
 import bg.devlabs.fullscreenvideoview.listener.OnVideoCompletedListener;
+import bg.devlabs.fullscreenvideoview.listener.OnVideoPreparedListener;
 import bg.devlabs.fullscreenvideoview.listener.mediacontroller.MediaControllerListener;
 import bg.devlabs.fullscreenvideoview.model.Arguments;
 import bg.devlabs.fullscreenvideoview.model.Margins;
@@ -84,6 +85,7 @@ public class FullscreenVideoView extends FrameLayout {
     private OnVideoCompletedListener onVideoCompletedListener;
     private VideoMediaPlayerListener videoMediaPlayerListener;
     private OrientationListener orientationListener;
+    private OnVideoPreparedListener onVideoPreparedListener;
 
     private boolean isVisible;
     private int originalWidth;
@@ -212,6 +214,11 @@ public class FullscreenVideoView extends FrameLayout {
                 }
                 // Seek to a specific time
                 fullscreenVideoMediaPlayer.seekTo(seekToTimeMillis);
+
+                // Notify the listener if available
+                if (onVideoPreparedListener != null) {
+                    onVideoPreparedListener.onPrepared();
+                }
             }
 
             @Override
@@ -646,6 +653,17 @@ public class FullscreenVideoView extends FrameLayout {
      */
     public FullscreenVideoView addOnVideoCompletedListener(OnVideoCompletedListener listener) {
         this.onVideoCompletedListener = listener;
+        return this;
+    }
+
+    /**
+     * Adds a listener which is called when the video is prepared.
+     *
+     * @param listener the listener for the video preparation
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView addOnVideoPreparedListener(OnVideoPreparedListener listener) {
+        this.onVideoPreparedListener = listener;
         return this;
     }
 
