@@ -694,6 +694,26 @@ public class FullscreenVideoView extends FrameLayout {
     }
 
     /**
+     * Mutes the video player.
+     *
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView mute() {
+        fullscreenVideoMediaPlayer.setVolume(0, 0);
+        return this;
+    }
+
+    /**
+     * Unmutes the video player.
+     *
+     * @return the fullscreenVideoView instance
+     */
+    public FullscreenVideoView unmute() {
+        fullscreenVideoMediaPlayer.setVolume(1, 1);
+        return this;
+    }
+
+    /**
      * Pauses the video at runtime.
      * <p>
      * This method is not part of the building pattern and because of that it's not returning
