@@ -15,6 +15,8 @@
  */
 
 apply from: './dependencies.gradle'
+apply plugin: 'io.github.gradle-nexus.publish-plugin'
+apply from: "${rootDir}/scripts/publish-root.gradle"
 
 buildscript {
     apply from: './dependencies.gradle'
@@ -26,6 +28,7 @@ buildscript {
     dependencies {
         classpath "com.android.tools.build:gradle:$versions.gradlePlugin"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
+        classpath 'io.github.gradle-nexus:publish-plugin:1.1.0'
     }
 }
 

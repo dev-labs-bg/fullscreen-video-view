@@ -16,14 +16,14 @@
 
 ext {
     PUBLISH_GROUP_ID = 'bg.devlabs'
-    PUBLISH_VERSION = '1.1.6'
+    PUBLISH_VERSION = '1.2.0'
     PUBLISH_ARTIFACT_ID = 'fullscreen-video-view'
 }
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply from: '../dependencies.gradle'
-apply from: "${rootDir}/scripts/publish-mavencentral.gradle"
+apply from: "${rootDir}/scripts/publish-module.gradle"
 
 android {
     compileSdkVersion versions.compileSdk
