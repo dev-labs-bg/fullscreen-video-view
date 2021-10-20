@@ -43,11 +43,4 @@ interface MediaController {
      * @return true if it's showing, otherwise false
      */
     boolean isShowing();
-
-    /**
-     * Checks if the player is playing.
-     *
-     * @return true if it's playing, otherwise false
-     */
-    boolean isPlaying();
 }

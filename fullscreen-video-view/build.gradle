@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
+ext {
+    PUBLISH_GROUP_ID = 'bg.devlabs'
+    PUBLISH_VERSION = '1.2.0'
+    PUBLISH_ARTIFACT_ID = 'fullscreen-video-view'
+}
+
 apply plugin: 'com.android.library'
-apply plugin: 'com.jfrog.bintray'
-apply plugin: 'maven-publish'
+apply plugin: 'kotlin-android'
 apply from: '../dependencies.gradle'
+apply from: "${rootDir}/scripts/publish-module.gradle"
 
 android {
     compileSdkVersion versions.compileSdk
@@ -29,6 +35,16 @@ android {
         versionCode versions.publishVersionCode
         versionName versions.publishVersion
     }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
     lintOptions {
         abortOnError false
         checkReleaseBuilds false
@@ -36,42 +52,13 @@ android {
 }
 
 dependencies {
-    implementation "androidx.core:core:$versions.core"
+    implementation "androidx.core:core-ktx:$versions.core"
     implementation "androidx.appcompat:appcompat:$versions.appcompat"
     implementation "com.google.android.material:material:$versions.material"
     implementation "androidx.constraintlayout:constraintlayout:$versions.constraintLayout"
 }
 
-ext {
-    bintrayRepo = 'maven'
-    bintrayName = 'fullscreen-video-view'
-
-    publishedGroupId = 'bg.devlabs.fullscreenvideoview'
-    libraryName = 'fullscreen-video-view'
-    artifact = 'library'
-
-    libraryDescription = 'A custom VideoView Android library which makes video views usage easy'
-
-    siteUrl = 'https://github.com/dev-labs-bg/fullscreen-video-view'
-    gitUrl = 'https://github.com/dev-labs-bg/fullscreen-video-view.git'
-
-    libraryVersion = '1.1.6'
-
-    developerId = 'slavipetrov'
-    developerName = 'Slavi Petrov'
-    developerEmail = 'slavi@devlabs.bg'
-
-    licenseName = 'Apache-2.0'
-    licenseUrl = 'https://github.com/dev-labs-bg/fullscreen-video-view/blob/master/LICENSE'
-    allLicenses = ["Apache-2.0"]
-}
-
 // Turn off javadocs as currently it doesn't work with kotlin
-tasks.withType(Javadoc).all {
-    enabled = false
-}
-
-if (project.rootProject.file('local.properties').exists()) {
-    apply from: 'https://raw.githubusercontent.com/dev-labs-bg/JCenter/master/installv1.gradle'
-    apply from: 'https://raw.githubusercontent.com/dev-labs-bg/JCenter/master/bintrayv1.gradle'
-}
+//tasks.withType(Javadoc).all {
+//    enabled = false
+//}

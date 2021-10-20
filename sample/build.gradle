@@ -51,13 +51,12 @@ android {
 }
 
 dependencies {
-    implementation project(':library')
+    implementation project(':fullscreen-video-view')
     implementation "androidx.appcompat:appcompat:$versions.appcompat"
     implementation "com.google.android.material:material:$versions.material"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin"
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$versions.leakCanary"
 
-    androidTestImplementation "androidx.test:rules:1.2.0"
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation "androidx.test:rules:$versions.test_rules"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$versions.espresso_core"
+    androidTestImplementation "androidx.test.ext:junit:$versions.junit_ext"
 }

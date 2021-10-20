@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
-ext.versions = [
-        minSdk            : 19,
-        compileSdk        : 30,
-        buildTools        : '29.0.2',
-        publishVersion    : '1.2.0',
-        publishVersionCode: 1,
-        gradlePlugin      : '7.0.3',
+package bg.devlabs.fullscreenvideoview.listener;
 
-        core              : '1.6.0',
-        appcompat         : '1.3.1',
-        material          : '1.4.0',
-        constraintLayout  : '2.1.1',
-        kotlin            : '1.5.31',
-        leakCanary        : '2.6',
+/**
+ * Listener for when the video is prepared.
+ */
+public interface OnVideoPreparedListener {
 
-        test_rules        : '1.4.0',
-        espresso_core     : '3.4.0',
-        junit_ext         : '1.1.3'
-]
+    /**
+     * Called when the video is prepared.
+     */
+    void onPrepared();
+}

@@ -19,13 +19,11 @@ package bg.devlabs.fullscreenvideoviewsample
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Environment
 import androidx.appcompat.app.AppCompatActivity
 import bg.devlabs.fullscreenvideoview.orientation.LandscapeOrientation
 import bg.devlabs.fullscreenvideoview.orientation.PortraitOrientation
 import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedOptions
 import kotlinx.android.synthetic.main.activity_action_bar.*
-import java.io.File
 
 class ActionBarActivity : AppCompatActivity() {
     companion object {
