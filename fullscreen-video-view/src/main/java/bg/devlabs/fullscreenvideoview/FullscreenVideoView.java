@@ -58,7 +58,6 @@ import bg.devlabs.fullscreenvideoview.playbackspeed.PlaybackSpeedOptions;
 
 @SuppressWarnings("unused")
 public class FullscreenVideoView extends FrameLayout {
-
     @Nullable
     private VideoSurfaceView surfaceView;
     @Nullable
